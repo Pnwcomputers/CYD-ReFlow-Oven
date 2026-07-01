@@ -85,22 +85,7 @@ The toaster oven receives power from the controller box output.
 
 ## 🧩 Wiring Diagram
 
-A graphical wiring diagram can be included in this repository as:
-
-```markdown
 ![DIY Reflow Controller Wiring Diagram](./diy_reflow_controller_wiring_diagram.png)
-```
-
-The diagram should show:
-
-* Controller box internal wiring
-* 3Dman IEC/rocker AC input
-* KP200 smart shutoff module
-* SSR hot/load switching
-* CYD-to-SSR control wiring
-* CYD-to-MAX6675 thermocouple wiring
-* Toaster oven output connection
-* Thermocouple probe placement inside the oven
 
 ---
 
