@@ -30,24 +30,62 @@ The controller sits in a standalone 3D-printed enclosure next to the oven, handl
 
 ---
 
-## ⚡ Pinout & Wiring Configurations
+## ⚡ Improved Wiring Guide & Schematic
 
-Through iterative hardware bring-up, specific pin mappings were chosen to avoid conflicts on the CYD board. 
+This section details the wiring for the CYD Reflow Oven Controller. The design is split into two distinct sections: the **Low Voltage (DC) Control Side** and the **High Voltage (AC) Power Side**.
 
-### CYD to MAX6675 (Thermocouple)
+> **⚠️ SEPARATION WARNING:** Maintain strict physical separation between the AC and DC wiring within your enclosure, using the integrated divider. Do not route AC wires near the microcontroller.
 
-We use bit-banged SPI (with a retry-on-failure pattern) to communicate with the MAX6675.
-* **SCK:** GPIO 22
-* **CS:** GPIO 27
-* **SO:** GPIO 35
+### 🔵 Part 1: Low Voltage (DC) Control Side
 
-> **⚠️ GPIO 21 Warning:** Do not use GPIO 21 for the SPI clock. On the CYD, GPIO 21 controls the backlight. Clocking SPI on this pin causes intermittent `OPEN_THERMOCOUPLE` errors.
+This side connects the CYD (ESP32) to the sensors and the control side of the SSR.
 
-### CYD to SSR (Heat Control)
+#### 1. Thermocouple Amplifier (MAX6675)
+We use a software bit-banged SPI configuration for the MAX6675 to avoid conflicts with the CYD’s onboard hardware.
 
-* **Control Pin:** GPIO 1 (TX line of P1 serial connector)
+| MAX6675 Pin | Connection to CYD (ESP32) |
+| :--- | :--- |
+| **VCC** | Connect to **3.3V** (Available on P1 Connector) |
+| **GND** | Connect to **GND** (Available on P1 Connector) |
+| **SCK** (Clock) | Connect to **GPIO 22** |
+| **CS** (Chip Select) | Connect to **GPIO 27** |
+| **SO** (Slave Out) | Connect to **GPIO 35** (This is an input-only pin on the ESP32, which is correct here) |
 
-> **⚠️ GPIO 1 / UART TX Conflict:** Because GPIO 1 is used for the SSR, **all `Serial.print()` calls must be removed** from the firmware. Leaving serial prints in the code will inadvertently toggle the SSR and fire the oven during serial output. 
+> **⛔ DO NOT USE GPIO 21:** Avoid using GPIO 21 for the SPI clock. This pin controls the CYD backlight and will cause communication failures.
+
+#### 2. Solid State Relay (SSR) Control
+This connects the CYD trigger signal to the input side of the Inkbird SSR.
+
+| Connection | Description |
+| :--- | :--- |
+| **CYD GPIO 1 (TX)** | Connect to **SSR Terminal 3 (+)** (Input) |
+| **CYD GND** | Connect to **SSR Terminal 4 (-)** (Input) |
+
+> **⚠️ CRITICAL GPIO 1 CONFLICT WARNING:** GPIO 1 on the CYD is also the hardware Serial TX pin used for programming and debugging.
+> 
+> 1. **DISABLE ALL `Serial.print()`** calls in your final code. Any serial output during operation will cause the SSR to rapidly toggle, unexpectedly firing the oven.
+> 2. **FOLLOW UPLOAD PROCEDURE:** You must disconnect the wire from GPIO 1 to the SSR before uploading code, or the upload will fail. Reconnect and reset the board after flashing.
+
+### 🔴 Part 2: High Voltage (AC) Mains Power Side
+
+This section details the AC wiring that powers the oven heating elements.
+
+#### 1. Fused IEC Inlet & Switch
+Wiring the integrated fused IEC C14 inlet and rocker switch.
+
+* **AC Inlet → Smart Plug:** This whole system should be plugged into the Home Assistant-controlled smart plug.
+* **Earth/Ground (Green/Yellow):** Connect the Earth pin of the IEC inlet directly to the metal chassis of the toaster oven and the ground terminal of the IEC inlet itself. This is critical for safety.
+* **Neutral (Blue):** Connect the Neutral pin of the IEC inlet directly to one side of the oven’s heating elements.
+* **Hot/Line (Brown/Red):** Connect the Hot pin of the IEC inlet to the **Fuse Holder** input.
+* **Fuse Holder Output:** Connect to one terminal of the **Rocker Switch**.
+
+#### 2. SSR Load Wiring
+The SSR acts as a switch in the Hot/Line wire path.
+
+* **Rocker Switch (Output Terminal):** Connect this to **SSR Terminal 1** (Load Output).
+* **SSR Terminal 2 (Load Output):** Connect this to the remaining terminal of the oven’s heating elements.
+
+> **⚠️ SAFETY CONFIRMATION:** Ensure the SSR is switching the **Hot (Live)** wire, **NOT** the Neutral wire. Switching Neutral is extremely dangerous, as the heating elements would remain live even when the oven is "off."
 
 ---
 
