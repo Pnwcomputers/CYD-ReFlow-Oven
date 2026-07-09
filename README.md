@@ -4,20 +4,41 @@
 
 ## 📖 Overview
 
-This is a custom-built, cost-conscious reflow toaster oven controller for soldering Surface Mount Technology (SMT) printed circuit boards.
+This is a custom-built, cost-conscious reflow toaster oven controller designed for soldering Surface Mount Technology (SMT) printed circuit boards. It serves as a lower-cost alternative to reference designs like the Adafruit EZ Make Oven, leveraging the popular **Cheap Yellow Display (CYD)** ESP32 touchscreen module.
 
-The project is intentionally designed as a lower-cost alternative to the Adafruit EZ Make Oven reference design, using a Cheap Yellow Display (CYD) ESP32 touchscreen as the main controller and UI.
+The controller is housed in a standalone, 3D-printed bench enclosure sitting safely adjacent to the toaster oven.
 
-The controller sits in a standalone 3D-printed bench enclosure next to the toaster oven. It controls oven heating through a Solid State Relay (SSR), reads chamber temperature from a K-type thermocouple through a MAX6675 module, and displays live profile/temperature data on the CYD touchscreen.
+### How It Works
+* **Control:** Switches oven heating elements via a Solid State Relay (SSR) using slow-PWM control (2-second window).
+* **Sensing:** Reads internal chamber temperatures using a K-type thermocouple paired with a MAX6675 digitizer module.
+* **UI/UX:** Displays live reflow profiles, temperature graphs, and touch targets directly on the CYD screen.
 
-The current enclosure design uses:
+---
 
-* A **3Dman fused IEC C14 inlet with rocker switch** as the controller box AC power input
-* A **KP200 smart outlet module** as the smart/remote shutoff layer
-* An **Inkbird SSR-40DA** to switch the oven hot/load line
-* A **CYD ESP32 touchscreen** mounted on the top lid
-* A **MAX6675 thermocouple module** for temperature sensing
-* A compact flat enclosure sized to print on a **Bambu X1C**
+## ✨ Features & Project Status
+
+* **Core UI:** CYD Display, capacitive touch, and status LED are fully validated.
+* **Sensing:** MAX6675 reading verified with a live rendering graph on the screen.
+* **Control:** Slow-PWM SSR control logic scaffolded. DC-side switching validation is up next.
+* **Enclosure:** OpenSCAD parametric design optimized to print flat on a Bambu X1C without supports. 
+* **Safety Isolation:** Internal structural barrier physically separates high-voltage AC mains from low-voltage DC control logic.
+* **Redundant Fail-safes:** Dual-layer protection utilizing a physical fused rocker switch alongside an upstream smart-home remote shutoff layer (KP200).
+
+---
+
+## 🛠️ Bill of Materials (BOM)
+
+| Component | Part / Model | Notes |
+| :--- | :--- | :--- |
+| **Microcontroller / UI** | AITRIP CYD ESP32-2432S028R | 2.8" resistive touchscreen unit |
+| **Toaster Oven** | Black & Decker TO1755SB | Base appliance being modified |
+| **Thermocouple Amp** | MAX6675 Module | Cold-junction compensated K-type digitizer |
+| **Thermocouple** | K-Type Thermocouple Probe | Mounted inside oven chamber at PCB tray height |
+| **Solid State Relay** | Inkbird SSR-40DA | Switches AC hot/load line to the oven |
+| **SSR Cooling** | Dedicated Aluminum Heatsink | 80 × 49.4 × 51mm; clears enclosure lid by 8mm |
+| **AC Power Inlet** | 3Dman Fused IEC C14 + Rocker | Main power input module with physical toggle |
+| **Smart Shutoff** | KP200 Smart Outlet Module | Upstream remote emergency isolation layer |
+| **Enclosure Material** | ASA *(Preferred)* / PETG *(Min)* | **Do not use PLA** (susceptible to oven-ambient warp) |
 
 ---
 
@@ -25,423 +46,122 @@ The current enclosure design uses:
 
 ```text
 CYD-ReFlow-Oven/
-├── 3MF/                                            # Slicer-ready, pre-arranged plates
-│   ├── reflow-enclosure-v9_4.3mf                   # Bottom shell + lid + bezel
-│   └── reflow-coupons-v9_4.3mf                     # IEC + KP200 test coupons
-├── OpenSCAD/                                       # Parametric source
-│   ├── reflow-enclosure-flat-v9_4-compact-x1c.scad # ✅ CURRENT source of record
-│   └── reflow-enclosure-flat-v9-compact-x1c.scad   # Historical v9 (superseded)
-├── STL/                                            # Individual validated meshes
-│   ├── reflow-v9_4-bottom.stl
-│   ├── reflow-v9_4-lid.stl
-│   ├── reflow-v9_4-bezel.stl
-│   ├── reflow-v9_4-coupon-iec.stl
-│   └── reflow-v9_4-coupon-kp200.stl
-├── diy_reflow_controller_wiring_diagram.png
-├── reflow-wiring-diagram.svg
-└── README.md
+├── 3MF/                                        # Slicer-ready, pre-arranged plates
+│   └── reflow-enclosure-v9_9-compact-x1.3mf    # Combined slicer assembly setup
+├── OpenSCAD/                                   # Parametric physical source CAD
+│   └── reflow-enclosure-v9_9-compact-x1.scad   # ✅ CURRENT master source of record
+├── STL/                                        # Individual production-ready meshes
+│   ├── reflow-v9_6-bottom.stl                  # Validated structural shell
+│   ├── reflow-v9_6-iec-trim-plate.stl          # Dedicated trim alignment plate
+│   ├── reflow-v9_9-bezel.stl                   # Top screen bezel mesh
+│   └── reflow-v9_9-lid.stl                     # Pre-mirrored mating lid mesh
+├── LICENSE                                     # BSD-2-Clause license file
+├── README.md                                   # This file
+├── diy_reflow_controller_wiring_diagram.png    # Rendered wiring schematic
+└── reflow-wiring-diagram.svg                   # Vector wiring asset
 ```
 
-> **Print only from `v9_4` files.** Earlier v9 exports had two lid bosses that collide with the IEC inlet body and SSR heatsink, and a display window 2mm too narrow for the measured glass position. If any `reflow-v9-*.stl` files remain in the repo, they are superseded and should not be printed.
+> ⚠️ **Print Advisory:** Ensure you deploy the correct mixture of versions currently in the repository branch. Print the **v9.6** variant for your bottom shell/trim plate and the **v9.9** files for the lid and bezel integration.
 
 ---
 
-## ✨ Features & Current State
+## ⚡ System Architecture & Wiring
 
-* **CYD Display/Touch/LED:** Validated
-* **MAX6675 Thermocouple Reading:** Validated with live graph on CYD
-* **SSR DC-Side Testing:** In progress / next validation step
-* **Slow-PWM SSR Control:** Scaffolded using a 2-second control window
-* **Enclosure:** Parametric OpenSCAD flat bench enclosure — **v9.4**, fully verified; bottom shell printed and confirmed sound; lid and bezel queued
-* **Smart Shutoff:** KP200 module integrated into the AC path as a smart shutoff layer
-* **Physical Power Control:** 3Dman fused IEC C14 inlet with integrated rocker switch
-* **AC/DC Separation:** Internal divider separates mains wiring from low-voltage control wiring
-* **Cost-Conscious Design:** Uses common off-the-shelf parts and an inexpensive CYD ESP32 board
-
----
-
-## 🛠️ Parts List / Bill of Materials
-
-| Component                  | Part / Model                               | Notes                                               |
-| :------------------------- | :----------------------------------------- | :-------------------------------------------------- |
-| **Microcontroller/UI**     | AITRIP CYD ESP32-2432S028R                 | 2.8" resistive touchscreen                          |
-| **Toaster Oven**           | Black & Decker TO1755SB                    | Base toaster oven being converted                   |
-| **Thermocouple Amplifier** | MAX6675 Module                             | For K-type thermocouple temperature sensing         |
-| **Thermocouple**           | K-Type Thermocouple Probe                  | Probe mounted inside oven chamber near tray height  |
-| **Solid State Relay**      | Inkbird SSR-40DA                           | Switches AC hot/load to the oven                    |
-| **SSR Cooling**            | SSR Heatsink                               | Measured 80 × 49.4 × 51mm; mounted inside enclosure with top ventilation slots |
-| **AC Input**               | 3Dman IEC C14 Inlet + Rocker Switch + Fuse | Main AC input to the controller box                 |
-| **Smart Shutoff**          | KP200 Smart Outlet Module                  | Smart/remote shutoff layer upstream of SSR; recessed body measured 70.5 × 45 × 45mm |
-| **Enclosure**              | 3D Printed OpenSCAD Case                   | Compact flat bench enclosure                        |
-| **Printer**                | Bambu X1C                                  | Used to print the controller enclosure              |
-| **Material**               | ASA preferred / PETG minimum               | Do not use PLA                                      |
-
----
-
-## ⚡ System Power Flow
-
-The intended AC power path is:
-
+### Power Flow Topology
 ```text
-Wall Power
-   ↓
-3Dman Fused IEC C14 Inlet + Rocker Switch
-   ↓
-KP200 Smart Shutoff Module
-   ↓
-SSR Hot-Side Switching
-   ↓
-Controller Box Oven Output
-   ↓
-Black & Decker TO1755SB Toaster Oven
+[Mains Wall Power] 
+       ↓
+[3Dman Fused IEC C14 Input + Rocker] 
+       ↓
+[KP200 Smart Shutoff Module] 
+       ↓
+[SSR Hot-Side Switching] 
+       ↓
+[Controller Receptacle Output] ---> [Black & Decker Toaster Oven]
 ```
 
-The 3Dman IEC/rocker module is the **device input**.
+> 🛑 **Design Rule:** An IEC C14 inlet is an *input* connector. Never use a male inlet as an energized power output. The power feed out to the oven must utilize a properly rated panel-mount female receptacle or a strain-relieved female trailing lead.
 
-The KP200 is the **smart shutoff layer**.
-
-The SSR is the **temperature-control switching device**.
-
-The toaster oven receives power from the controller box output.
-
-> **Important:** A C14 inlet is an input connector, not an output connector. Do not use a male IEC inlet as an energized output port. The oven output should use a properly rated female receptacle, a properly strain-relieved output cord, or another safe output method.
-
----
-
-## 🧩 Wiring Diagram
-
+### Wiring Architecture
 ![DIY Reflow Controller Wiring Diagram](./diy_reflow_controller_wiring_diagram.png)
 
----
+### Pin Configuration Mapping
 
-## 🔵 Low Voltage / DC Control Wiring
+The low-voltage control side links the CYD ESP32 to the MAX6675 sensor and the input side of the SSR. Due to hardware resource sharing on the CYD board, specific pins must be used:
 
-The low-voltage side connects the CYD ESP32 to the MAX6675 thermocouple module and the DC input side of the SSR.
-
-This wiring must remain physically separated from the mains AC wiring.
-
-### MAX6675 Thermocouple Module
-
-The MAX6675 is wired using bit-banged SPI instead of the CYD's shared hardware SPI bus.
-
-| MAX6675 Pin | CYD / ESP32 Connection |
-| :---------- | :--------------------- |
-| **VCC**     | **3.3V**               |
-| **GND**     | **GND**                |
-| **SCK**     | **GPIO 22**            |
-| **CS**      | **GPIO 27**            |
-| **SO**      | **GPIO 35**            |
-
-GPIO 35 is input-only on the ESP32, which is correct for the MAX6675 SO/data output line.
-
-> **Do not use GPIO 21 for MAX6675 SCK.** GPIO 21 controls the CYD backlight on this board and caused intermittent thermocouple read failures / `OPEN_THERMOCOUPLE` behavior during testing.
-
-### SSR DC Control Wiring
-
-| CYD / ESP32 Connection | SSR Connection        |
-| :--------------------- | :-------------------- |
-| **GPIO 1 / TX**        | **SSR DC+ / Input +** |
-| **GND**                | **SSR DC- / Input -** |
-
-> **Critical GPIO 1 warning:** GPIO 1 is also the ESP32 hardware serial TX pin. Any `Serial.print()` or serial debug output can toggle the SSR unexpectedly if GPIO 1 is connected to the relay input.
-
-Before using GPIO 1 for SSR control:
-
-* Remove all `Serial.print()` / serial debug output from production firmware
-* Disconnect the SSR control wire before uploading firmware
-* Reconnect the SSR control wire after flashing
-* Press the CYD reset button for a clean boot
+| Function | ESP32 GPIO | Connection Target | Design Context / Gotchas |
+| :--- | :--- | :--- | :--- |
+| **MAX6675 SCK** | **GPIO 22** | Module Clock | Bit-banged SPI. *Do not use GPIO 21* (conflicts with CYD backlight). |
+| **MAX6675 CS** | **GPIO 27** | Module Chip Select| Bit-banged SPI |
+| **MAX6675 SO** | **GPIO 35** | Module Data Out | Input-only on ESP32 (perfect match for SO) |
+| **SSR Control** | **GPIO 1** | SSR Input DC+ | Shared with Hardware Serial TX pin. See warning below. |
+| **DC Ground** | **GND** | SSR Input DC- | Common low-voltage ground reference |
 
 ---
 
-## 🔴 High Voltage / AC Power Wiring
+## 💻 Firmware & Flashing Rules
 
-> **⚠️ Mains AC Warning:** This section is a conceptual wiring guide only. Verify the actual terminals, wire colors, fuse rating, load rating, earth bonding, and toaster oven wiring before applying power.
-
-The AC side contains:
-
-* 3Dman fused IEC C14 inlet with rocker switch
-* KP200 smart shutoff module
-* Inkbird SSR-40DA load terminals
-* Oven output wiring
-* Ground bond / earth continuity path
-
-### AC Input: 3Dman IEC C14 + Fuse + Rocker
-
-The 3Dman module is the main AC input for the controller box.
-
-Conceptual wiring:
-
-| AC Input Function  | Destination                                          |
-| :----------------- | :--------------------------------------------------- |
-| **Hot / Line**     | Through fuse/rocker switch, then to KP200 line input |
-| **Neutral**        | To KP200 neutral and oven neutral pass-through       |
-| **Ground / Earth** | To chassis/ground bond and oven ground pass-through  |
-
-The rocker switch provides local physical power control.
-
-The fuse provides local protection, but it must be correctly sized for the actual load and wiring.
-
-### KP200 Smart Shutoff Module
-
-The KP200 acts as the smart shutoff layer upstream of the SSR.
-
-Conceptual flow:
-
-```text
-3Dman Switched Hot Output
-   ↓
-KP200 Line Input
-   ↓
-KP200 Controlled/Load Output
-   ↓
-SSR AC Load Terminal
-```
-
-Neutral should be wired according to the KP200's actual terminal labeling and requirements.
-
-The KP200 must be rated for the actual toaster oven load. Confirm the oven nameplate wattage/current and the KP200 rating before using it in the load path.
-
-### SSR Load Wiring
-
-The SSR switches the oven **hot/load** conductor only.
-
-Conceptual flow:
-
-```text
-KP200 Load Hot Output
-   ↓
-SSR AC Terminal 1
-   ↓
-SSR AC Terminal 2
-   ↓
-Oven Output Hot
-```
-
-Neutral and ground should pass through to the oven output unchanged.
-
-```text
-AC Neutral → Oven Output Neutral
-AC Ground  → Ground Bond → Oven Output Ground
-```
-
-> **The SSR must switch hot, not neutral.** Switching neutral can leave the oven heating circuit energized even when the controller appears to be off.
-
----
-
-## 🔌 Toaster Oven Connection
-
-The Black & Decker TO1755SB connects to the controller box output.
-
-Recommended output approaches:
-
-* Properly rated panel-mount female receptacle
-* Properly strain-relieved output cord ending in a female receptacle
-* Another safe, enclosed, properly rated output method
-
-Do not use a male C14 inlet as an energized output.
-
-The oven connection should preserve:
-
-| Conductor          | Behavior                |
-| :----------------- | :---------------------- |
-| **Hot / Line**     | SSR-controlled          |
-| **Neutral**        | Pass-through            |
-| **Ground / Earth** | Pass-through and bonded |
-
-The thermocouple probe should be routed into the oven chamber and positioned near tray height where the PCB will sit.
-
----
-
-## 💻 Firmware Notes
-
-### Libraries
-
-Required libraries:
-
-* `TFT_eSPI`
+### Required Core Libraries
+* `TFT_eSPI` (Configured for the respective CYD display controller)
 * `XPT2046_Touchscreen`
 
-The MAX6675 code uses custom bit-banged SPI, so no external MAX6675 library is required.
+### 🚨 Critical GPIO 1 / SSR Warning
+Because **GPIO 1** is shared with the hardware serial transmit line (`TX`), any active `Serial.print()` statements or bootloader debugging data will rapidly toggle the SSR during boot or runtime.
 
-### Known Working Pin Assignment
-
-| Function                 | GPIO    |
-| :----------------------- | :------ |
-| **MAX6675 SCK**          | GPIO 22 |
-| **MAX6675 CS**           | GPIO 27 |
-| **MAX6675 SO**           | GPIO 35 |
-| **SSR Control**          | GPIO 1  |
-| **SSR Ground Reference** | GND     |
-
-### Upload Procedure
-
-Because GPIO 1 is used for SSR control, use this upload process:
-
-1. Disconnect the SSR control wire from GPIO 1.
-2. Compile and upload firmware.
-3. Reconnect the SSR control wire.
-4. Press the CYD `RST` button.
-5. Confirm clean boot before enabling AC power.
+#### Strict Upload Procedure:
+1. **Isolate:** Disconnect the SSR DC+ control wire from GPIO 1 entirely.
+2. **Flash:** Confirm all active `Serial.print()` calls are stripped out of production builds, then flash firmware over USB.
+3. **Reconnect & Boot:** Reattach the SSR control line, then press the physical `RST` button on the CYD to initiate a clean, deterministic system boot before introducing AC power.
 
 ---
 
-## 🖨️ Enclosure & 3D Printing
+## 🖨️ Enclosure & 3D Printing Production
 
-The enclosure is a standalone flat bench unit designed to sit next to the toaster oven.
+The parametric enclosure splits the interior into isolated functional chambers with an internal physical divider wall. 
 
-The compact layout fits comfortably on a Bambu X1C (256 × 256mm bed) when printed as separate parts.
+### Enclosure Revision Milestones
 
-### Current Version: v9.4
+* **v9.6 Platform:** Stabilized the bottom shell architecture and added the dedicated `reflow-v9_6-iec-trim-plate.stl` alignment spacer.
+* **v9.9 Platform (Current):** Refined top tolerances. The physical lid file (`reflow-v9_9-lid.stl`) is intentionally pre-mirrored for printing so that features properly map to the bottom shell when flipped upside down into its installed state. Do not mirror it again in the slicer.
 
-```text
-220mm W × 155mm D × 65mm H  ·  AC/DC divider at X = 147mm  ·  lay-flat, no bottom openings
-```
-
-Every mesh in `3MF/` and `STL/` is validated: watertight, winding-consistent, zero open edges, and regression-tested in **installed orientation** (the lid mesh is physically flipped 180° and probed against the shell — all 8 screw holes, both windows, standoffs, vents, and volumetric non-interference).
-
-#### Version history
-
-| Version | Change |
-| :------ | :----- |
-| v9      | Initial compact flat X1C layout (both AC modules, CYD rotated 90°) |
-| v9.1    | Relocated two AC-side lid bosses that collided with the 3Dman inlet body and the SSR heatsink corner |
-| v9.2    | KP200 lid window widened 70 → 73mm (measured body is 70.5mm); CYD insert bosses thickened 7 → 8.5mm OD |
-| v9.3    | **Critical:** lid is now emitted mirrored for printing. The old assembly preview used a physically impossible Z-mirror, so the printed lid installed mirror-imaged — the symmetric DC screw pattern masked it while all four asymmetric AC-side holes missed their bosses |
-| v9.4    | CYD display window widened 46 → 48mm — the glass sits 0.5–1mm off-center between the mounting holes; symmetric widening keeps the lid rotation-agnostic |
-
-#### ⚠️ The lid looks mirror-imaged on the print plate — this is correct
-
-As of v9.3 the lid STL is intentionally exported mirrored. When you physically flip the printed part over to install it (flip toward you, about the X axis), all features land in true plan coordinates. Do not "fix" the mirroring in the slicer.
-
-#### Verified physical dimensions (measured against real parts)
-
-| Item | Measured | Enclosure margin |
-| :--- | :------- | :--------------- |
-| SSR + heatsink stack height | 51mm | 8mm clearance to lid inner face (limit 56mm) |
-| Heatsink footprint | 80 × 49.4mm | Clears KP200 body by ~6.1mm, front boss by ~3.8mm |
-| KP200 recessed body | 70.5 × 45 × 45mm | Clears 73mm lid window by 1.25mm per side |
-| Display glass position | 0.5–1mm off-center between mounting holes | Absorbed by 48mm window (≥1.4mm per side either rotation) |
-
-### Print Order
-
-1. **Test coupons** (`3MF/reflow-coupons-v9_4.3mf`) — verify the IEC cutout/screw spacing and KP200 window against your physical parts before committing to multi-hour prints
-2. **Bottom shell**
-3. **Lid + bezel** (can share a plate)
-
-### Material
-
-Recommended:
-
-* **ASA preferred**
-* **PETG minimum**
-
-Avoid:
-
-* **PLA**, because it may soften or warp from heat near the oven or from prolonged warm bench conditions.
-
-### Suggested Print Settings
-
-* 3 perimeters minimum
-* 30–40% gyroid infill
-* No supports required for any part as oriented
-* Heat-set inserts (M3) or machine screws preferred where serviceability matters
+### Slicer Configurations
+* **Orientation:** All STL assets are pre-oriented for direct printing. No supports are required.
+* **Infill & Perimeters:** Run a minimum of 3 perimeters paired with 30–40% Gyroid infill to handle internal heat-sink structural load.
+* **Hardware:** M3 heat-set brass inserts are required for the internal mounting pillars.
 
 ---
 
-## 🧱 OpenSCAD Compilation
+## 🚧 Roadmap & Known Issues
 
-The enclosure is parametric; `OpenSCAD/reflow-enclosure-flat-v9_4-compact-x1c.scad` is the source of record. The `part` variable selects what to render:
+### Completed Milestones ✅
+* [x] Enclosure dimensions coupon-validated against physical AC components.
+* [x] Confirmed SSR heatsink lid-clearance margins (8mm vertical buffer).
+* [x] Split production prints to v9.6 bottom configurations and v9.9 top closures.
+* [x] Successfully printed and verified structural bottom shell.
 
-```text
-part = "bottom" | "lid" | "bezel" | "assembly" | "all_flat" | "iec_test_coupon" | "kp200_test_coupon"
-```
-
-Example CLI exports:
-
-```bash
-xvfb-run -a openscad -D 'part="bottom"' -o reflow-v9_4-bottom.stl OpenSCAD/reflow-enclosure-flat-v9_4-compact-x1c.scad
-xvfb-run -a openscad -D 'part="lid"'    -o reflow-v9_4-lid.stl    OpenSCAD/reflow-enclosure-flat-v9_4-compact-x1c.scad
-xvfb-run -a openscad -D 'part="bezel"'  -o reflow-v9_4-bezel.stl  OpenSCAD/reflow-enclosure-flat-v9_4-compact-x1c.scad
-```
-
-For PNG previews, append OpenSCAD preview options such as:
-
-```bash
---imgsize=1600,1200 --camera=ex,ey,ez,lx,ly,lz,dist
-```
-
-> **Note on raw OpenSCAD STLs:** OpenSCAD output can contain coincident-but-unwelded vertices. The STLs in this repo have been vertex-welded (0.02mm tolerance) and validated with trimesh. If you export your own, expect to weld/repair before relying on watertightness checks.
+### Open Action Items 🛠️
+* [ ] Print production v9.9 lid and bezel; check fitment against bottom shell.
+* [ ] Verify physical CYD screw pattern matching (82 × 44mm) against the printed lid.
+* [ ] Choose SSR-to-heatsink retention method (RTV high-temp silicone vs. a printed corral bracket).
+* [ ] Run low-voltage logic validations to ensure clean SSR switching over GPIO 1.
+* [ ] Audit codebase to completely strip out active `Serial` debugging logs.
+* [ ] Cross-reference Black & Decker TO1755SB peak current requirements with KP200 internal relay specs.
+* [ ] Finalize oven chassis entry point for the K-type thermocouple probe.
+* [ ] Design and implement target reflow curve PID logic loops in firmware.
 
 ---
 
-## 🚧 Known Issues & To-Do
+## 🛑 Final Safety Checklist Before Mains Power Authorization
 
-### Enclosure — resolved ✅
+Do not connect the device to wall power until every item below is explicitly checked:
 
-* [x] Confirm exact 3Dman IEC/rocker module cutout dimensions (coupon-verified)
-* [x] Confirm KP200 physical cutout and mounting clearances (body measured 70.5 × 45 × 45mm; window widened to 73mm)
-* [x] Verify SSR heatsink dimensions and lid vent alignment (measured 80 × 49.4 × 51mm; 8mm lid clearance)
-* [x] Verify display glass position vs. window (measured 0.5–1mm offset; window widened to 48mm)
-* [x] Add final wiring diagram image to repository
-* [x] Add final enclosure STL/3MF exports to repository
-* [x] Print and verify bottom shell
-
-### Open items
-
-* [ ] Print lid and bezel from v9.4; validate fit against printed bottom shell
-* [ ] Confirm CYD mounting hole pattern against v9.4 lid (82 × 44mm assumed from datasheet; first physical check is the lid print)
-* [ ] Confirm CYD USB-C port location for the exact board variant (side slot is optional; goes unused if the connector is on the short edge)
-* [ ] Decide SSR/heatsink retention method: RTV silicone, drill-through, or printed corral bracket
-* [ ] Complete SSR DC-side testing; confirm SSR turns on/off reliably from CYD GPIO 1
-* [ ] Remove all `Serial.print()` calls from firmware before connecting SSR control to GPIO 1
-* [ ] Verify KP200 current rating against the Black & Decker TO1755SB nameplate
-* [ ] Verify 3Dman fuse value and rocker switch rating against the oven load
-* [ ] Decide final CYD power method: external USB-C wall adapter vs. internal isolated AC-to-5V module
-* [ ] Finalize oven output method: female receptacle, output cord, or other safe connector
-* [ ] Finalize thermocouple probe routing into the oven chamber
-* [ ] Complete AC wiring only after all test fits and DC-side tests are complete
-* [ ] Develop full reflow profile firmware logic
+- [ ] **Wiring Verification:** Trace out all connections using a digital multimeter on continuity mode.
+- [ ] **Mains Orientation:** Explicitly confirm that the SSR switches the **Hot / Line** conductor, *never* the Neutral conductor.
+- [ ] **Ground Path Bonding:** Confirm solid metal-to-metal earth ground continuity from the primary AC wall inlet pin straight to both the controller chassis elements and the external metal oven frame.
+- [ ] **Isolation Separation:** Visually verify that no low-voltage control lines path through or touch the AC high-voltage chamber.
+- [ ] **Touch Protection:** Ensure there are zero exposed live AC terminals or raw wire conductor strands capable of being touched inside the box.
+- [ ] **Thermal Clearance:** Ensure the SSR heatsink cooling vents are unblocked and clear.
+- [ ] **Logic Verification:** Test the complete firmware logic path with the AC lines fully disconnected to ensure the CYD triggers the relay pin appropriately under mock profiles.
+- [ ] **Constant Supervision:** Never leave the modified oven system unmonitored during live operations.
 
 ---
-
-## 🧪 Current Development Notes
-
-Important findings so far:
-
-* GPIO 21 should not be used for MAX6675 SCK because it conflicts with CYD backlight control.
-* MAX6675 works with:
-
-  * SCK → GPIO 22
-  * CS → GPIO 27
-  * SO → GPIO 35
-* SSR control is currently assigned to GPIO 1.
-* GPIO 1 requires special care because it is also Serial TX.
-* Disconnect SSR control before firmware upload.
-* Reconnect SSR control after upload and reset the CYD.
-* SSR heatsink fins do not need to protrude through the lid.
-* Vent slots above the SSR/heatsink are the preferred enclosure cooling approach.
-* The compact enclosure must include both the KP200 smart shutoff and the 3Dman IEC/rocker input.
-* Printed-part alignment must be verified in **installed orientation**, not plan coordinates — a symmetric screw pattern can mask a mirror-imaged part (see v9.3).
-* The bezel screws and CYD mounting are coaxial: one M3×16 per corner from the top (bezel → lid → boss insert) with a nylock behind the PCB clamps the whole stack.
-
----
-
-## ⚠️ Final Safety Checklist Before Mains Power
-
-Before connecting the oven to mains power:
-
-* [ ] Verify all AC wiring with a meter
-* [ ] Confirm hot, neutral, and ground are correctly identified
-* [ ] Confirm the SSR switches hot only
-* [ ] Confirm neutral is not being switched in place of hot
-* [ ] Confirm ground continuity from AC input to oven chassis/ground
-* [ ] Confirm enclosure strain relief on all mains wiring
-* [ ] Confirm no exposed AC terminals can be touched
-* [ ] Confirm AC and DC wiring are physically separated
-* [ ] Confirm fuse value is appropriate
-* [ ] Confirm KP200 rating is appropriate for the oven load
-* [ ] Confirm SSR rating and heatsink are appropriate
-* [ ] Confirm SSR control works from low voltage before applying AC load
-* [ ] Test with a meter before connecting the toaster oven
-* [ ] Never leave the oven unattended during operation
