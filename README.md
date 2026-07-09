@@ -4,7 +4,7 @@
 
 ## 📖 Overview
 
-This is a custom-built, cost-conscious reflow toaster oven controller designed for soldering Surface Mount Technology (SMT) printed circuit boards. It serves as a lower-cost alternative to reference designs like the Adafruit EZ Make Oven, leveraging the popular **Cheap Yellow Display (CYD)** ESP32 touchscreen module.
+This is a custom-built, cost-conscious reflow toaster oven controller designed for soldering Surface Mount Technology (SMT) printed circuit boards. It serves as a lower-cost alternative to reference designs like the [Adafruit EZ Make Oven](https://learn.adafruit.com/ez-make-oven/overview), leveraging the popular [**Cheap Yellow Display (CYD)**](https://www.elecrow.com/2-8inch-esp32-miner-lcd-display-2pcs-cryptocurrency-solo-miner-with-1000kh-s-hashrate.html) ESP32 touchscreen module.
 
 The controller is housed in a standalone, 3D-printed bench enclosure sitting safely adjacent to the toaster oven.
 
@@ -30,14 +30,12 @@ The controller is housed in a standalone, 3D-printed bench enclosure sitting saf
 
 | Component | Part / Model | Notes |
 | :--- | :--- | :--- |
-| **Microcontroller / UI** | AITRIP CYD ESP32-2432S028R | 2.8" resistive touchscreen unit |
-| **Toaster Oven** | Black & Decker TO1755SB | Base appliance being modified |
-| **Thermocouple Amp** | MAX6675 Module | Cold-junction compensated K-type digitizer |
-| **Thermocouple** | K-Type Thermocouple Probe | Mounted inside oven chamber at PCB tray height |
-| **Solid State Relay** | Inkbird SSR-40DA | Switches AC hot/load line to the oven |
-| **SSR Cooling** | Dedicated Aluminum Heatsink | 80 × 49.4 × 51mm; clears enclosure lid by 8mm |
-| **AC Power Inlet** | 3Dman Fused IEC C14 + Rocker | Main power input module with physical toggle |
-| **Smart Shutoff** | KP200 Smart Outlet Module | Upstream remote emergency isolation layer |
+| **Microcontroller / UI** | [AITRIP CYD ESP32-2432S028R](https://a.co/d/0eqnJxus) | 2.8" resistive touchscreen unit |
+| **Toaster Oven** | [Black & Decker TO1755SB](https://a.co/d/00ZCCpC5) | Base appliance being modified |
+| **Thermocouple Amp** | [MAX6675 Module + K-Type Thermocouple Probe](https://a.co/d/0htQOedm) | Cold-junction compensated K-type digitizer |
+| **Solid State Relay** | [Inkbird SSR-40DA w/ Aluminum Heatsink](https://a.co/d/078ydj3f) | Switches AC hot/load line to the oven |
+| **AC Power Inlet** | [3Dman Fused IEC C14 + Rocker](https://a.co/d/0f6DD4BR) | Main power input module with physical toggle |
+| **Smart Shutoff** | [KP200 Smart Outlet Module](https://a.co/d/0it13pHO) | Upstream remote emergency isolation layer |
 | **Enclosure Material** | ASA *(Preferred)* / PETG *(Min)* | **Do not use PLA** (susceptible to oven-ambient warp) |
 
 ---
