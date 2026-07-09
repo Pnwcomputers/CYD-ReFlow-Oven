@@ -32,7 +32,7 @@ The controller is housed in a standalone, 3D-printed bench enclosure sitting saf
 | :--- | :--- | :--- |
 | **Microcontroller / UI** | [AITRIP CYD ESP32-2432S028R](https://a.co/d/0eqnJxus) | 2.8" resistive touchscreen unit |
 | **Toaster Oven** | [Black & Decker TO1755SB](https://a.co/d/00ZCCpC5) | Base appliance being modified |
-| **Thermocouple Amp** | [MAX6675 Module + K-Type Thermocouple Probe](https://a.co/d/0htQOedm) | Cold-junction compensated K-type digitizer |
+| **Thermocouple Amp** | [MAX6675 Module + K-Type Thermocouple Probe](https://a.co/d/0htQOedm) | Cold-junction compensated K-type digitizer with probe |
 | **Solid State Relay** | [Inkbird SSR-40DA + Aluminum Heatsink](https://a.co/d/078ydj3f) | Switches AC hot/load line to the oven |
 | **AC Power Inlet** | [3Dman Fused IEC C14 + Rocker Switch](https://a.co/d/0f6DD4BR) | Main power input module with physical toggle |
 | **Smart Shutoff** | [KP200 Smart Outlet Module](https://a.co/d/0it13pHO) | Upstream remote emergency isolation layer |
