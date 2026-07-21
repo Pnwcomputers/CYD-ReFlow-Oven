@@ -40,7 +40,7 @@ The controller is housed in a standalone, 3D-printed bench enclosure sitting saf
 | **Smart Master Relay** | [Shelly 1PM Gen4](https://a.co/d/01A2Ngha) (`S4SW-001P16EU`) | 16 A resistive, power metering, in the oven's hot path |
 | **AC Power Inlet** | [3Dman Fused IEC C14 + Rocker Switch](https://a.co/d/0f6DD4BR) | Single-pole rocker, switches hot only |
 | **Accessory Outlet** | [KP200 Smart Outlet Module](https://a.co/d/0it13pHO) | **Always-live**, feeds CYD 5 V via USB adapter. Top socket blanked |
-| **Oven Feed** | Strain-relieved female trailing lead | Exits the 13 mm cable gland on the left side wall |
+| **Oven Feed** | [Female trailing](https://a.co/d/0cmD64dU) lead for power | Exits the 13 mm cable gland on the left side wall |
 | **Splices** | [Wago](https://a.co/d/0g3QaYkX) 221-series lever nuts | Ground junction; neutral junction when the oven lead is added |
 | **Enclosure Material** | ASA *(Preferred)* / PETG *(Min)* | **Do not use PLA** (susceptible to oven-ambient warp) |
 
