@@ -37,7 +37,7 @@ The controller is housed in a standalone, 3D-printed bench enclosure sitting saf
 | **Toaster Oven** | [Black & Decker TO1313SBD](https://a.co/d/00ZCCpC5) | 1150 W @ 120 V = **9.6 A continuous** |
 | **Thermocouple Amp** | [MAX6675 Module + K-Type Thermocouple Probe](https://a.co/d/0htQOedm) | Cold-junction compensated K-type digitizer with probe |
 | **Solid State Relay** | [Inkbird SSR-40DA + Aluminum Heatsink](https://a.co/d/078ydj3f) | PID element — chops AC hot line to the oven |
-| **Smart Master Relay** | **Shelly 1PM Gen4** (`S4SW-001P16EU`) | 16 A resistive, power metering, in the oven's hot path |
+| **Smart Master Relay** | [Shelly 1PM Gen4](https://a.co/d/01A2Ngha) (`S4SW-001P16EU`) | 16 A resistive, power metering, in the oven's hot path |
 | **AC Power Inlet** | [3Dman Fused IEC C14 + Rocker Switch](https://a.co/d/0f6DD4BR) | Single-pole rocker, switches hot only |
 | **Accessory Outlet** | [KP200 Smart Outlet Module](https://a.co/d/0it13pHO) | **Always-live**, feeds CYD 5 V via USB adapter. Top socket blanked |
 | **Oven Feed** | Strain-relieved female trailing lead | Exits the 13 mm cable gland on the left side wall |
