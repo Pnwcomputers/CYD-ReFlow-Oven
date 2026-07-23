@@ -133,7 +133,6 @@ Each call re-arms a 30-second auto-off. If firmware hangs or the CYD reboots, th
 **Shorted-SSR detection.** Because the 1PM meters current, a script can trip the relay when it sees meaningful draw while the controller reports idle — the one failure mode the whole safety architecture exists for.
 
 ### Wiring Architecture
-
 ![DIY Reflow Controller Wiring Diagram](./diy_reflow_controller_wiring_diagram.png)
 
 ### Pin Configuration Mapping
@@ -160,22 +159,18 @@ The low-voltage control side links the CYD ESP32 to the MAX6675 sensor and the i
 ## 💻 Firmware & Flashing Rules
 
 ### Required Core Libraries
-
 * `TFT_eSPI` (Configured for the respective CYD display controller)
 * `XPT2046_Touchscreen`
 
 ### 🚨 Critical GPIO 1 / SSR Warning
-
 Because **GPIO 1** is shared with the hardware serial transmit line (`TX`), any active `Serial.print()` statements or bootloader debugging data will rapidly toggle the SSR during boot or runtime.
 
 #### Strict Upload Procedure:
-
 1. **Isolate:** Disconnect the SSR DC+ control wire from GPIO 1 entirely.
 2. **Flash:** Confirm all active `Serial.print()` calls are stripped out of production builds, then flash firmware over USB.
 3. **Reconnect & Boot:** Reattach the SSR control line, then press the physical `RST` button on the CYD to initiate a clean, deterministic system boot before introducing AC power.
 
 ### Startup & Shutdown Order
-
 Because the KP200 feed is always live, the CYD boots the instant the rocker goes on — while GPIO 1 is still chattering. Sequence accordingly:
 
 * **Power up:** rocker on → CYD boots → *then* enable the Shelly.
@@ -196,7 +191,6 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * **v10.3 (Current):** KP200 tab recesses returned to solid 1.2 mm pockets at full plate strength, with 45° sloped lead-in walls and rounded corners. Reverts the v10.2 through-slot construction.
 
 ### Slicer Configurations
-
 * **Orientation:** All STL assets are pre-oriented for direct printing. No supports are required.
 * **Infill & Perimeters:** Run a minimum of 3 perimeters paired with 30–40% Gyroid infill to handle internal heat-sink structural load.
 * **Hardware:** M3 heat-set brass inserts are required for the internal mounting pillars.
@@ -206,7 +200,6 @@ The parametric enclosure splits the interior into isolated functional chambers w
 ## 🚧 Roadmap & Known Issues
 
 ### Completed Milestones ✅
-
 * [x] Enclosure dimensions coupon-validated against physical AC components.
 * [x] Confirmed SSR heatsink lid-clearance margins (8mm vertical buffer).
 * [x] Split production prints to v9.6 bottom configurations and v9.9 top closures.
@@ -219,14 +212,12 @@ The parametric enclosure splits the interior into isolated functional chambers w
 ### Open Action Items 🛠️
 
 **Blocking mains operation with the oven attached:**
-
 * [ ] **Fuse value.** 9.6 A continuous means 5–6 A slow-blow will open on the first preheat ramp. Size 10 A minimum, realistically 12 A.
 * [ ] **C14 inlet current headroom.** IEC 60320 C13/C14 is rated 10 A; 9.6 A continuous is 96 % of rating. Evaluate moving to a C20 inlet (16 A) with a 6.3×32 mm time-lag fuse and C19 cord.
 * [ ] **Verify inlet lead gauge.** These modules commonly ship 18 AWG, sometimes 20. At 9.6 A in a sealed enclosure, 20 AWG is inadequate and 18 is marginal.
 * [ ] **Confirm the fuse is in the hot leg.** Rocker on: hot pin to red reads near zero; pulling the fuse should open *red*, not blue.
 
 **Build:**
-
 * [ ] Connect SSR `T2` to the oven trailing lead and terminate at the cable gland with strain relief.
 * [ ] **Verify Shelly physical placement.** The KP200 body keepout (`kp_depth_z = 44`) leaves 15 mm of floor clearance; the Shelly is 16 mm thick. Measure the real KP200 body depth — if under 40 mm the Shelly lies flat beneath it. Otherwise mount it on edge in the pocket between the inlet wire zone and the heatsink (approx. x=95–145, y=34–65), keeping distance from the heatsink given the Shelly's 40 °C ambient limit.
 * [ ] Print production v9.9 lid and bezel; check fitment against bottom shell.
@@ -236,7 +227,6 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * [ ] Export v10.3 STLs to replace the lagging v9.6/v9.9 meshes.
 
 **Firmware:**
-
 * [ ] Audit codebase to completely strip out active `Serial` debugging logs.
 * [ ] Implement the Shelly watchdog heartbeat (`toggle_after=30`, called every 15 s).
 * [ ] Implement `KVS.Set` heating-state publishing for shorted-SSR detection.
