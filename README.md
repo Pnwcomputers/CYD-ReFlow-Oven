@@ -208,14 +208,14 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * [x] Smart shutoff device selected: Shelly 1PM Gen4 (16 A, metered, terminal-based — resolves the KP200's socket-only output).
 * [x] AC distribution wired and energized: inlet → Shelly → KP200 → USB adapter → CYD boots on mains.
 * [x] Oven peak current resolved by spec: 1150 W / 9.6 A, comfortably inside the Shelly's 16 A rating.
+* [x] Confirmed the fuse is in the hot leg. Rocker on: hot pin to red reads near zero; pulling the fuse should open *red*, not blue.
+* [x] Verified inlet leads gauge as 18 guage; which is marginal and may need improvement.
 
 ### Open Action Items 🛠️
 
 **Blocking mains operation with the oven attached:**
 * [ ] **Fuse value.** 9.6 A continuous means 5–6 A slow-blow will open on the first preheat ramp. Size 10 A minimum, realistically 12 A.
 * [ ] **C14 inlet current headroom.** IEC 60320 C13/C14 is rated 10 A; 9.6 A continuous is 96 % of rating. Evaluate moving to a C20 inlet (16 A) with a 6.3×32 mm time-lag fuse and C19 cord.
-* [ ] **Verify inlet lead gauge.** These modules commonly ship 18 AWG, sometimes 20. At 9.6 A in a sealed enclosure, 20 AWG is inadequate and 18 is marginal.
-* [ ] **Confirm the fuse is in the hot leg.** Rocker on: hot pin to red reads near zero; pulling the fuse should open *red*, not blue.
 
 **Build:**
 * [ ] Connect SSR `T2` to the oven trailing lead and terminate at the cable gland with strain relief.
