@@ -132,7 +132,7 @@ Each call re-arms a 30-second auto-off. If firmware hangs or the CYD reboots, th
 
 **Shorted-SSR detection.** Because the 1PM meters current, a script can trip the relay when it sees meaningful draw while the controller reports idle — the one failure mode the whole safety architecture exists for.
 
-### Wiring Architecture (Just an idea; is NOT the "final plan")
+### Wiring Architecture (Just the idea; this is NOT final)
 ![DIY Reflow Controller Wiring Diagram](./diy_reflow_controller_wiring_diagram.png)
 
 ### Pin Configuration Mapping
