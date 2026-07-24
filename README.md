@@ -210,12 +210,9 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * [x] Oven peak current resolved by spec: 1150 W / 9.6 A, comfortably inside the Shelly's 16 A rating.
 * [x] Confirmed the fuse is in the hot leg. Rocker on: hot pin to red reads near zero; pulling the fuse should open *red*, not blue.
 * [x] Verified inlet leads gauge as 18 guage; which is marginal and may need improvement.
+* [x] **C14 Inlet Upgrade.** IEC 60320 C13/C14 is rated 10A; 9.6A continuous is 96 % it's rating and will likely fail. Moved to a IEC320 C14 15A FILSHU IEC & Rocker with 15A fuse.
 
 ### Open Action Items 🛠️
-
-**Blocking mains operation with the oven attached:**
-* [ ] **Fuse value.** 9.6 A continuous means 5–6 A slow-blow will open on the first preheat ramp. Size 10 A minimum, realistically 12 A.
-* [ ] **C14 inlet current headroom.** IEC 60320 C13/C14 is rated 10 A; 9.6 A continuous is 96 % of rating. Evaluate moving to a C20 inlet (16 A) with a 6.3×32 mm time-lag fuse and C19 cord.
 
 **Build:**
 * [ ] Connect SSR `T2` to the oven trailing lead and terminate at the cable gland with strain relief.
