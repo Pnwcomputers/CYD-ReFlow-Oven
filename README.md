@@ -210,15 +210,14 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * [x] Oven peak current resolved by spec: 1150 W / 9.6 A, comfortably inside the Shelly's 16 A rating.
 * [x] Confirmed the fuse is in the hot leg. Rocker on: hot pin to red reads near zero; pulling the fuse should open *red*, not blue.
 * [x] Verified inlet leads gauge as 18 guage; which is marginal and may need improvement.
-* [x] **C14 Inlet Upgrade.** IEC 60320 C13/C14 is rated 10A; 9.6A continuous is 96 % it's rating and will likely fail. Moved to a IEC320 C14 15A FILSHU IEC & Rocker with 15A fuse.
+* [x] C14 Inlet Upgrade: IEC 60320 C13/C14 is rated 10A; 9.6A continuous is 96 % it's rating and will likely fail. Moved to a IEC320 C14 15A FILSHU IEC & Rocker with 15A fuse.
+* [x] Print production v9.9 lid and bezel; check fitment against bottom shell.
 
 ### Open Action Items 🛠️
 
 **Build:**
 * [ ] Connect SSR `T2` to the oven trailing lead and terminate at the cable gland with strain relief.
-* [ ] **Verify Shelly physical placement.** The KP200 body keepout (`kp_depth_z = 44`) leaves 15 mm of floor clearance; the Shelly is 16 mm thick. Measure the real KP200 body depth — if under 40 mm the Shelly lies flat beneath it. Otherwise mount it on edge in the pocket between the inlet wire zone and the heatsink (approx. x=95–145, y=34–65), keeping distance from the heatsink given the Shelly's 40 °C ambient limit.
-* [ ] Print production v9.9 lid and bezel; check fitment against bottom shell.
-* [ ] Choose SSR-to-heatsink retention method (RTV high-temp silicone vs. a printed corral bracket).
+* [ ] Finalize Shelly physical placement. The KP200 body keepout (`kp_depth_z = 44`) leaves 15 mm of floor clearance; the Shelly is 16 mm thick. Measure the real KP200 body depth — if under 40 mm the Shelly lies flat beneath it. Otherwise mount it on edge in the pocket between the inlet wire zone and the heatsink (approx. x=95–145, y=34–65), keeping distance from the heatsink given the Shelly's 40 °C ambient limit.
 * [ ] Finalize oven chassis entry point for the K-type thermocouple probe.
 * [ ] Update `diy_reflow_controller_wiring_diagram.png` / `reflow-wiring-diagram.svg` to the split topology.
 * [ ] Export v10.3 STLs to replace the lagging v9.6/v9.9 meshes.
