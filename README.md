@@ -211,7 +211,7 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * [x] Confirmed the fuse is in the hot leg. Rocker on: hot pin to red reads near zero; pulling the fuse should open *red*, not blue.
 * [x] Verified inlet leads gauge as 18 guage; which is marginal and may need improvement.
 * [x] C14 Inlet Upgrade: IEC 60320 C13/C14 is rated 10A; 9.6A continuous is 96 % it's rating and will likely fail. Moved to a IEC320 C14 15A FILSHU IEC & Rocker with 15A fuse.
-* [x] Print production v9.9 lid and bezel; check fitment against bottom shell.
+* [x] Print production v9.9 lid and bezel. Checked the fitment against bottom shell, and they line up and fit.
 
 ### Open Action Items 🛠️
 
