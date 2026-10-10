@@ -2,6 +2,47 @@
 
 Reviewed against commit `663b7d9` (2026-07-24), the v10.3 OpenSCAD source, every repo mesh, the project's earlier design discussions, and current manufacturer and datasheet sources. Anything that could not be verified is labeled as such. Sources are listed at the end.
 
+## Update — v12.0: CrowPanel 2.8, cable-only, landscape front panel (2026-10-10)
+
+Owner requirements: no modifications to the display board (cables only), no right-angle fork lugs (straight bare wire under the SSR clamps), landscape screen, long side facing the user.
+
+**Board.** The stock CYD cannot drive the SSR cable-only and safely: IO1 has a reset pull-up and carries the ROM boot log, IO3 is shared with the CH340, IO27 has a pull-up and IO21 is the backlight, and the remaining CN1/P3 pins are needed by the MAX6675. Finding #5 (R16 pad mod) is therefore closed by changing boards to the Elecrow CrowPanel 2.8 ESP32 HMI.
+
+Facts below come from Elecrow's Eagle files ([Elecrow-RD/CrowPanel-2.8-ESP32-HMI-320x240](https://github.com/Elecrow-RD/CrowPanel-2.8-ESP32-HMI-320x240), `Eagle_SCH&PCB` V1.0, V2.0, V2.1; V2.0 and V2.1 files are byte-identical), parsed net by net and cross-checked on the rendered schematic:
+
+| Connector | Pin 1 | Pin 2 | Pin 3 | Pin 4 | Pull-ups |
+| --- | --- | --- | --- | --- | --- |
+| J7 GPIO_D | IO25 | IO32 | 3V3 | GND | R18, R1: 1 kΩ to 3V3 |
+| J6 IIC | IO21 | IO22 | 3V3 | GND | R26, R27: 1 kΩ to 3V3 |
+| J10 UART1 | IO16 | IO17 | 3V3 | GND | none |
+
+Identical in V1.0. The Codex-compiled `readme.md` in the same folder says IO25 drives a user LED through 1 kΩ; the schematic shows R18 as a pull-up to 3V3 and the only LED (LED1 via R3) on the 3V3 rail. The schematic was followed.
+
+Design consequence: an SSR between 3V3 and IO32 is **off whenever IO32 is released** (reset, boot, flashing), because the pull-up puts both SSR terminals at 3.3 V. On = sink. The ESP32-WROOM-32 datasheet gives 28 mA sink at 0.495 V. The MAX6675 SO goes on IO16 (no pull-up), because its output is specified at 0.4 V with 1.6 mA sink (Maxim datasheet) and a 1 kΩ pull-up would demand 3.3 mA. CS (IO21) and SCK (IO22) tolerate the pull-ups; CS idling high during boot is a benefit. Arduino-ESP32 (current master, `esp32-hal-gpio.c`) ignores `digitalWrite()` on a pin `pinMode()` has not configured, and `pinMode()` sets no level, so the firmware releases the pin (`INPUT`) for off rather than writing HIGH.
+
+**Board geometry.**
+* Elecrow outline drawing: PCB 85.7 × 54 mm, 4 × Ø3.2 holes at 78.7 × 47 mm, LCM 69.2 × 50 mm centred (8.25 mm per side).
+* QD281801 LCM drawing: 3.50 ± 0.10 mm thick; LCD active area 57.60 × 43.20 starting 2.90 mm from the end opposite the FPC; touch active area 58.60 × 44.20 starting 2.40 mm from that end.
+* The FPC end was located from the `.brd`: J1's pads sit 28.4 mm from the PCB's USB-C edge, about 20 mm inside the LCM's end on that side. That is consistent with the drawing's folded FPC (17.46 mm), and impossible from the far end (49 mm).
+* Elecrow's STEP (V2.1) gives connector, USB-C and component positions and depths. Its solids 0, 6, 7 are the acrylic case and 8–11 its screws (unused); the LCM itself is not in the STEP and is modelled from the drawing.
+
+**Enclosure v12.0.**
+* The board is landscape on a separate front panel, printed face down, mounted connectors-down so the USB-C faces the side wall and plugs in from outside. Window = touch active area (LCD active area + 0.5 mm per side), 1.5 mm 45° chamfer. Standoffs are 4.1 mm (LCM 3.5 + 0.6 mm glass gap).
+* The box grows to 250 × 155 × 83 mm. The DC bay needs 89 mm. The height is set by the board (54) + a 15 mm cable zone below for the downward-facing HY2.0 plugs (APPROX) + 8 mm above for the speaker jack.
+* SSR straight-wire clearance: AC terminals at the SSR's left end; the taller box lifts the KP200 body to z 35, giving a straight run under it plus an 11.5 mm full-height channel at the SSR end; DC terminals at the right end, 12 mm to the divider and its U-slot. These are keepouts in the interference check.
+* Lid outlet slots 7 → 6, moved 3 mm forward. The first v12 ray test found 12 rays from the rearmost slot reaching the top edge of the SSR terminal face in the taller box; an assert now enforces the geometric bound.
+
+**Verification (fresh renders):**
+* Watertight and within the bed; supports none.
+* Zero interference between shell, installed lid and installed front panel, and against 17 keepouts.
+* Elecrow's STEP board placed by the SCAD transform clears every printed part (25 solids). A 0.3 mm nudge toward the panel collides, so the check is sensitive.
+* 43,393 probe rays through every opening, none reaching a live part.
+
+**Still open:**
+* The CrowPanel itself (bench checks in the README): connector voltage, the SSR's input current at 3.3 V, window fit on the coupon.
+* The USB-C overmold size of the cable used.
+* The 250 mm parts leave 3 mm per side on the bed (brim ≤ 3 mm).
+
 ## Update — v11.0 redesign (2026-10-10)
 
 The must-fix items are now addressed in the enclosure (v11.0), and one finding is withdrawn.
