@@ -19,7 +19,7 @@ The controller is housed in a standalone, 3D-printed bench enclosure sitting saf
 
 ## ✨ Features & Project Status
 
-* **Core UI:** CYD Display, capacitive touch, and status LED are fully validated.
+* **Core UI:** CYD Display, resistive touch (XPT2046), and status LED are fully validated.
 * **Sensing:** MAX6675 reading verified with a live rendering graph on the screen.
 * **AC Distribution:** ✅ **Validated.** Inlet → Shelly → KP200 branch energized and confirmed. Shelly joins Wi-Fi and reports metering; KP200 powers the CYD via USB adapter; CYD boots on mains power.
 * **Control:** Slow-PWM SSR control logic scaffolded. SSR load path (`T2` → oven) not yet connected.
@@ -38,9 +38,11 @@ The controller is housed in a standalone, 3D-printed bench enclosure sitting saf
 | **Thermocouple Amp** | [MAX6675 Module + K-Type Thermocouple Probe](https://a.co/d/0htQOedm) | Cold-junction compensated K-type digitizer with probe |
 | **Solid State Relay** | [Inkbird SSR-40DA + Aluminum Heatsink](https://a.co/d/078ydj3f) | PID element — chops AC hot line to the oven |
 | **Smart Master Relay** | [Shelly 1PM Gen4](https://a.co/d/01A2Ngha) (`S4SW-001P16EU`) | 16 A resistive, power metering, in the oven's hot path |
-| **AC Power Inlet** | [FILSHU 15A 250V IEC320 C14 Panel Mount Rocker](https://a.co/d/0dQGxSvV) | **15A** Single-pole rocker with 14AWG leads; switches hot only |
+| **AC Power Inlet** | [FILSHU 15A 250V IEC320 C14 Panel Mount Rocker](https://a.co/d/0dQGxSvV) | **15A** Single-pole rocker with 14AWG leads; switches hot only. Ratings are from the listing; confirm against the label molded on the module |
+| **Inlet Fuse** | 15 A, 5 × 20 mm | Use a **ceramic, time-delay** fuse (glass bodies have low breaking capacity). Fitted type not yet recorded |
+| **Power Cord (wall → inlet)** | NEMA 5-15P to IEC C13, **14 AWG SJT, rated 15 A** | **Required.** Typical PC cords are 18 AWG (10 A); 9.6 A would load one to 96 % |
 | **Accessory Outlet** | [KP200 Smart Outlet Module](https://a.co/d/0it13pHO) | **Always-live**, feeds CYD 5 V via USB adapter. Top socket blanked |
-| **Oven Feed** | [Female trailing lead](https://a.co/d/0cmD64dU) for the oven's power connection from/to the controller | Exits the 13 mm cable gland on the left side wall |
+| **Oven Feed** | [Female trailing lead](https://a.co/d/0cmD64dU) for the oven's power connection from/to the controller | Exits the cable gland on the left side wall. **The 13 mm hole is too small:** it fits a PG7 gland (3–6.5 mm clamp), while SJT 16/3 is 8.38 mm and 14/3 is 9.27 mm OD. Use an M16 gland with a 5–10 mm clamp range |
 | **Splices** | [Wago](https://a.co/d/0g3QaYkX) 221-series lever nuts | Ground junction; neutral junction when the oven lead is added |
 | **Enclosure Material** | ASA *(Preferred)* / PETG *(Min)* | **Do not use PLA** (susceptible to oven-ambient warp) |
 
@@ -51,21 +53,23 @@ The controller is housed in a standalone, 3D-printed bench enclosure sitting saf
 ```text
 CYD-ReFlow-Oven/
 ├── 3MF/                                            # Slicer-ready, pre-arranged plates
-│   └── reflow-enclosure-v9_9-compact-x1.3mf        # Combined slicer assembly setup
+│   └── reflow-reprint-v10_3.3mf                    # Lid, KP200 coupon, CYD bezel
 ├── OpenSCAD/                                       # Parametric physical source CAD
 │   └── reflow-enclosure-flat-v10_3-compact-x1c.scad  # ✅ CURRENT master source of record
 ├── STL/                                            # Individual production-ready meshes
 │   ├── reflow-v9_6-bottom.stl                      # Validated structural shell
 │   ├── reflow-v9_6-iec-trim-plate.stl              # Dedicated trim alignment plate
 │   ├── reflow-v9_9-bezel.stl                       # Top screen bezel mesh
-│   └── reflow-v9_9-lid.stl                         # Pre-mirrored mating lid mesh
+│   └── reflow-v10_3-lid.stl                        # Pre-mirrored mating lid mesh
+├── docs/
+│   └── DESIGN-REVIEW-2026-10.md                    # Full design re-review (Oct 2026)
 ├── LICENSE                                         # BSD-2-Clause license file
 ├── README.md                                       # This file
 ├── diy_reflow_controller_wiring_diagram.png        # Rendered wiring schematic
 └── reflow-wiring-diagram.svg                       # Vector wiring asset
 ```
 
-> ⚠️ **Print Advisory:** Print the **v9.6** variant for your bottom shell/trim plate and the **v9.9** files for the lid and bezel integration. The OpenSCAD master is now **v10.3**; STL exports lag it.
+> ✅ **Print Advisory (verified Oct 2026):** The repo meshes are current. A fresh OpenSCAD 2021.01 render of the v10.3 source is volumetrically identical (0.0 mm³ difference both ways) to `reflow-v9_6-bottom.stl`, `reflow-v10_3-lid.stl` and `reflow-v9_9-bezel.stl`; the file names keep the version in which each part last changed. The lid printed earlier was v9.9; the v10.x KP200 rework is in `reflow-v10_3-lid.stl`.
 
 ---
 
@@ -78,7 +82,7 @@ The line splits at the inlet. The oven path is switched twice; the accessory pat
 ```text
 [Mains Wall Power]
        ↓
-[3Dman Fused IEC C14 Inlet + Rocker]   ← single-pole, switches HOT only
+[FILSHU 15 A Fused IEC C14 Inlet + Rocker]   ← single-pole, switches HOT only
        ↓
    FUSED HOT  ─────────────┬──────────────────────────────┐
                            ↓                              ↓
@@ -91,7 +95,7 @@ The line splits at the inlet. The oven path is switched twice; the accessory pat
         [Black & Decker Toaster Oven]              top socket blanked
 ```
 
-**Why the split:** SSRs typically fail *shorted*. Killing the CYD's power cannot stop a welded triac — only a mechanical contact in the oven's own hot conductor can. The Shelly is therefore the primary cutoff. The KP200 remains a useful secondary (cutting CYD power de-energizes GPIO 1 and drops the SSR), and keeping the CYD on an always-live feed means the display and thermocouple readout stay alive during an emergency stop so you can watch the temperature fall.
+**Why the split:** SSRs typically fail *shorted*. Killing the CYD's power cannot stop a welded triac — only a mechanical contact in the oven's own hot conductor can. The Shelly is therefore the primary cutoff. The KP200 remains a useful secondary (cutting CYD power de-energizes the SSR drive pin and drops the SSR), and keeping the CYD on an always-live feed means the display and thermocouple readout stay alive during an emergency stop so you can watch the temperature fall.
 
 > 🛑 **Design Rule:** An IEC C14 inlet is an *input* connector. Never use a male inlet as an energized power output. The power feed out to the oven uses a strain-relieved female trailing lead through the 13 mm cable gland (`ac_out_gland_dia`, left wall, y=42, z=18).
 
@@ -149,9 +153,11 @@ The low-voltage control side links the CYD ESP32 to the MAX6675 sensor and the i
 
 > **Note:** GPIO 1 outputs 3.3 V; the SSR-40DA input is specced 3–32 VDC, so this is in spec with no headroom. If switching proves unreliable, drive the SSR from 5 V through a 2N7000 / AO3400 low-side switch.
 
+> 🛑 **Known issue — GPIO 1 is not safe for the SSR (verified Oct 2026).** Espressif's IO_MUX table gives GPIO 1 an internal pull-up at reset, and the ROM prints its boot log on U0TXD by default, so the SSR is commanded on during every boot. The planned fix is a MOSFET low-side driver on **GPIO 17** (10 kΩ gate pulldown, 220 Ω gate resistor). On the CYD, GPIO 17 is the blue LED cathode: per the manufacturer schematic, R16 (1 kΩ) and the LED tie the pad to 3.3 V, which can hold the gate near the AO3400A's 0.65 V minimum threshold while the pin floats at boot. Remove R16, or measure the gate voltage through a power-up, before relying on it. See [docs/DESIGN-REVIEW-2026-10.md](docs/DESIGN-REVIEW-2026-10.md).
+
 **Divider crossings.** The AC/DC barrier has two dedicated 6 mm pass-throughs. Low-voltage lines use these and never route through the AC chamber:
 
-* `ctrl_hole` — y=36, z=15 — SSR control pair (GPIO 1 / GND)
+* `ctrl_hole` — y=36, z=15 — SSR control pair (drive / GND)
 * `pwr_hole` — y=54, z=15 — CYD 5 V / GND
 
 ---
@@ -191,9 +197,9 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * **v10.3 (Current):** KP200 tab recesses returned to solid 1.2 mm pockets at full plate strength, with 45° sloped lead-in walls and rounded corners. Reverts the v10.2 through-slot construction.
 
 ### Slicer Configurations
-* **Orientation:** All STL assets are pre-oriented for direct printing. No supports are required.
+* **Orientation:** All STL assets are pre-oriented for direct printing. No supports are required. *(Verified Oct 2026 by surface scan: no overhang steeper than 45° wider than 4 mm; longest bridge is the 48 mm IEC cutout top edge, which has already printed successfully.)*
 * **Infill & Perimeters:** Run a minimum of 3 perimeters paired with 30–40% Gyroid infill to handle internal heat-sink structural load.
-* **Hardware:** M3 heat-set brass inserts are required for the internal mounting pillars.
+* **Hardware:** Heat-set brass inserts are required for the mounting pillars: 14 in total (8 lid-screw bosses in the bottom shell, 4 CYD bosses and 2 KP200 bosses on the lid). The lid-screw and CYD pockets are 4.2 mm for M3. The KP200 pockets are 4.5 mm; confirm the KP200's own screw thread and match the insert to it.
 
 ---
 
@@ -209,8 +215,8 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * [x] AC distribution wired and energized: inlet → Shelly → KP200 → USB adapter → CYD boots on mains.
 * [x] Oven peak current resolved by spec: 1150 W / 9.6 A, comfortably inside the Shelly's 16 A rating.
 * [x] Confirmed the fuse is in the hot leg. Rocker on: hot pin to red reads near zero; pulling the fuse should open *red*, not blue.
-* [x] Verified inlet leads gauge as 18 guage; which is marginal and may need improvement.
-* [x] C14 Inlet Upgrade: IEC 60320 C13/C14 is rated 10A; 9.6A continuous is 96 % it's rating and will likely fail. Moved to a IEC320 C14 15A FILSHU IEC & Rocker with 15A fuse.
+* [x] Verified inlet leads gauge as 18 guage; which is marginal and may need improvement. *(Applied to the original 3Dman module, since replaced; the FILSHU leads are 14 AWG.)*
+* [x] C14 Inlet Upgrade: IEC 60320 C13/C14 is rated 10A; 9.6A continuous is 96 % it's rating and will likely fail. Moved to a IEC320 C14 15A FILSHU IEC & Rocker with 15A fuse. *(10 A is the IEC rating; North American C13 cord sets are rated 15 A at 14 AWG and 13 A at 16 AWG, so the cord into the inlet must be 14 AWG — see BOM.)*
 * [x] Print production v9.9 lid and bezel. Checked the fitment against bottom shell, and they line up and fit.
 
 ### Open Action Items 🛠️
@@ -220,7 +226,18 @@ The parametric enclosure splits the interior into isolated functional chambers w
 * [ ] Finalize Shelly physical placement. The KP200 body keepout (`kp_depth_z = 44`) leaves 15 mm of floor clearance; the Shelly is 16 mm thick. Measure the real KP200 body depth — if under 40 mm the Shelly lies flat beneath it. Otherwise mount it on edge in the pocket between the inlet wire zone and the heatsink (approx. x=95–145, y=34–65), keeping distance from the heatsink given the Shelly's 40 °C ambient limit.
 * [ ] Finalize oven chassis entry point for the K-type thermocouple probe.
 * [ ] Update `diy_reflow_controller_wiring_diagram.png` / `reflow-wiring-diagram.svg` to the split topology.
-* [ ] Export v10.3 STLs to replace the lagging v9.6/v9.9 meshes.
+* [x] ~~Export v10.3 STLs to replace the lagging v9.6/v9.9 meshes.~~ Not needed: verified identical to a fresh v10.3 render (see Print Advisory).
+
+**From the Oct 2026 design review** ([full report](docs/DESIGN-REVIEW-2026-10.md)):
+* [ ] Buy a 14 AWG SJT, 15 A NEMA 5-15P to C13 cord for the inlet.
+* [ ] Record the rating molded on the FILSHU module, the fitted fuse type, and the module's body size and depth.
+* [ ] Fit the SSR's terminal cover. The lid vent slots (x 101–140, y 76–134) sit over the SSR, whose mains terminals are about 8 mm below the lid.
+* [ ] Replace the 13 mm oven-lead gland hole with an M16 gland (5–10 mm clamp); the hole can be drilled out.
+* [ ] Dummy-load thermal run: log the Shelly's own temperature (`temperature.tC`) during 10 min at 100 % and 30 min at 50 % with the lid closed. The SSR can dissipate up to 15.4 W (9.6 A × 1.6 V max drop); the Shelly is rated to 40 °C ambient.
+* [ ] Remove R16 or measure the GPIO 17 gate voltage at power-up (see Known issue above).
+* [ ] Firmware: keep profiles in internal flash, or move touch off VSPI. With touch on VSPI, the microSD card (also VSPI) cannot be used at the same time.
+* [ ] Decide the screen orientation: the board is rotated 90°, so the 48 × 65 mm window reads portrait (240 × 320).
+* [ ] Commit the working MAX6675 and SSR test sketches; the repo holds no firmware yet.
 
 **Firmware:**
 * [ ] Audit codebase to completely strip out active `Serial` debugging logs.

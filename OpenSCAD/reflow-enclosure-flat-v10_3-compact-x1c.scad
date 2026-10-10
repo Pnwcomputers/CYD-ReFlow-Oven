@@ -2,6 +2,16 @@
 //  DIY Reflow Oven Controller — Compact Flat Bench Enclosure (v10.3, X1C Fit)
 //  Parametric OpenSCAD model for Bambu X1C (PETG minimum, ASA preferred)
 //
+//  2026-10 COMMENT-ONLY UPDATE (geometry unchanged; re-render verified
+//  volumetrically identical to the repo STLs): the AC path, inlet and CYD
+//  hole notes below were stale. Current AC path: FILSHU 15 A fused C14 inlet
+//  -> Shelly 1PM Gen4 (heat path) -> SSR -> oven; KP200 tapped in parallel,
+//  feeding only the CYD's USB adapter. The inlet cutout is still sized from
+//  the 3Dman body; the FILSHU body has not been measured into this file.
+//  OPEN: the coordinate note says Y=0 is the REAR wall (inlet side), but the
+//  v9.8 note calls y=0 the FRONT wall. Confirm on the physical box.
+//  See docs/DESIGN-REVIEW-2026-10.md.
+//
 //  v10.3 CHANGE: KP200 tab recesses per user spec — SOLID 1.2mm pockets kept
 //  at full plate strength, now with 45-degree sloped lead-in walls, rounded
 //  corners, and widened 21 -> 22mm floor. Replaces (and reverts) the v10.2
@@ -57,7 +67,7 @@
 //  - All cable/connector openings are on side/rear/top faces, not the bottom,
 //    so the enclosure can sit flat on the bench.
 //
-//  Intended AC path:
+//  Intended AC path (v9 era, SUPERSEDED — see 2026-10 note at top):
 //    Wall -> external upstream safety/kill option if used -> 3Dman IEC input
 //    -> KP200 line input -> KP200 controlled output -> SSR/load path -> oven.
 //
@@ -157,7 +167,7 @@ ac_out_gland_y = 42;
 ac_out_gland_z = 18;
 
 /* [DC side: CYD top-lid mount]
-   OPEN QUESTION: mounting hole pattern assumed 82 x 44mm for AITRIP variant.
+   RESOLVED (v9.5): hole pattern measured on the AITRIP board at 77.5 x 42mm.
    Compact v9 rotates the CYD 90 degrees so the 90mm board length runs front/back
    instead of left/right. This saves about 25-30mm of total enclosure width.
    Set cyd_rotate_90_for_compact = false only if you want the earlier landscape
@@ -300,7 +310,7 @@ kp_screw_positions = [
     [kp_center_x, kp_center_y + kp_screw_spacing / 2]
 ];
 
-echo("=== Compact flat bench enclosure v9 / X1C fit / KP200 + 3Dman IEC ===");
+echo("=== Compact flat bench enclosure v10.3 / X1C fit / KP200 lid mount + IEC inlet (cutout from 3Dman body) ===");
 echo(str("Box: ", box_w, " x ", box_d, " x ", box_h, " mm"));
 echo("Target printer: Bambu X1C 256 x 256mm bed; v9 footprint leaves ~36mm X and ~101mm Y spare before slicer limits.");
 echo(str("CYD rotated for compact mount: ", cyd_rotate_90_for_compact));
