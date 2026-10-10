@@ -2,7 +2,23 @@
 
 Reviewed against commit `663b7d9` (2026-07-24), the v10.3 OpenSCAD source, every repo mesh, the project's earlier design discussions, and current manufacturer and datasheet sources. Anything that could not be verified is labeled as such. Sources are listed at the end.
 
-## Bottom line
+## Update — v11.0 redesign (2026-10-10)
+
+The must-fix items are now addressed in the enclosure (v11.0), and one finding is withdrawn.
+
+| # | Status after v11.0 |
+| --- | --- |
+| 1 | BOM now requires a 14 AWG SJT, 15 A C13 cord (a purchase; nothing to model) |
+| 2 | **Withdrawn.** It assumed the SSR sat on top of the heatsink. The July measurements (heatsink 80 × 49.4 mm footprint, 51 mm stack, fins vertical, SSR bolted to the vertical face) put the terminals facing sideways. In v11 a probe-ray test (41,472 straight rays through every lid outlet and front intake slot) finds no path to any live part |
+| 3 | Low front intake slots added behind the heatsink; outlet slots re-centred over the fin field. Still verify with the dummy-load run |
+| 4 | Gland removed; the oven now plugs into a FILSHU NEMA 5-15R snap-in panel socket (spec cutout 24.5–25.0 mm square). The clip panel thickness is unspecified, so the coupon tests 2.0 / 2.5 / 3.0 mm |
+| 5 | Unchanged: remove R16 or measure the gate voltage (hardware step) |
+| New | The v10.x layout put the SSR's sideways protrusion (~23.5 mm, approximate) about 3 mm from the KP200 body, leaving no room for terminal lugs. v11 widens the box to 230 mm and runs the heatsink along the front wall with the SSR facing the rear, leaving a 20 mm wiring zone |
+| New | FILSHU inlet: cutout set to its panel spec (48.0 × 27.5 mm). Its side clips are made for a 1.5 mm panel, so v11 thins the 3 mm wall to 1.5 mm in a strip beside each clip edge. The old flange screw holes are removed, since a ~30 mm-tall snap-in flange would have left them open beside live terminals |
+
+Verification of v11 (fresh OpenSCAD 2021.01 renders): all parts watertight and within the X1C bed; no supports needed (longest bridges 48 mm inlet edge and 24.75 mm socket edge; other downward faces are 45° slopes); zero interference between the shell, installed lid and nine component keepouts; zero probe rays reaching live parts. Inputs taken from listings rather than measurement are marked `APPROX` in the SCAD and covered by coupons where they set a cutout.
+
+## Bottom line (original review, 2026-10-09)
 
 Nine findings should be closed before the oven load is connected. None requires reprinting the bottom shell (the gland hole can be drilled out); two touch the lid.
 
