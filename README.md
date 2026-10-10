@@ -45,9 +45,10 @@ The controller is housed in a standalone, 3D-printed bench enclosure next to the
 | **Power Cord (wall → inlet)** | NEMA 5-15P to IEC C13, **14 AWG SJT, rated 15 A** | **Required.** Typical PC cords are 18 AWG (10 A); 9.6 A would load one to 96 % |
 | **Accessory Outlet** | [KP200 Smart Outlet Module](https://a.co/d/0it13pHO) | **Always-live**, feeds the display's 5 V through a USB adapter. Top socket blanked |
 | **Oven Feed** | FILSHU 15A 125V NEMA 5-15R panel-mount socket, 14 AWG leads | Snaps into the left wall (model X = 0). 27 × 27 mm face, ~35 mm deep, cutout spec 24.5–25.0 mm square. 9.6 A is 64 % of its 15 A rating |
-| **Splices** | [Wago](https://a.co/d/0g3QaYkX) 221-series lever nuts | Ground junction; neutral junction for the oven socket |
+| **Splices** | [Wago](https://a.co/d/0g3QaYkX) 221-series lever nuts: 1 × 221-413, 2 × 221-415 | Hot, neutral and ground junctions (UL 486C: 600 V, 20 A, 24–12 AWG) |
+| **Internal AC wire** | 14 AWG stranded UL 1015 (600 V, 105 °C), black / white / green, ~1 m each | Full shopping list with terminals, sleeving and fasteners: [docs/BUILD-GUIDE.md](docs/BUILD-GUIDE.md) |
 | **Heat-set inserts** | 19 × M3 for 4.2 mm pockets + 2 for the KP200 (4.5 mm pockets) | 9 lid-screw (shell), 6 front-panel (shell posts, horizontal), 4 display standoffs (front panel) |
-| **Screws** | 9 × M3 countersunk (lid), 6 × M3 × 8 countersunk (front panel), 4 × M3 × 5 pan head (display) | Lid screw length: lid 3 mm + no more than 4 mm into the 5 mm pocket |
+| **Screws** | 9 × M3 × 6 countersunk (lid), 6 × M3 × 8 countersunk (front panel), 4 × M3 × 5 pan head (display) | Each length stops short of the bottom of its insert pocket (lid 2 mm, panel 1 mm, display 0.6 mm) |
 | **Enclosure Material** | **ASA** | Glass transition ~100 °C vs PETG ~81 °C; the heatsink stands on the printed floor. **Do not use PLA** |
 
 ---
@@ -74,13 +75,17 @@ CYD-ReFlow-Oven/
 │   └── legacy-v10_3/
 ├── tools/
 │   ├── verify_enclosure.py                         # Mesh health, supports, interference, probe rays, real-board fit
-│   └── step_parts.py                               # Splits Elecrow's STEP into per-solid STLs for the fit check
+│   ├── step_parts.py                               # Splits Elecrow's STEP into per-solid STLs for the fit check
+│   └── make_wiring_diagram.py                      # Generates the wiring diagram SVG/PNG
+├── firmware/
+│   └── bench_test/bench_test.ino                   # CrowPanel bench test: SSR drive + MAX6675 over USB serial
 ├── docs/
+│   ├── BUILD-GUIDE.md                              # ✅ Parts, print, bench checks, assembly, first power
 │   └── DESIGN-REVIEW-2026-10.md                    # Design re-review (Oct 2026) + v11 and v12 updates
 ├── LICENSE                                         # BSD-2-Clause license file
 ├── README.md                                       # This file
-├── diy_reflow_controller_wiring_diagram.png        # Wiring sketch (pre-v12; being redrawn)
-└── reflow-wiring-diagram.svg
+├── diy_reflow_controller_wiring_diagram.png        # v12 wiring diagram (generated)
+└── reflow-wiring-diagram.svg                       # same, vector
 ```
 
 > ⚠️ **Print Advisory (v12.0):** Print `3MF/reflow-v12_0-coupons.3mf` first, in ASA.
@@ -122,19 +127,21 @@ The line splits at the inlet. The oven path is switched twice; the accessory pat
 
 ### AC Terminal Map
 
-The Shelly's three `L` and two `N` terminals are internally paralleled, so they serve as the distribution junction — no bus bar or splice is needed on hot or neutral.
+The Wago lever nuts are the junctions. The Shelly's manual says not to use its `L` terminals to power other devices and not to put several wires under one terminal, so each Shelly terminal gets exactly one wire. **v12 change:** earlier revisions of this table fed the KP200 from a second Shelly `L` terminal; if your box is wired that way, move the KP200 line to the hot Wago.
 
 | From | To |
 | :--- | :--- |
-| Inlet **switched, fused hot** | Shelly `L` (terminal 1) |
-| Shelly `L` (terminal 2) | KP200 **load** |
-| Inlet **neutral** | Shelly `N` (terminal 1) |
-| Shelly `N` (terminal 2) | Wago → KP200 **neutral** + oven socket **neutral** (wide slot) |
-| Inlet **ground** | Wago 221-413 → KP200 **ground** + SSR heatsink bond + oven socket **ground** |
+| Inlet **switched, fused hot** | WAGO 221-413 (hot) |
+| Hot Wago | Shelly `L`; KP200 **Line** |
+| Inlet **neutral** | WAGO 221-415 (neutral) |
+| Neutral Wago | Shelly `N`; KP200 **Neutral**; oven socket **neutral** (wide slot) |
+| Inlet **ground** | WAGO 221-415 (ground) |
+| Ground Wago | KP200 **Ground**; SSR heatsink bond (ring terminal); oven socket **ground** (round) |
 | Shelly `O` | SSR `T1` |
 | SSR `T2` | Oven socket **hot** (narrow slot) |
 | Shelly `SW` | *unconnected — set input to detached* |
-| Shelly `L` (terminal 3) | *spare* |
+
+Shelly screw terminals: 0.2–2.5 mm² (14 AWG = 2.08 mm²), strip 6–7 mm, 0.4 N·m max. WAGO 221: 24–12 AWG, strip 11 mm.
 
 > **Lead colours:** the FILSHU listing photo shows black, white and green leads. Identify hot, neutral and ground on *your* module with a meter (the fuse must be in the hot leg) before wiring; do not go by colour alone.
 
@@ -142,7 +149,7 @@ The Shelly has **no ground terminal** — it is double-insulated. The SSR has **
 
 ### SSR wiring (straight wire, no lugs)
 
-* **Orientation:** mount the SSR on the heatsink with its **AC terminals (`T1`, `T2`) at the left end** (toward the KP200 / Shelly / oven socket) and its **DC terminals (`T3`, `T4`) at the right end** (toward the divider). Turn the SSR 180° on the heatsink if yours is the other way round.
+* **Orientation:** mount the SSR on the heatsink with its **AC terminals (`T1`, `T2`) at the end toward the KP200** (model −X, the left-wall side: toward the Shelly and oven socket) and its **DC terminals (`T3`, `T4`) at the end toward the divider**. Turn the SSR 180° on the heatsink if yours is the other way round.
 * **Clearance (modelled and checked as keepouts):** the wires leave the clamps straight out of the SSR ends. At the AC end there is an 11.5 mm channel the full height of the SSR between its end and the KP200 body, and below the KP200 (which now starts 35 mm above the floor) a free run of 28 mm to the left. At the DC end there are 12 mm to the divider, with the control pass-through right there.
 * **Terminations:** strip to the depth of the clamp plate, twist the strands, and seat them fully under the plate. **Do not tin the ends with solder:** tinned ends compress and loosen under a screw clamp ([Wiring Harness News](https://wiringharnessnews.com/2901/)); ferrules are the alternative if you want one. The NEC sets no terminal bending space for 14–10 AWG ([Table 312.6(A)](https://open-exam-prep.com/study-guides/mn-electrician/ch13-boxes-cabinets/cabinets-cutout-bending-space)), but pre-form the upper AC wire's bend on the bench.
 * **Order:** wire the SSR on the bench before dropping the heatsink into its fence. The terminal screws face the rear of the box and are awkward to reach in place.
@@ -167,10 +174,10 @@ Each call re-arms a 30-second auto-off. If firmware hangs or the controller rebo
 
 **Shorted-SSR detection.** Because the 1PM meters current, a script can trip the relay when it sees meaningful draw while the controller reports idle — the one failure mode the whole safety architecture exists for.
 
-### Wiring Architecture (Just the idea; this is NOT final)
+### Wiring Diagram (v12)
 ![DIY Reflow Controller Wiring Diagram](./diy_reflow_controller_wiring_diagram.png)
 
-*(Drawn for the CYD; the low-voltage side is superseded by the table below.)*
+*Generated by `tools/make_wiring_diagram.py`. Step-by-step build: [docs/BUILD-GUIDE.md](docs/BUILD-GUIDE.md).*
 
 ### Pin Configuration Mapping (CrowPanel 2.8, cables only)
 
@@ -201,7 +208,7 @@ Pin 1 is the end marked with the triangle on the connector symbol. On-board peri
 **Bench checks when the CrowPanel arrives** (USB power only, no mains):
 1. Note the PCB revision on the silkscreen.
 2. With nothing plugged into the expansion connectors, meter J7 pin 3 → pin 4: 3.3 V. J7 pin 2 → pin 4 should also read 3.3 V (pull-up) while firmware leaves IO32 alone.
-3. Wire only the SSR (J7 pins 2 and 3), run the `ssrOn()` / `ssrOff()` code below: the SSR's LED lights on `ssrOn()`. With it on, meter across `T3`–`T4` (expect ≥ 3.0 V, the SSR's minimum) and the input current in series (expect well under 24 mA).
+3. Wire only the SSR (J7 pins 2 and 3) and flash `firmware/bench_test/bench_test.ino` (commands `1`, `0`, `t`, `s` over USB serial): the SSR's LED lights on `ssrOn()`. With it on, meter across `T3`–`T4` (expect ≥ 3.0 V, the SSR's minimum) and the input current in series (expect well under 24 mA).
 4. Power-cycle and press RESET a few times while watching the SSR LED: it must stay off.
 5. Fit the board on the CrowPanel coupon (window and glass gap), and check the USB-C cable's overmold fits the 15 × 9 mm slot.
 
@@ -246,6 +253,8 @@ The USB-C port is reachable from outside the box (left side wall, facing the fro
 The enclosure is three printed parts: an open-front **bottom shell** (floor, rear and side walls, AC/DC divider at `divider_x = 157`, posts), a **front panel**, and a **lid**.
 
 ### Assembly order
+Full version with parts, checks and first-power procedure: [docs/BUILD-GUIDE.md](docs/BUILD-GUIDE.md).
+
 1. Inserts: 9 lid-screw inserts (shell, vertical), 6 front-panel inserts (shell posts, horizontal), 4 display inserts (front-panel standoffs), 2 KP200 inserts (lid).
 2. Screw the CrowPanel to the front panel (4 × M3 × 5), connectors toward the floor. Plug the three Grove cables in now; the connectors face down.
 3. Bench-wire the SSR (see SSR wiring), set the heatsink in its fence, fit the Shelly, inlet, socket, MAX6675.
@@ -298,13 +307,13 @@ The enclosure is three printed parts: an open-front **bottom shell** (floor, rea
 * [ ] Print the v12 bottom, front panel and lid in ASA.
 * [ ] Wire SSR `T2` to the oven socket hot (narrow slot); neutral and ground via Wagos.
 * [ ] Finalize oven chassis entry point for the K-type thermocouple probe.
-* [ ] Redraw `diy_reflow_controller_wiring_diagram.png` / `reflow-wiring-diagram.svg` for the split topology and the CrowPanel.
+* [x] ~~Redraw the wiring diagram.~~ v12 diagram generated from `tools/make_wiring_diagram.py`.
 
 **From the Oct 2026 design review** ([full report](docs/DESIGN-REVIEW-2026-10.md)):
 * [ ] Buy a 14 AWG SJT, 15 A NEMA 5-15P to C13 cord for the inlet.
 * [ ] Record the rating molded on the FILSHU module and the fitted fuse type.
 * [ ] Dummy-load thermal run: log the Shelly's own temperature (`temperature.tC`) during 10 min at 100 % and 30 min at 50 % with the lid closed. The SSR can dissipate up to 15.4 W (9.6 A × 1.6 V max drop); the Shelly is rated to 40 °C ambient.
-* [ ] Commit the working MAX6675 and SSR test sketches, ported to the CrowPanel pins.
+* [x] ~~Commit SSR / MAX6675 test sketches.~~ `firmware/bench_test/` for the CrowPanel pins (host-compiled and simulated; first ESP32 build is yours).
 
 **Firmware:**
 * [ ] Port the UI to the CrowPanel (TFT_eSPI setup above, rotation, touch calibration).

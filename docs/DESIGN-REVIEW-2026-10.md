@@ -38,6 +38,8 @@ Design consequence: an SSR between 3V3 and IO32 is **off whenever IO32 is releas
 * Elecrow's STEP board placed by the SCAD transform clears every printed part (25 solids). A 0.3 mm nudge toward the panel collides, so the check is sensitive.
 * 43,393 probe rays through every opening, none reaching a live part.
 
+**AC terminal map correction (found while writing the build guide).** Shelly's own 1PM Gen4 documentation says not to use the device's `L` terminals to power other devices and not to put several wires under one terminal. The README map fed the KP200 from a second Shelly `L` terminal. The map now uses a WAGO 221-413 hot junction and 221-415 neutral and ground junctions, with one wire per Shelly terminal. The KP200's install guide names its wires Line, Neutral and Ground; there is no Load, so the old "KP200 load" wording was also wrong.
+
 **Still open:**
 * The CrowPanel itself (bench checks in the README): connector voltage, the SSR's input current at 3.3 V, window fit on the coupon.
 * The USB-C overmold size of the cable used.
