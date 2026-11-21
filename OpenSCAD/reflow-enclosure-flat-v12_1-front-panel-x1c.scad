@@ -1,6 +1,13 @@
 // ============================================================================
-//  DIY Reflow Oven Controller — Flat Bench Enclosure (v12.0, X1C Fit)
+//  DIY Reflow Oven Controller — Flat Bench Enclosure (v12.1, X1C Fit)
 //  Parametric OpenSCAD model for Bambu X1C. PRINT IN ASA.
+//
+//  v12.1 CHANGE (2026-11, DROK AC meter in the lid):
+//  - Snap-in cutout for the DROK AC multimeter (Amazon B0B3WVG2V9) in the lid
+//    over the AC bay, above the inlet. Only the LID changed; the bottom shell
+//    and front panel are the v12.0 parts. New part "drok_meter_coupon".
+//  - Its split-core CT goes on the oven hot wire (SSR T2 -> socket hot) and
+//    lies on the AC floor between the oven socket and the inlet.
 //
 //  v12.0 CHANGE (2026-10, cable-only display + landscape front panel):
 //  - Display is now the Elecrow CrowPanel 2.8" ESP32 HMI (ESP32-WROOM-32-N4,
@@ -52,7 +59,7 @@
 // ============================================================================
 
 /* [Render selector] */
-part = "assembly"; // ["bottom","lid","front_panel","assembly","assembly_open","keepouts","crowpanel_test_coupon","iec_test_coupon","kp200_test_coupon","oven_socket_coupon","iec_trim_plate"]
+part = "assembly"; // ["bottom","lid","front_panel","assembly","assembly_open","keepouts","crowpanel_test_coupon","iec_test_coupon","kp200_test_coupon","oven_socket_coupon","iec_trim_plate","drok_meter_coupon"]
 
 /* [Wall thicknesses] */
 wall_t = 3;
@@ -106,6 +113,23 @@ crow_edge_gap = 0.5;        // standoff boss to right wall
 box_w = 250;                // 3 mm spare per side on the 256 mm bed
 box_d = 155;
 box_h = floor_t + crow_cable_zone + crow_pcb_h + crow_top_clear + lid_t;   // = 83
+
+/* [DROK AC meter (B0B3WVG2V9), lid mount over the inlet] -- v12.1
+   Measured by Jon 2026-11-21: face 76.5 x 48, body 73.37 x 45, body depth
+   21.47 below the face. Snap-in from above. Long axis along Y (front to
+   back): between the KP200 faceplate (x <= 90) and the divider (x >= 156)
+   there are only 66 mm, so the 73.4 mm body cannot sit crosswise. */
+drok_face_l = 76.5;
+drok_face_w = 48;
+drok_body_l = 73.37;
+drok_body_w = 45;
+drok_body_d = 21.47;
+drok_cut_l = 74.0;          // cutout = body + ~0.6; confirm with drok_meter_coupon
+drok_cut_w = 45.6;
+drok_panel_t = 3;           // lid thickness at the meter; < lid_t pockets the underside for the clips
+drok_wire_zone = 7;         // screw heads + wires leaving sideways below the body (SSR top is 7.5 below)
+drok_center_x = 130;
+drok_center_y = wall_t + 1 + drok_face_l / 2;
 
 /* [AC/DC divider] */
 divider_x = 157;
@@ -326,7 +350,7 @@ kp_screw_positions = [
     [kp_center_x, kp_center_y + kp_screw_spacing / 2]
 ];
 
-echo("=== Flat bench enclosure v12.0 / X1C fit / CrowPanel 2.8 front panel + KP200 lid + FILSHU inlet + 5-15R socket ===");
+echo("=== Flat bench enclosure v12.1 (DROK meter in lid) / X1C fit / CrowPanel 2.8 front panel + KP200 lid + FILSHU inlet + 5-15R socket ===");
 echo(str("Box: ", box_w, " x ", box_d, " x ", box_h, " mm; shell ", shell_h, "; DC bay interior ", dc_w, " mm"));
 echo(str("CrowPanel centre X/Z ", crow_cx, "/", crow_cz, "; PCB X ", bx(-crow_pcb_w / 2), "-", bx(crow_pcb_w / 2),
          " Z ", bz(crow_pcb_h / 2), "-", bz(-crow_pcb_h / 2), "; PCB front Y ", crow_pcb_front_y));
@@ -335,6 +359,14 @@ echo(str("USB-C slot centre Y/Z ", crow_usb_cy, "/", crow_usb_cz));
 echo(str("Vent centre X/Y ", vent_center_x, "/", vent_center_y, "; rearmost slot edge Y ", vent_center_y - (vent_slot_count - 1) * vent_slot_gap / 2 - vent_slot_w / 2));
 echo(str("KP200 body bottom Z ", kp_bottom_z, "; heatsink top Z ", heatsink_top_z, "; SSR Z ", ssr_z0, "-", ssr_z0 + ssr_h_z));
 assert(box_w <= 256 && box_d <= 256, "box exceeds X1C bed");
+assert(drok_center_x + drok_face_w / 2 <= divider_x - divider_t / 2 - 1 && drok_center_x - drok_body_w / 2 >= 80 + 6,
+       "DROK meter hits the divider or the [80,10] lid screw");
+assert(drok_center_y + drok_face_l / 2 <= vent_center_y - (vent_slot_count - 1) * vent_slot_gap / 2 - vent_slot_w / 2 - 3,
+       "DROK meter face runs into the lid vent slots");
+assert(shell_h - drok_body_d - drok_wire_zone >= max(inlet_center_z + inlet_cutout_h / 2, ssr_z0 + ssr_h_z) + 0.5,
+       "DROK meter terminal zone hits the inlet or the SSR wiring zone");
+echo(str("DROK meter centre X/Y ", drok_center_x, "/", drok_center_y, "; cutout ", drok_cut_w, " x ", drok_cut_l,
+         "; body bottom Z ", shell_h - drok_body_d));
 assert(vent_center_y - (vent_slot_count - 1) * vent_slot_gap / 2 - vent_slot_w / 2 >= ssr_y0 + 3 + (shell_h - (ssr_z0 + ssr_h_z)) + 1,
        "rearmost lid slot gives a 45-degree probe line to the SSR terminal face");
 assert(hs_x0 + hs_len_x + hs_clear + fence_t <= divider_x - divider_t / 2, "heatsink fence hits divider");
@@ -359,6 +391,7 @@ else if (part == "iec_test_coupon") iec_test_coupon();
 else if (part == "kp200_test_coupon") kp200_test_coupon();
 else if (part == "oven_socket_coupon") oven_socket_coupon();
 else if (part == "iec_trim_plate") iec_trim_plate();
+else if (part == "drok_meter_coupon") drok_meter_coupon();
 
 // ============================================================================
 //  Bottom shell — floor, rear/left/right walls, divider, posts. Open front.
@@ -537,6 +570,13 @@ module lid_print_orientation() {
             translate([kp_center_x, kp_center_y + dy, -eps])
                 cylinder(d = kp_capscrew_clear_dia, h = lid_t + kp_lid_boss_h + 2 * eps);
 
+        // v12.1: DROK AC meter
+        translate([drok_center_x - drok_cut_w / 2, drok_center_y - drok_cut_l / 2, -eps])
+            cube([drok_cut_w, drok_cut_l, lid_t + 2 * eps]);
+        if (drok_panel_t < lid_t)
+            translate([drok_center_x - drok_cut_w / 2 - 6, drok_center_y - drok_cut_l / 2 - 3, drok_panel_t])
+                cube([drok_cut_w + 12, drok_cut_l + 6, lid_t - drok_panel_t + eps]);
+
         vent_span = (vent_slot_count - 1) * vent_slot_gap;
         for (i = [0 : vent_slot_count - 1])
             translate([vent_center_x - vent_slot_len / 2,
@@ -707,6 +747,30 @@ module oven_socket_coupon() {
     }
 }
 
+// v12.1: DROK meter cutout coupon. Columns: cutout size (small, nominal,
+// large; dimples along the bottom edge count 1-3). Rows: panel thickness 2.0
+// (front row, 1 dimple on the left edge) and 3.0 (back row, 2 dimples).
+drok_coupon_cuts   = [[45.2, 73.6], [45.6, 74.0], [46.0, 74.4]];
+drok_coupon_panels = [2.0, 3.0];
+module drok_meter_coupon() {
+    cw = drok_face_w + 8;
+    cl = drok_face_l + 8;
+    difference() {
+        cube([3 * cw, 2 * cl, 3]);
+        for (r = [0 : 1]) for (c = [0 : 2]) {
+            cx = c * cw + cw / 2;
+            cy = r * cl + cl / 2;
+            cut = drok_coupon_cuts[c];
+            pt = drok_coupon_panels[r];
+            translate([cx - cut[0] / 2, cy - cut[1] / 2, -eps]) cube([cut[0], cut[1], 3 + 2 * eps]);
+            if (pt < 3)   // z 0 = meter face side (print face-down, like the lid); clip side thinned
+                translate([cx - cut[0] / 2 - 2.5, cy - cut[1] / 2 - 2, pt]) cube([cut[0] + 5, cut[1] + 4, 3 - pt + eps]);
+            for (k = [0 : c]) translate([cx - 4 + k * 4, r * cl + 1.6, 3 - 0.8]) cylinder(d = 1.6, h = 1, $fn = 16);
+            for (k = [0 : r]) translate([c * cw + 1.6, cy - 2 + k * 4, 3 - 0.8]) cylinder(d = 1.6, h = 1, $fn = 16);
+        }
+    }
+}
+
 // ============================================================================
 //  Component keepouts [name, [x0,y0,z0], [x1,y1,z1]] — echoed for the
 //  verification script, drawn by component_previews().
@@ -743,7 +807,12 @@ keepouts = [
     ["usb_plug", [bx(crow_pcb_w / 2), crow_usb_cy - usb_plug_t / 2, crow_usb_cz - usb_plug_w / 2],
                  [box_w + 25, crow_usb_cy + usb_plug_t / 2, crow_usb_cz + usb_plug_w / 2]],
     ["max6675", [max_pos_x - max_board_w / 2, max_pos_y - max_board_h / 2, floor_t + 5],
-                [max_pos_x + max_board_w / 2, max_pos_y + max_board_h / 2, floor_t + 6.6]]
+                [max_pos_x + max_board_w / 2, max_pos_y + max_board_h / 2, floor_t + 6.6]],
+    // v12.1: DROK meter body under the lid, and its terminal/wire zone below it
+    ["drok_meter", [drok_center_x - drok_body_w / 2, drok_center_y - drok_body_l / 2, shell_h - drok_body_d],
+                   [drok_center_x + drok_body_w / 2, drok_center_y + drok_body_l / 2, shell_h]],
+    ["drok_terminals", [drok_center_x - drok_body_w / 2, drok_center_y - drok_body_l / 2, shell_h - drok_body_d - drok_wire_zone],
+                       [drok_center_x + drok_body_w / 2, drok_center_y + drok_body_l / 2, shell_h - drok_body_d]]
 ];
 for (k = keepouts) echo(str("KO|", k[0], "|", k[1][0], "|", k[1][1], "|", k[1][2], "|", k[2][0], "|", k[2][1], "|", k[2][2]));
 

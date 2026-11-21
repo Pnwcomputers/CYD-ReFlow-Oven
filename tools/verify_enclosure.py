@@ -1,5 +1,5 @@
 # Usage:
-#   S=OpenSCAD/reflow-enclosure-flat-v12_0-front-panel-x1c.scad
+#   S=OpenSCAD/reflow-enclosure-flat-v12_1-front-panel-x1c.scad
 #   for p in bottom lid front_panel crowpanel_test_coupon oven_socket_coupon iec_test_coupon kp200_test_coupon iec_trim_plate; do
 #     openscad -o OUT/$p.stl -D "part=\"$p\"" $S > OUT/$p.log 2>&1; done
 #   grep -h "KO|" OUT/bottom.log | sed "s/ECHO: //" > OUT/keepouts.txt
@@ -65,7 +65,7 @@ def inter_vol(a, b):
 
 # ---------------------------------------------------------------- 1 + 2
 parts = ["bottom", "lid", "front_panel", "crowpanel_test_coupon", "oven_socket_coupon",
-         "iec_test_coupon", "kp200_test_coupon", "iec_trim_plate"]
+         "iec_test_coupon", "kp200_test_coupon", "iec_trim_plate", "drok_meter_coupon"]
 print(f"Box {BOX_W} x {BOX_D} x {BOX_H}, shell {SHELL_H}")
 print("== 1. Mesh health and bed fit ==")
 ok1 = True
