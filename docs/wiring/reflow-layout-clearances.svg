@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1560" viewBox="0 0 1800 1560">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker><marker id="arrb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker><pattern id="fins" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#c9ced4"/><rect width="6" height="14" fill="#9aa2ab"/></pattern><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#e9edf1"/><rect width="3" height="8" fill="#c3cad2"/></pattern></defs>
+<rect width="1800" height="1560" fill="#ffffff"/>
+<text x="30" y="42" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="27" font-weight="bold" text-anchor="start" fill="#111">Sheet 3 of 3 — Where everything sits (to scale) and how to get at it</text>
+<text x="30" y="68" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="15" font-weight="normal" text-anchor="start" fill="#444">Enclosure v12.1, 250 x 155 x 83 mm. Dimensions in mm, from the OpenSCAD model and its verified keep-out boxes. View A is from above, standing at the front panel.</text>
+<text x="60" y="136" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="start" fill="#111">A. Top view, lid removed (lid-mounted parts shown as dashed outlines)</text>
+<rect x="60.0" y="150.0" width="1250.0" height="775.0" rx="6" fill="#f3f5f7" stroke="#333" stroke-width="3"/>
+<rect x="75.0" y="165.0" width="1220.0" height="745.0" rx="3" fill="#ffffff" stroke="#999" stroke-width="1"/>
+<rect x="520.0" y="150.0" width="10.0" height="760.0" rx="3" fill="#6b7480" stroke="#444" stroke-width="1"/>
+<rect x="60.0" y="910.0" width="1250.0" height="15.0" rx="3" fill="#44505c" stroke="#222" stroke-width="1"/>
+<text x="685.0" y="945.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#111">FRONT PANEL (display side)  —  you stand here</text>
+<text x="1010.0" y="162.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#555">REAR WALL</text>
+<text x="52.0" y="535.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#555" transform="rotate(-90 52.0 535.0)">RIGHT WALL: USB-C slot + thermocouple hole</text>
+<text x="1326.0" y="535.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#555" transform="rotate(90 1326.0 535.0)">LEFT WALL: oven socket</text>
+<text x="1085.0" y="205.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#b22222">AC BAY</text>
+<text x="295.0" y="205.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#1f5fa8">DC BAY</text>
+<rect x="545.0" y="623.0" width="400.0" height="247.00000000000003" rx="3" fill="url(#fins)" stroke="#6f7780" stroke-width="1.5"/>
+<text x="745.0" y="742.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#111">Heatsink</text>
+<text x="745.0" y="758.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="middle" fill="#111">fins front-to-back, top at z 54</text>
+<rect x="590.0" y="505.5" width="310.0" height="117.5" rx="3" fill="#f2f2f2" stroke="#222" stroke-width="2"/>
+<text x="745.0" y="568.25" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#111">SSR-40DA</text>
+<text x="610.0" y="580.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#b22222">1 2</text>
+<text x="870.0" y="580.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f5fa8">3 4</text>
+<rect x="590.0" y="405.5" width="310.0" height="99.99999999999997" rx="3" fill="#fff4d6" stroke="#c79a1e" stroke-width="1" stroke-dasharray="5,4"/>
+<text x="850.0" y="497.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10.5" font-weight="normal" text-anchor="middle" fill="#7a5c00">SSR wire bends</text>
+<rect x="600.0" y="165.0" width="240.0" height="240.0" rx="3" fill="#262626" stroke="#111" stroke-width="2"/>
+<text x="720.0" y="238.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#fff">FILSHU inlet</text>
+<text x="720.0" y="254.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#fff">body + wire space</text>
+<text x="720.0" y="270.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#fff">z 17-45 (under the meter)</text>
+<rect x="1135.0" y="232.5" width="162.5" height="135.0" rx="3" fill="#2a2a2a" stroke="#111" stroke-width="2"/>
+<text x="1216.25" y="296.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#fff">Oven</text>
+<text x="1216.25" y="312.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#fff">socket</text>
+<rect x="1212.0" y="473.0" width="80.0" height="210.0" rx="3" fill="#1c3f6e" stroke="#0d2240" stroke-width="2"/>
+<text x="1252.0" y="580.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#fff" transform="rotate(90 1252.0 580.0)">Shelly 1PM</text>
+<rect x="380.0" y="262.5" width="90.0" height="75.0" rx="3" fill="#1b4fa0" stroke="#0d2a59" stroke-width="2"/>
+<text x="425.0" y="236.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#111">MAX6675</text>
+<rect x="81.25" y="853.75" width="428.49999999999994" height="35.75000000000003" rx="3" fill="#12233a" stroke="#0a1322" stroke-width="2"/>
+<text x="395.5" y="797.75" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#111">CrowPanel</text>
+<rect x="920.0" y="215.0" width="210.0" height="160.0" rx="3" fill="#e9f7ee" stroke="#1a8f3a" stroke-width="2" stroke-dasharray="6,4"/>
+<text x="1025.0" y="283.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#14592a">CT clamp + Wagos</text>
+<text x="1025.0" y="299.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="middle" fill="#14592a">lie here on the floor</text>
+<text x="1025.0" y="315.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="middle" fill="#14592a">(42 x 32, free to z 35)</text>
+<rect x="830.0" y="180.0" width="160.0" height="40.0" rx="3" fill="none" stroke="none" stroke-width="0"/>
+<circle cx="1260.0" cy="200.0" r="21.25" fill="#dfe4ea" stroke="#555" stroke-width="1.5"/>
+<circle cx="1260.0" cy="200.0" r="8.0" fill="#fff" stroke="#555" stroke-width="1"/>
+<circle cx="910.0" cy="200.0" r="21.25" fill="#dfe4ea" stroke="#555" stroke-width="1.5"/>
+<circle cx="910.0" cy="200.0" r="8.0" fill="#fff" stroke="#555" stroke-width="1"/>
+<circle cx="1260.0" cy="425.0" r="21.25" fill="#dfe4ea" stroke="#555" stroke-width="1.5"/>
+<circle cx="1260.0" cy="425.0" r="8.0" fill="#fff" stroke="#555" stroke-width="1"/>
+<circle cx="470.0" cy="200.0" r="21.25" fill="#dfe4ea" stroke="#555" stroke-width="1.5"/>
+<circle cx="470.0" cy="200.0" r="8.0" fill="#fff" stroke="#555" stroke-width="1"/>
+<circle cx="125.0" cy="200.0" r="21.25" fill="#dfe4ea" stroke="#555" stroke-width="1.5"/>
+<circle cx="125.0" cy="200.0" r="8.0" fill="#fff" stroke="#555" stroke-width="1"/>
+<rect x="960.0" y="381.25" width="225.0" height="352.5" rx="3" fill="#f1f1f1" stroke="#555" stroke-width="2" stroke-dasharray="7,4" fill-opacity="0.75"/>
+<text x="1072.5" y="635.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#111">KP200 body</text>
+<text x="1072.5" y="651.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#111">hangs from the lid</text>
+<text x="1072.5" y="667.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#111">z 35-80</text>
+<rect x="860.0" y="235.0" width="425.0" height="645.0" rx="3" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="3,5"/>
+<text x="1072.5" y="850.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#555">KP200 faceplate on top of the lid (85 x 129)</text>
+<rect x="540.0" y="170.0" width="240.0" height="382.5" rx="3" fill="none" stroke="#b22222" stroke-width="2" stroke-dasharray="3,5"/>
+<rect x="547.5" y="177.825" width="225.0" height="366.85" rx="3" fill="#4a90d9" stroke="#b22222" stroke-width="3.5" stroke-dasharray="8,4" fill-opacity="0.22"/>
+<rect x="553.5" y="412.5" width="213.0" height="85.0" rx="5" fill="#ffffff" stroke="#b22222" stroke-width="1.5" fill-opacity="0.92"/>
+<text x="660.0" y="443.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#8a1010">DROK meter (in the lid)</text>
+<text x="660.0" y="459.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#8a1010">body 45 x 73.4, z 58.5-80</text>
+<text x="660.0" y="475.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#8a1010">face 48 x 76.5 on top</text>
+<rect x="580.0" y="679.0" width="330.0" height="15.0" rx="1" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,3"/>
+<rect x="580.0" y="709.0" width="330.0" height="15.0" rx="1" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,3"/>
+<rect x="580.0" y="739.0" width="330.0" height="15.0" rx="1" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,3"/>
+<rect x="580.0" y="769.0" width="330.0" height="15.0" rx="1" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,3"/>
+<rect x="580.0" y="799.0" width="330.0" height="15.0" rx="1" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,3"/>
+<rect x="580.0" y="829.0" width="330.0" height="15.0" rx="1" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="2,3"/>
+<text x="745.0" y="657.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10.5" font-weight="normal" text-anchor="middle" fill="#555">lid vent slots above the heatsink</text>
+<line x1="860.0" y1="530.0" x2="780.0" y2="530.0" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="780.0" y1="530.0" x2="860.0" y2="530.0" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="820.0" y="525.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#b22222">16</text>
+<line x1="565.0" y1="552.5" x2="565.0" y2="679.0" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="565.0" y1="679.0" x2="565.0" y2="552.5" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="572.0" y="650.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="start" fill="#b22222">25 to vents</text>
+<polyline points="830,395 880,395 930,350" fill="none" stroke="#111" stroke-width="3.5" stroke-dasharray="2,7" stroke-linecap="round"/>
+<circle cx="930.0" cy="350.0" r="5" fill="#111" stroke="#111" stroke-width="0"/>
+<text x="880.0" y="385.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10.5" font-weight="bold" text-anchor="middle" fill="#111">inlet → Wagos</text>
+<polyline points="1212,520 1160,505 900,505" fill="none" stroke="#111" stroke-width="3.5" stroke-dasharray="2,7" stroke-linecap="round"/>
+<circle cx="900.0" cy="505.0" r="5" fill="#111" stroke="#111" stroke-width="0"/>
+<text x="1060.0" y="525.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#111">Shelly O → SSR 1</text>
+<polyline points="900,465 1020,465 1035,375 1135,330" fill="none" stroke="#111" stroke-width="3.5" stroke-dasharray="2,7" stroke-linecap="round"/>
+<circle cx="1135.0" cy="330.0" r="5" fill="#111" stroke="#111" stroke-width="0"/>
+<text x="1050.0" y="455.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#111">SSR 2 → CT → socket hot</text>
+<polyline points="590,570 520,570 480,700 460,840" fill="none" stroke="#1f5fa8" stroke-width="3.5" stroke-dasharray="2,7" stroke-linecap="round"/>
+<circle cx="460.0" cy="840.0" r="5" fill="#1f5fa8" stroke="#1f5fa8" stroke-width="0"/>
+<text x="380.0" y="680.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f5fa8">SSR 3/4 → J7</text>
+<text x="380.0" y="700.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="10.5" font-weight="normal" text-anchor="middle" fill="#1f5fa8">through the U-slot</text>
+<polyline points="380,340 250,450 250,840" fill="none" stroke="#1f5fa8" stroke-width="3.5" stroke-dasharray="2,7" stroke-linecap="round"/>
+<circle cx="250.0" cy="840.0" r="5" fill="#1f5fa8" stroke="#1f5fa8" stroke-width="0"/>
+<text x="170.0" y="570.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f5fa8">MAX6675</text>
+<text x="170.0" y="590.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#1f5fa8">→ J6 / J10</text>
+<text x="60" y="996" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" text-anchor="start" fill="#111">B. Side section through the meter (cut at X = 130, looking from the divider toward the left wall)</text>
+<rect x="60.0" y="1488.4" width="790.4" height="15.600000000000001" rx="2" fill="#c9d1d9" stroke="#333" stroke-width="1.5"/>
+<rect x="60.0" y="1088.0" width="15.600000000000001" height="416.0" rx="2" fill="#c9d1d9" stroke="#333" stroke-width="1.5"/>
+<rect x="850.4" y="1088.0" width="15.600000000000001" height="416.0" rx="2" fill="#44505c" stroke="#333" stroke-width="1.5"/>
+<rect x="60.0" y="1072.4" width="806.0" height="15.600000000000001" rx="2" fill="#c9d1d9" stroke="#333" stroke-width="2"/>
+<rect x="87.378" y="1071.36" width="384.644" height="17.68" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<rect x="610.16" y="1071.36" width="15.600000000000001" height="17.68" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<rect x="641.36" y="1071.36" width="15.600000000000001" height="17.68" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<rect x="672.5600000000001" y="1071.36" width="15.600000000000001" height="17.68" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<rect x="703.76" y="1071.36" width="15.600000000000001" height="17.68" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<rect x="734.96" y="1071.36" width="15.600000000000001" height="17.68" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<rect x="766.1600000000001" y="1071.36" width="15.600000000000001" height="17.68" rx="0" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
+<rect x="60.0" y="1271.3" width="161.20000000000002" height="143.0" rx="2" fill="#262626" stroke="#111" stroke-width="2"/>
+<rect x="221.20000000000002" y="1271.3" width="104.0" height="143.0" rx="2" fill="#555" stroke="#111" stroke-width="1" stroke-dasharray="4,3" fill-opacity="0.5"/>
+<text x="148.4" y="1353.2" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#fff">Inlet body</text>
+<text x="273.20000000000005" y="1353.2" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#fff">its wires</text>
+<rect x="325.72" y="1238.8" width="103.99999999999997" height="234.0" rx="2" fill="#fff4d6" stroke="#c79a1e" stroke-width="1" stroke-dasharray="5,4"/>
+<text x="377.71999999999997" y="1358.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#7a5c00">SSR wire</text>
+<text x="377.71999999999997" y="1379.2" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#7a5c00">bends</text>
+<rect x="429.71999999999997" y="1238.8" width="122.2" height="234.0" rx="2" fill="#f2f2f2" stroke="#222" stroke-width="2"/>
+<text x="490.82" y="1358.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#111">SSR</text>
+<rect x="551.92" y="1223.2" width="256.88000000000005" height="265.2" rx="2" fill="url(#fins)" stroke="#6f7780" stroke-width="2"/>
+<text x="680.36" y="1358.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#111">Heatsink</text>
+<rect x="88.938" y="1088.0" width="381.52400000000006" height="111.64399999999999" rx="2" fill="#0b2a5c" stroke="#b22222" stroke-width="2.5"/>
+<rect x="80.774" y="1059.4" width="397.852" height="13.0" rx="2" fill="#1d1d1d" stroke="#000" stroke-width="2"/>
+<rect x="88.938" y="1199.644" width="381.52400000000006" height="36.4" rx="2" fill="#e9f7ee" stroke="#1a8f3a" stroke-width="1.5" stroke-dasharray="5,4"/>
+<text x="279.70000000000005" y="1137.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#fff">DROK meter body 21.5 deep</text>
+<text x="279.70000000000005" y="1160.8" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="middle" fill="#cfe0f5">snaps in from above, clips grip the lid</text>
+<text x="247.20000000000002" y="1225.8" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#14592a">7 mm: screw heads + wires</text>
+<text x="279.70000000000005" y="1046.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="middle" fill="#111">face 76.5 long, sits on top of the lid</text>
+<text x="694.4" y="1046.4" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="middle" fill="#555">vent slots</text>
+<text x="460.40000000000003" y="1532.6" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="normal" text-anchor="middle" fill="#555">floor</text>
+<text x="49.6" y="1296.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#555" transform="rotate(-90 49.6 1296.0)">rear wall</text>
+<text x="884.2" y="1296.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" text-anchor="middle" fill="#555" transform="rotate(90 884.2 1296.0)">front panel</text>
+<line x1="216.0" y1="1271.3" x2="216.0" y2="1236.2" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="216.0" y1="1236.2" x2="216.0" y2="1271.3" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="223.0" y="1257.75" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="start" fill="#b22222">6.8 clear above the inlet</text>
+<line x1="450.0" y1="1238.8" x2="450.0" y2="1199.8" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="450.0" y1="1199.8" x2="450.0" y2="1238.8" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="457.0" y="1223.3" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="start" fill="#b22222">7.5 SSR top to meter</text>
+<line x1="673.6" y1="1223.2" x2="673.6" y2="1088.0" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="673.6" y1="1088.0" x2="673.6" y2="1223.2" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="680.6" y="1159.6" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="start" fill="#b22222">26 heatsink to lid</text>
+<line x1="494.2" y1="1199.8" x2="494.2" y2="1088.0" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="494.2" y1="1088.0" x2="494.2" y2="1199.8" stroke="#b22222" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="501.2" y="1147.9" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="bold" text-anchor="start" fill="#b22222">21.5</text>
+<text x="1355" y="150" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" text-anchor="start" fill="#111">Mounting and orientation</text>
+<text x="1355" y="176.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">DROK meter</text>
+<text x="1355" y="195.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Snaps into a 45.6 x 74.0 mm hole in the lid, from above.</text>
+<text x="1355" y="215.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  No screws. Print the cutout coupon first and pick</text>
+<text x="1355" y="234.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  the cell it clicks into without rattling.</text>
+<text x="1355" y="254.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Long axis runs front-to-back. Crosswise does not</text>
+<text x="1355" y="273.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  fit: only 66 mm between the KP200 faceplate and</text>
+<text x="1355" y="293.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  the divider, and the body is 73.4 mm.</text>
+<text x="1355" y="312.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• The hole is symmetric, so choose which way it</text>
+<text x="1355" y="332.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  reads at assembly: turn it so the digits are</text>
+<text x="1355" y="351.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  upright from the side you stand at (left-wall end</text>
+<text x="1355" y="371.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  or display end).</text>
+<text x="1355" y="390.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• It stays in the AC bay: its L / N terminals are</text>
+<text x="1355" y="410.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  mains and must not enter the DC bay.</text>
+<text x="1355" y="429.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333"></text>
+<text x="1355" y="449.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">CT clamp</text>
+<text x="1355" y="468.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Clips around the SSR 2 → socket hot wire and</text>
+<text x="1355" y="488.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  lies on the AC floor between the oven socket and</text>
+<text x="1355" y="507.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  the inlet, with the Wagos. Zip-tie it to the wire</text>
+<text x="1355" y="527.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  so it cannot wander toward the heatsink.</text>
+<text x="1355" y="546.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333"></text>
+<text x="1355" y="566.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">Service access</text>
+<text x="1355" y="585.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Everything is reached by lifting the lid</text>
+<text x="1355" y="605.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  (9 screws). The meter and KP200 come up with it.</text>
+<text x="1355" y="624.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Leave about 150 mm of slack in the meter's L / N</text>
+<text x="1355" y="644.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  and CT leads and the KP200 wires, so the lid can</text>
+<text x="1355" y="663.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  be laid on its back beside the box, still wired.</text>
+<text x="1355" y="683.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• To remove the meter: lid off, squeeze the two</text>
+<text x="1355" y="702.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  side clips, push it out upward.</text>
+<text x="1355" y="722.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Route the meter leads along the rear wall, away</text>
+<text x="1355" y="741.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  from the heatsink and clear of the vent slots.</text>
+<text x="1355" y="761.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Display, Grove cables: front panel (6 screws).</text>
+<text x="1355" y="780.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333"></text>
+<text x="1355" y="800.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">Printing (Bambu X1C, ASA, no supports)</text>
+<text x="1355" y="819.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Lid: outer face down, already mirrored.</text>
+<text x="1355" y="839.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  The meter hole is a plain through-cut.</text>
+<text x="1355" y="858.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Only the lid changed from v12.0. The bottom</text>
+<text x="1355" y="878.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  shell and front panel are the same parts.</text>
+<text x="1355" y="897.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">• Checked on the model: no overhang past 45°,</text>
+<text x="1355" y="917.0" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  no part-to-part or part-to-component overlap,</text>
+<text x="1355" y="936.5" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#333">  no straight probe path to a live terminal.</text>
+<rect x="1347" y="161" width="6" height="20" rx="1" fill="#b22222" stroke="#b22222" stroke-width="0"/>
+<rect x="1347" y="434.0" width="6" height="20" rx="1" fill="#b22222" stroke="#b22222" stroke-width="0"/>
+<rect x="1347" y="551.0" width="6" height="20" rx="1" fill="#b22222" stroke="#b22222" stroke-width="0"/>
+<rect x="1347" y="785.0" width="6" height="20" rx="1" fill="#b22222" stroke="#b22222" stroke-width="0"/>
+<rect x="1345" y="1010" width="400" height="300" rx="8" fill="#f7f9fb" stroke="#b8c2cc" stroke-width="1.2"/>
+<text x="1361" y="1036" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" text-anchor="start" fill="#111">Clearances (mm)</text>
+<rect x="1361" y="1048" width="368" height="24" rx="0" fill="#dfe6ee" stroke="#333" stroke-width="1.2"/>
+<text x="1367" y="1064" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" text-anchor="start" fill="#111">Between</text>
+<text x="1657" y="1064" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" text-anchor="start" fill="#111">Gap</text>
+<rect x="1361" y="1072" width="368" height="24" rx="0" fill="#f7f9fb" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1088" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter body ↔ divider</text>
+<text x="1657" y="1088" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">3.5</text>
+<rect x="1361" y="1096" width="368" height="24" rx="0" fill="#ffffff" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1112" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter body ↔ rear wall</text>
+<text x="1657" y="1112" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">2.6</text>
+<rect x="1361" y="1120" width="368" height="24" rx="0" fill="#f7f9fb" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1136" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter face ↔ KP200 faceplate</text>
+<text x="1657" y="1136" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">16</text>
+<rect x="1361" y="1144" width="368" height="24" rx="0" fill="#ffffff" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1160" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter face ↔ lid vent slots</text>
+<text x="1657" y="1160" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">25</text>
+<rect x="1361" y="1168" width="368" height="24" rx="0" fill="#f7f9fb" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1184" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter body ↔ SSR top</text>
+<text x="1657" y="1184" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">7.5</text>
+<rect x="1361" y="1192" width="368" height="24" rx="0" fill="#ffffff" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1208" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter body ↔ inlet top</text>
+<text x="1657" y="1208" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">13.8</text>
+<rect x="1361" y="1216" width="368" height="24" rx="0" fill="#f7f9fb" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1232" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter body ↔ KP200 body</text>
+<text x="1657" y="1232" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">37</text>
+<rect x="1361" y="1240" width="368" height="24" rx="0" fill="#ffffff" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1256" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Heatsink top ↔ lid</text>
+<text x="1657" y="1256" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">26</text>
+<rect x="1361" y="1264" width="368" height="24" rx="0" fill="#f7f9fb" stroke="#b8c2cc" stroke-width="0.8"/>
+<text x="1367" y="1280" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">Meter ↔ Shelly</text>
+<text x="1657" y="1280" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="normal" text-anchor="start" fill="#111">88</text>
+</svg>

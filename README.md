@@ -22,8 +22,9 @@ The controller is housed in a standalone, 3D-printed bench enclosure next to the
 * **CYD era (validated on the CYD, carried forward):** resistive touch UI, MAX6675 reading with a live graph, SSR switching at 3.3 V drive.
 * **CrowPanel 2.8 (v12):** pinout and electrical details taken from Elecrow's own Eagle schematic and board files and its STEP model (see Pin Configuration). **Board not yet in hand:** run the bench checks below before wiring mains.
 * **AC Distribution:** ✅ **Validated.** Inlet → Shelly → KP200 branch energized and confirmed. Shelly joins Wi-Fi and reports metering; the KP200 powers the display through a USB adapter.
-* **Control:** Slow-PWM SSR control logic scaffolded. SSR load path (`T2` → oven) not yet connected.
-* **Enclosure:** OpenSCAD parametric design (**v12.0, 250 × 155 × 83 mm, ASA**) that prints on a Bambu X1C without supports. Verified by surface scan, interference check (including Elecrow's real board model), and probe-ray test (see Enclosure section).
+* **Control:** Reflow firmware in `firmware/reflow_controller/` (profiles, PID with slow-PWM, safety aborts, Shelly heartbeat) and a Shelly supervisor script in `firmware/shelly/`. **Not yet run on hardware:** syntax-checked on a PC and simulated only. SSR load path (`T2` → oven) not yet connected.
+* **Metering:** DROK AC multimeter (Amazon B0B3WVG2V9) snapped into the lid; its split-core CT is on the oven hot wire, so it shows what the oven draws.
+* **Enclosure:** OpenSCAD parametric design (**v12.1, 250 × 155 × 83 mm, ASA**) that prints on a Bambu X1C without supports. Verified by surface scan, interference check (including Elecrow's real board model), and probe-ray test (see Enclosure section).
 * **Safety Isolation:** An internal divider wall separates mains AC from the low-voltage side; one SSR-control pass-through only.
 * **Fail-safes:** Fused rocker inlet, a Shelly 1PM Gen4 in the oven's hot path (survives a shorted SSR), SSR drive that is **off whenever the ESP32 is not actively driving it**, and a KP200 that can cut the controller's power.
 
@@ -59,15 +60,18 @@ The controller is housed in a standalone, 3D-printed bench enclosure next to the
 CYD-ReFlow-Oven/
 ├── 3MF/
 │   ├── reflow-v12_0-coupons.3mf                    # Socket + inlet + CrowPanel coupons, one plate — print FIRST
+│   ├── reflow-v12_1-drok-meter-coupon.3mf          # DROK meter cutout coupon — print FIRST
+│   ├── reflow-v12_1-lid.3mf                        # v12.1 lid (same part as the STL)
 │   ├── legacy-v11_0/                               # v11 coupons (socket and inlet coupons are unchanged in v12)
 │   └── legacy-v10_3/
 ├── OpenSCAD/
-│   ├── reflow-enclosure-flat-v12_0-front-panel-x1c.scad  # ✅ CURRENT master source of record
+│   ├── reflow-enclosure-flat-v12_1-front-panel-x1c.scad  # ✅ CURRENT master source of record
 │   └── legacy-v11_0/                               # v11 source (230 mm box, CYD on the lid)
 ├── STL/
-│   ├── reflow-v12_0-bottom.stl                     # Bottom shell: floor, rear/side walls, divider, posts
-│   ├── reflow-v12_0-lid.stl                        # Lid, pre-mirrored for printing
-│   ├── reflow-v12_0-front-panel.stl                # Front panel with display window, printed face down
+│   ├── reflow-v12_0-bottom.stl                     # Bottom shell: floor, rear/side walls, divider, posts (unchanged in v12.1)
+│   ├── reflow-v12_1-lid.stl                        # Lid with the DROK meter cutout, pre-mirrored for printing
+│   ├── reflow-v12_1-drok-meter-coupon.stl          # 3 meter cutout sizes × 2 panel thicknesses
+│   ├── reflow-v12_0-front-panel.stl                # Front panel with display window, printed face down (unchanged in v12.1)
 │   ├── reflow-v12_0-crowpanel-coupon.stl           # Display region of the front panel, 1:1
 │   ├── reflow-v12_0-oven-socket-coupon.stl         # 3 cut sizes × 3 panel thicknesses
 │   ├── reflow-v12_0-iec-coupon.stl                 # Inlet cutout + clip reliefs
@@ -76,22 +80,25 @@ CYD-ReFlow-Oven/
 ├── tools/
 │   ├── verify_enclosure.py                         # Mesh health, supports, interference, probe rays, real-board fit
 │   ├── step_parts.py                               # Splits Elecrow's STEP into per-solid STLs for the fit check
-│   └── make_wiring_diagram.py                      # Generates the wiring diagram SVG/PNG
+│   ├── make_wiring_diagrams.py                     # Generates the three wiring / layout sheets (SVG)
+│   └── render_diagrams.js                          # SVG → PNG + PDF (Playwright)
 ├── firmware/
-│   └── bench_test/bench_test.ino                   # CrowPanel bench test: SSR drive + MAX6675 over USB serial
+│   ├── bench_test/bench_test.ino                   # CrowPanel bench test: SSR drive + MAX6675 over USB serial
+│   ├── reflow_controller/                          # Reflow firmware (see its README)
+│   └── shelly/reflow_supervisor.js                 # Supervisor script that runs on the Shelly
 ├── docs/
 │   ├── BUILD-GUIDE.md                              # ✅ Parts, print, bench checks, assembly, first power
+│   ├── wiring/                                     # ✅ Illustrated wiring sheets: AC mains, low-voltage, layout (SVG, PNG, PDF)
 │   └── DESIGN-REVIEW-2026-10.md                    # Design re-review (Oct 2026) + v11 and v12 updates
 ├── LICENSE                                         # BSD-2-Clause license file
-├── README.md                                       # This file
-├── diy_reflow_controller_wiring_diagram.png        # v12 wiring diagram (generated)
-└── reflow-wiring-diagram.svg                       # same, vector
+└── README.md                                       # This file
 ```
 
-> ⚠️ **Print Advisory (v12.0):** Print `3MF/reflow-v12_0-coupons.3mf` first, in ASA.
+> ⚠️ **Print Advisory (v12.1):** Print `3MF/reflow-v12_0-coupons.3mf` first, in ASA.
 > 1. **Oven-socket coupon:** 3 cut sizes (rows: 24.5 / 24.75 / 25.0 mm; dimples on the left edge = row) × 3 panel thicknesses (columns: 2.0 / 2.5 / 3.0 mm; dimples on the top edge = column). Pick the cell where the socket snaps in firmly; set `os_cut` / `os_panel_t` if they differ from 24.75 / 2.5.
 > 2. **Inlet coupon:** confirm the FILSHU inlet snaps in.
 > 3. **CrowPanel coupon:** fit 4 inserts, screw the bare board on (M3 × 5, connectors toward the notched edge), and check from the front that the whole active area shows and the glass does not touch the plastic (designed gap 0.6 mm).
+> 4. **DROK meter coupon** (`3MF/reflow-v12_1-drok-meter-coupon.3mf`): 3 cutout sizes (columns: 45.2 × 73.6 / 45.6 × 74.0 / 46.0 × 74.4 mm; dimples on the bottom edge) × 2 panel thicknesses (rows: 1 dimple on the left edge = 2.0 mm, 2 dimples = 3.0 mm). Pick the cell the meter clicks into; if it isn't the middle cell of the 3.0 mm row, set `drok_cut_w` / `drok_cut_l` / `drok_panel_t` and re-export the lid.
 >
 > Then print the bottom, lid and front panel. The box is 250 mm wide, leaving 3 mm per side on the 256 mm plate: **limit the brim to 3 mm** (or use brim ears at the corners).
 
@@ -174,10 +181,20 @@ Each call re-arms a 30-second auto-off. If firmware hangs or the controller rebo
 
 **Shorted-SSR detection.** Because the 1PM meters current, a script can trip the relay when it sees meaningful draw while the controller reports idle — the one failure mode the whole safety architecture exists for.
 
-### Wiring Diagram (v12)
-![DIY Reflow Controller Wiring Diagram](./diy_reflow_controller_wiring_diagram.png)
+### Wiring Diagrams (v12.1)
 
-*Generated by `tools/make_wiring_diagram.py`. Step-by-step build: [docs/BUILD-GUIDE.md](docs/BUILD-GUIDE.md).*
+Three illustrated sheets in [`docs/wiring/`](docs/wiring/) (SVG, PNG, and one [PDF](docs/wiring/reflow-wiring-all-sheets.pdf) for printing). Every wire carries a tag that matches the table on its sheet.
+
+**Sheet 1 — AC mains**
+![AC mains wiring](docs/wiring/reflow-wiring-ac-mains.png)
+
+**Sheet 2 — Low-voltage and signals**
+![Low-voltage wiring](docs/wiring/reflow-wiring-low-voltage.png)
+
+**Sheet 3 — Layout, clearances and service access**
+![Layout and clearances](docs/wiring/reflow-layout-clearances.png)
+
+*Generated by `tools/make_wiring_diagrams.py` and `tools/render_diagrams.js`. Step-by-step build: [docs/BUILD-GUIDE.md](docs/BUILD-GUIDE.md).*
 
 ### Pin Configuration Mapping (CrowPanel 2.8, cables only)
 
@@ -269,7 +286,8 @@ Full version with parts, checks and first-power procedure: [docs/BUILD-GUIDE.md]
 * **v9.9:** Display window passes the full standoff depth. The lid file is pre-mirrored for printing; do not mirror it again in the slicer.
 * **v10 / v10.1 / v10.3:** KP200 flush-mount rework from teardown measurements (window 46 × 72 mm, yoke-ear recesses with 45° lead-ins, captive box-screw clearance).
 * **v11.0:** AC bay rebuilt around the real parts: heatsink (measured 80 × 49.4 × 51 mm) along the front with the SSR on its rear face; NEMA 5-15R oven socket; FILSHU inlet cutout with clip reliefs; Shelly pocket; heatsink fence; intake and outlet slots.
-* **v12.0 (Current):** CrowPanel 2.8 in landscape on a separate **front panel** printed face down (clean face, crisp chamfered window, standoffs straight up). Board geometry from Elecrow's outline drawing, the LCM datasheet and Elecrow's STEP model. Board mounted connectors-down so its USB-C faces the side wall and the cable plugs in from outside. Box 230 × 155 × 65 → **250 × 155 × 83 mm** (89 mm DC bay; height for the board plus a 15 mm cable zone below it). The taller box lifts the KP200 body to 35 mm above the floor, which opens a straight-wire path at the SSR's AC end. Lid: display window and bosses removed; outlet slots 7 → 6 and moved 3 mm forward (the taller box let a 45° probe through the old rear slot reach the SSR terminal edge). One divider pass-through instead of two.
+* **v12.1 (Current):** DROK AC multimeter (face 76.5 × 48, body 73.4 × 45 × 21.5 mm, measured) snaps into a 45.6 × 74.0 mm cutout in the lid over the AC bay, above the inlet, long axis front-to-back (crosswise does not fit between the KP200 faceplate and the divider). Clearances: 7.5 mm to the SSR top, 13.8 mm to the inlet, 25 mm to the vent slots. Only the lid changed. New `drok_meter_coupon` part.
+* **v12.0:** CrowPanel 2.8 in landscape on a separate **front panel** printed face down (clean face, crisp chamfered window, standoffs straight up). Board geometry from Elecrow's outline drawing, the LCM datasheet and Elecrow's STEP model. Board mounted connectors-down so its USB-C faces the side wall and the cable plugs in from outside. Box 230 × 155 × 65 → **250 × 155 × 83 mm** (89 mm DC bay; height for the board plus a 15 mm cable zone below it). The taller box lifts the KP200 body to 35 mm above the floor, which opens a straight-wire path at the SSR's AC end. Lid: display window and bosses removed; outlet slots 7 → 6 and moved 3 mm forward (the taller box let a 45° probe through the old rear slot reach the SSR terminal edge). One divider pass-through instead of two.
 
 ### Slicer Configurations
 * **Orientation:** All STL assets are pre-oriented for printing. No supports are required. The front panel prints **outer face down**.
@@ -307,7 +325,8 @@ Full version with parts, checks and first-power procedure: [docs/BUILD-GUIDE.md]
 * [ ] Print the v12 bottom, front panel and lid in ASA.
 * [ ] Wire SSR `T2` to the oven socket hot (narrow slot); neutral and ground via Wagos.
 * [ ] Finalize oven chassis entry point for the K-type thermocouple probe.
-* [x] ~~Redraw the wiring diagram.~~ v12 diagram generated from `tools/make_wiring_diagram.py`.
+* [x] ~~Redraw the wiring diagram.~~ v12.1 illustrated sheets in `docs/wiring/`.
+* [ ] Print the DROK meter coupon, then the v12.1 lid.
 
 **From the Oct 2026 design review** ([full report](docs/DESIGN-REVIEW-2026-10.md)):
 * [ ] Buy a 14 AWG SJT, 15 A NEMA 5-15P to C13 cord for the inlet.
@@ -316,10 +335,9 @@ Full version with parts, checks and first-power procedure: [docs/BUILD-GUIDE.md]
 * [x] ~~Commit SSR / MAX6675 test sketches.~~ `firmware/bench_test/` for the CrowPanel pins (host-compiled and simulated; first ESP32 build is yours).
 
 **Firmware:**
-* [ ] Port the UI to the CrowPanel (TFT_eSPI setup above, rotation, touch calibration).
-* [ ] Implement the Shelly watchdog heartbeat (`toggle_after=30`, called every 15 s).
-* [ ] Implement `KVS.Set` heating-state publishing for shorted-SSR detection.
-* [ ] Design and implement target reflow curve PID logic loops in firmware.
+* [x] ~~UI, Shelly watchdog heartbeat, `KVS.Set` heating-state publishing, reflow profiles and PID.~~ Written in `firmware/reflow_controller/` and `firmware/shelly/`; host syntax-checked and simulated only.
+* [ ] First real compile and flash in the Arduino IDE; bench test with a lamp load (see `firmware/reflow_controller/README.md`).
+* [ ] Tune the PID on the real oven from the CSV log.
 
 ---
 

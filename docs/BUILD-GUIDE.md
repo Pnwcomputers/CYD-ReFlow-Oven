@@ -1,6 +1,13 @@
-# Build Guide — v12.0
+# Build Guide — v12.1
 
-Build one controller from the v12.0 design: what to buy, what to print, what order to do it in, and what to check at each step. Wiring is in [`diy_reflow_controller_wiring_diagram.png`](../diy_reflow_controller_wiring_diagram.png) (source: `tools/make_wiring_diagram.py`). Background and the reasons behind each choice are in the [README](../README.md) and [design review](DESIGN-REVIEW-2026-10.md).
+Build one controller from the v12.1 design: what to buy, what to print, what order to do it in, and what to check at each step.
+
+**Wiring sheets** (in [`docs/wiring/`](wiring/), also as one [printable PDF](wiring/reflow-wiring-all-sheets.pdf)):
+
+1. [AC mains](wiring/reflow-wiring-ac-mains.png): every mains wire, tagged A1–A15.
+2. [Low-voltage and signals](wiring/reflow-wiring-low-voltage.png): display, MAX6675, SSR drive, USB, Wi-Fi link, tagged D1–D7.
+3. [Layout and clearances](wiring/reflow-layout-clearances.png): where each part sits, to scale, and how to get at it.
+ Background and the reasons behind each choice are in the [README](../README.md) and [design review](DESIGN-REVIEW-2026-10.md).
 
 > ⚠️ Mains wiring. Work with the inlet cord unplugged, and meter before every first power-up.
 
@@ -9,7 +16,9 @@ Build one controller from the v12.0 design: what to buy, what to print, what ord
 ## 1. Parts
 
 ### Already in hand (per project notes)
-FILSHU C14 inlet, FILSHU NEMA 5-15R socket, Shelly 1PM Gen4 (EU `S4SW-001P16EU`; supply range 110–240 V~), KP200, Inkbird SSR-40DA + heatsink, MAX6675 + K probe, Wago 221 lever nuts, USB adapter.
+FILSHU C14 inlet (with a 15 A time-delay fuse fitted), FILSHU NEMA 5-15R socket, Shelly 1PM Gen4 (EU `S4SW-001P16EU`; supply range 110–240 V~), KP200, Inkbird SSR-40DA + heatsink, MAX6675 + K probe, Wago 221 lever nuts, USB adapter, **DROK AC multimeter with split-core CT** (Amazon B0B3WVG2V9), CrowPanel 2.8 (bought as the "NerdMiner 2.8" 2-pack, Amazon B0H11B33ZK), 14 AWG C13 cord, 14 AWG wire, heat-shrink, 3–4 Grove cables.
+
+The table below is the full list for anyone building from scratch.
 
 ### To buy
 
@@ -20,14 +29,16 @@ FILSHU C14 inlet, FILSHU NEMA 5-15R socket, Shelly 1PM Gen4 (EU `S4SW-001P16EU`;
 | 1 | NEMA 5-15P → C13 cord, **14 AWG SJT, 15 A** | Not a PC cord (those are typically 18 AWG / 10 A) |
 | 1 | 15 A, 5 × 20 mm, **ceramic, time-delay** fuse | For the inlet's holder |
 | 1 m each | 14 AWG stranded hook-up wire, UL 1015 (600 V, 105 °C): black, white, green | Internal AC wiring |
-| 1 | WAGO 221-413 (3-conductor) | Hot junction. 24–12 AWG, UL 486C 600 V / 20 A, strip 11 mm |
-| 2 | WAGO 221-415 (5-conductor) | Neutral junction and ground junction |
+| 3 | WAGO 221-415 (5-conductor) | Hot, neutral and ground junctions. 24–12 AWG, UL 486C 600 V / 20 A, strip 11 mm. The hot junction carries 4 wires since the meter was added, so a 3-port 221-413 is no longer enough |
+| 1 | DROK AC multimeter 50–300 V / 100 A with split-core CT | Amazon B0B3WVG2V9. Snaps into the lid |
+| ~0.5 m each | 18 AWG hook-up wire, 600 V: black, white | Meter voltage leads (14 AWG also works if the meter's terminals take it) |
 | 1 | 14 AWG ring terminal sized for a heatsink screw | Heatsink ground bond. Measure the screw first |
 | ~15 cm | Heat-shrink tubing rated 600 V, to fit over the 4-wire Grove cable | Sleeves the SSR control cable through the AC bay; check the rating printed on the tubing |
 | small | Heat-shrink for the unused DuPont ends | 5 ends: J7 pins 1 and 4, J10 pins 2–4 |
 | 19 | M3 heat-set inserts for a 4.2 mm pocket, ≤ 4 mm long | Same kind as the CYD bosses. 9 lid, 6 front panel, 4 display |
 | 2 | Inserts matching the KP200's own screw thread | 4.5 mm pockets in the lid |
 | 9 | M3 × 6 countersunk | Lid: 3 mm lid + 3 mm into the insert |
+| 2 | Small zip ties | CT clamp to its wire; meter leads |
 | 6 | M3 × 8 countersunk | Front panel: 3 mm panel + 5 mm (pocket is 6 mm deep) |
 | 4 | M3 × 5 pan head | CrowPanel to standoffs: 1.6 mm PCB + 3.4 mm |
 | 4 | Self-adhesive rubber feet, ≤ 12 mm diameter | Recesses are 12 mm, 0.8 mm deep |
@@ -43,7 +54,8 @@ All files are in `STL/` and `3MF/`, already oriented. No supports. ASA, ≥ 3 pe
    * Oven-socket coupon: find the cell the socket snaps into firmly (rows: 24.5 / 24.75 / 25.0 mm cut, dimples on the left edge; columns: 2.0 / 2.5 / 3.0 mm panel, dimples on the top edge). If it isn't the centre cell (24.75 / 2.5), set `os_cut` / `os_panel_t` in the SCAD and re-export the bottom shell.
    * Inlet coupon: the FILSHU inlet snaps in.
    * CrowPanel coupon: see step 3.4.
-2. **Main parts:** `reflow-v12_0-bottom.stl`, `reflow-v12_0-front-panel.stl` (outer face down, as exported), `reflow-v12_0-lid.stl` (pre-mirrored: don't mirror it in the slicer). These are 250 mm wide, 3 mm per side from the plate edge: **brim ≤ 3 mm**, or brim ears on the corners.
+   * **DROK meter coupon** (`3MF/reflow-v12_1-drok-meter-coupon.3mf`, dimpled side up as exported): six cutouts. Columns are the cutout size (1, 2, 3 dimples on the bottom edge: 45.2 × 73.6, 45.6 × 74.0, 46.0 × 74.4 mm). The row with 1 dimple on its left edge is thinned to 2.0 mm around the hole; the row with 2 dimples is the full 3.0 mm lid thickness. Push the meter in from the smooth side. The lid is modelled on the middle cell of the 3.0 mm row. If another cell holds it better, set `drok_cut_w`, `drok_cut_l` and `drok_panel_t` in the SCAD and re-export the lid, or tell me which cell and I'll do it.
+2. **Main parts:** `reflow-v12_0-bottom.stl`, `reflow-v12_0-front-panel.stl` (outer face down, as exported), `reflow-v12_1-lid.stl` (pre-mirrored: don't mirror it in the slicer). The bottom shell and front panel did not change in v12.1. These are 250 mm wide, 3 mm per side from the plate edge: **brim ≤ 3 mm**, or brim ears on the corners.
 
 ## 3. Bench checks before building in (USB power only, no mains)
 
@@ -65,6 +77,7 @@ The sketch was compiled and simulated on a PC against stub Arduino headers (chec
    * Bottom shell: 9 lid inserts (vertical, tops of the bosses and the two front-left posts) and 6 front-panel inserts (horizontal, in the front faces of the 4 posts).
    * Front panel: 4 display inserts in the standoffs.
    * Lid: the 2 KP200 inserts.
+   * Lid: snap the DROK meter in from above. Its long side runs front-to-back; turn it so the digits are upright from the side you'll stand at.
 2. **Display:**
    * If the acrylic case is fitted, take it off; it isn't used, and the board itself stays unmodified. Screw the board to the front panel, connectors toward the panel's bottom edge.
    * Plug the three Grove cables into J7, J6 and J10 now; the connectors face down and are harder to reach later.
@@ -78,31 +91,36 @@ The sketch was compiled and simulated on a PC against stub Arduino headers (chec
    * Shelly into its pocket on the left wall.
    * Inlet into the rear wall and socket into the left wall (both snap in).
    * MAX6675 on the DC floor bosses: the boss pattern (13 × 10 mm, 3.5 mm holes) is not from a measurement of your module, so check it. If it doesn't match, use foam tape, or send me the module's hole pattern.
-5. **AC wiring:** follow the diagram and the terminal map below.
-6. **Low-voltage wiring:**
+5. **AC wiring:** follow [sheet 1](wiring/reflow-wiring-ac-mains.png) and the terminal map below.
+   * **CT clamp:** open it, close it around the SSR `T2` → socket-hot wire only (A15), and let it lie on the AC floor between the oven socket and the inlet, next to the Wagos (a 42 × 32 mm area, free up to 35 mm high). Zip-tie it to the wire.
+   * **Meter leads:** land the two voltage leads and the CT pair on the meter's rear terminals as labelled on the meter. Leave about 150 mm of slack on these and on the KP200 wires, so the lid can be laid on its back beside the box while still wired. Route them along the rear wall, away from the heatsink and the vent slots.
+6. **Low-voltage wiring** ([sheet 2](wiring/reflow-wiring-low-voltage.png)):
    * Slide the 600 V heat-shrink over the J7 cable, drop the cable into the divider's U-slot (it is beside the SSR's DC end), and land IO32 (J7 pin 2) on `T4` and 3V3 (J7 pin 3) on `T3`. Grove wires are thin: fold the stripped end double before clamping, or crimp a ferrule.
    * Insulate the unused ends.
    * Route J6/J10 along the DC floor to the MAX6675. Pass the thermocouple through the right-wall hole.
 7. **Close up:**
    * Front panel on (6 × M3 × 8): its rib slides along the AC side of the divider.
-   * Lid on (9 × M3 × 6). The lid also clamps the panel's top edge. The KP200 sits in the lid; its faceplate covers the lid screws near it.
+   * Lid on (9 × M3 × 6). The lid also clamps the panel's top edge. The KP200 sits in the lid; its faceplate covers the lid screws near it. Check that the meter's leads fold down beside the inlet and nothing is pinched: the meter body ends 7.5 mm above the SSR and 13.8 mm above the inlet.
    * Plug the USB cable into the KP200's adapter and in through the right-wall slot.
 
 ### AC terminal map
 
 | From | To |
 | --- | --- |
-| Inlet hot (fused, switched) | WAGO 221-413 **HOT** |
-| HOT Wago | Shelly `L`; KP200 **Line** |
+| Inlet hot (fused, switched) | WAGO 221-415 **HOT** |
+| HOT Wago | Shelly `L`; KP200 **Line**; DROK meter **L** (18 AWG) |
 | Inlet neutral | WAGO 221-415 **NEUTRAL** |
-| NEUTRAL Wago | Shelly `N`; KP200 **Neutral**; socket **neutral** (wide slot) |
+| NEUTRAL Wago | Shelly `N`; KP200 **Neutral**; socket **neutral** (wide slot); DROK meter **N** (18 AWG) |
 | Inlet ground | WAGO 221-415 **GROUND** |
 | GROUND Wago | KP200 **Ground**; socket **ground** (round); heatsink ring terminal |
 | Shelly `O` | SSR `T1` |
-| SSR `T2` | Socket **hot** (narrow slot) |
+| SSR `T2` | Socket **hot** (narrow slot), **through the DROK CT clamp** |
+| CT leads | DROK meter CT terminals |
 | Shelly `SW` | not connected (set input to detached) |
 
 Shelly: one wire per terminal, strip 6–7 mm, 0.4 N·m max, 0.2–2.5 mm² (14 AWG is 2.08 mm²). Its manual says not to use its `L` terminals to power other devices, which is why the KP200 is fed from the Wago, not from a second Shelly `L` terminal. **If your box is already wired with the KP200 on a Shelly `L` terminal, move it to the Wago.**
+
+**DROK meter:** the terminal names above are generic. Use the labels printed on the back of your meter for which two screws are the 50–300 V input and which two take the CT. The CT goes around the oven hot wire alone; around hot and neutral together it reads zero. With it there, the meter shows the oven's draw (about 9.6 A / 1150 W while the SSR is on) and the line voltage whenever the rocker is on. If the watts read wrong or negative, turn the clamp around.
 
 Identify hot / neutral / ground on the inlet with a meter (the fuse must be in the hot leg), not by lead colour.
 
@@ -130,14 +148,22 @@ Pin numbers are from Elecrow's schematic. Grove cable colours vary, so check eac
    * No loose strands anywhere.
 2. Configure the Shelly before any load is attached: power-on default **off**, input detached, overpower 1400 W, `current_limit` 11 A.
 3. Oven **unplugged**, an incandescent lamp in the socket as a load:
-   * Rocker on → the controller boots, and the SSR LED stays off.
+   * Rocker on → the controller boots, the DROK meter lights and shows about 120 V, and the SSR LED stays off.
    * Shelly on → lamp stays off.
-   * `1` in the bench sketch → lamp on for 3 s, then off.
+   * `1` in the bench sketch → lamp on for 3 s, then off. The DROK meter shows the lamp's current while it is lit (a 60 W lamp is 0.5 A).
    * Shelly off → lamp can't light even with the SSR on.
 4. Check socket polarity with a plug-in outlet tester (Shelly on, SSR on).
 5. Thermal run with the oven as the load: log the Shelly's own temperature (`temperature.tC`) for 10 min at 100 % and 30 min at 50 %, lid closed. The Shelly is rated to 40 °C ambient.
 
 Leave the oven's own thermostat in circuit (set to maximum): it stays an independent hardware temperature limit outside the controller's firmware.
 
-## 6. Then
-The reflow firmware: TFT_eSPI with Elecrow's settings (README), `setRotation(1)` or `(3)`, whichever is upright with the board connectors-down, touch recalibration, slow-PWM SSR control using the `ssrOn()`/`ssrOff()` pattern, and the Shelly watchdog (`toggle_after=30`, refreshed every 15 s).
+## 6. Reflow firmware
+
+The firmware is in [`firmware/reflow_controller/`](../firmware/reflow_controller/) and the Shelly script in [`firmware/shelly/`](../firmware/shelly/). Setup, the bench-test order, the safety aborts and tuning are in [its README](../firmware/reflow_controller/README.md). It has been syntax-checked and simulated on a PC only, so the first compile and the first runs are bench work with a lamp as the load.
+
+## 7. Service
+
+* Everything inside is reached by taking the lid off (9 screws). The meter and KP200 lift with it; with the slack from step 4.5 the lid lies on its back beside the box.
+* DROK meter out: lid off, squeeze the clips on the two long sides, push it up and out.
+* Display and Grove cables: front panel (6 screws).
+* Fuse: in the inlet's drawer, from outside, cord unplugged.
