@@ -2,6 +2,44 @@
 
 Reviewed against commit `663b7d9` (2026-07-24), the v10.3 OpenSCAD source, every repo mesh, the project's earlier design discussions, and current manufacturer and datasheet sources. Anything that could not be verified is labeled as such. Sources are listed at the end.
 
+## Update — v12.1: panel meter, reflow firmware, firmware review (2026-11-21)
+
+**Enclosure v12.1.** A DROK AC panel meter (Amazon B0B3WVG2V9; measured face 76.5 × 48 mm, body 73.37 × 45 mm, 21.47 mm deep) snaps into the lid over the AC bay, above the inlet. Only the lid changed; the bottom shell and front panel are still the v12.0 files.
+
+* Its long side runs front-to-back. Crosswise there are 66 mm between the KP200 faceplate and the divider, and the body is 73.4 mm. The DC bay was ruled out because the meter's terminals carry mains.
+* Clearances from the model, all enforced as keepouts or asserts: 7.5 mm above the SSR, 13.8 mm above the inlet, 25 mm from the lid vent slots, 3.5 mm from the divider.
+* The split-core current transformer goes around the SSR `T2` → socket-hot wire only. The meter's voltage leads come from the hot and neutral Wagos, so the **hot junction is now a 5-port 221-415**. That replaces the 221-413 named in the v12.0 update below.
+* The cutout is a plain through-cut, so the lid still prints without supports. The clip fit is unproven until the coupon (`STL/reflow-v12_1-drok-meter-coupon.stl`) is printed.
+* `tools/verify_enclosure.py` passes for v12.1 (output in `docs/VERIFY-v12_1.txt`). The fit check against Elecrow's STEP model was not repeated: the display is on the front panel, which did not change.
+
+**Controller board.** Bought on Amazon as Elecrow's "ESP32 Display 2.8 Inch (NerdMiner)" 2-pack (B0H11B33ZK), which is the CrowPanel 2.8 ESP32 HMI. The firmware also supports a Freenove ESP32-S3 Display 3.5" (FNK0104N) as a backup; it would need its own front panel.
+
+**Firmware.** `firmware/reflow_controller/` implements the "firmware safety rules to build in from the start" from the control section below, except the second thermocouple. A line-by-line review on 2026-11-21 found and fixed the following:
+
+| Finding | Fix |
+| --- | --- |
+| Two failed heartbeats 0.2 s apart aborted the run, so any brief Wi-Fi dropout did | Retry every 2 s; abort only after 25 s without a successful heartbeat, which is still inside the Shelly's 30 s timeout |
+| The heartbeat ran in its own task and kept re-arming the Shelly even if the control loop was stuck with the SSR on | The control loop stamps a time on every pass; if the stamp is 5 s old, the Shelly task releases the SSR, opens the relay and stops the heartbeat |
+| The heartbeat's `Switch.Set on=true` would re-close a relay that the Shelly had opened on its own (power or current limit, supervisor script, the app) | The relay is closed once per run. Each heartbeat first reads `Switch.GetStatus` and aborts if the relay is open |
+| A supervisor-script trip had the same weakness from the other side: the next heartbeat closed the relay again and restarted the script's on-time count | The script holds the relay open for 5 minutes after a trip and re-opens it at once if anything closes it |
+| Nothing detected an SSR that had failed closed; the run simply ended when the Shelly relay opened | Before each run, and at heartbeats that find the SSR off for 5 s, more than 40 W on the Shelly's meter with the SSR off aborts with "SSR stuck on" |
+| The integral term wound up during ramps (it integrated the look-ahead error) | Integral on the real error; P and D still on the look-ahead |
+| The profile clock only held at exactly full duty | It holds whenever the oven is more than 10 °C behind |
+| Time stamps written by one task and read by the other were compared unsigned, so a stamp written a moment after the read looked 49 days old | Signed comparison |
+| Screen: the status line ran under the temperature readout on the 320 px screen; a shorter temperature left part of the previous one behind; the longest abort text ran under the OK button | Fixed-length status line, padded temperature field, shorter abort texts |
+| Serial `x` turned an idle screen into "Aborted"; a first boot could fail to open the settings store read-only; a run could be started on a hot oven | Guarded; opened read-write; START refused above 60 °C |
+| The sketch would not have compiled in the Arduino IDE: `struct Btn` was defined halfway down the `.ino`, below where the IDE inserts its generated function prototypes (plain g++ accepts this, so the earlier PC check missed it) | Types moved to `types.h`; the PC test now imitates the IDE's prototype insertion |
+| The Wi-Fi password lived in `config.h` in a public repository | `secrets.h`, git-ignored, with `secrets.example.h` as the template |
+
+**How it was checked.** `firmware/host_test/` compiles the real sketch with g++ and runs it against a simulated clock, GPIO, MAX6675, oven and Shelly: 27 scenarios for each board, including every row above, plus 9 tests of the Shelly script under Node.js. Reverting a fix makes the matching scenario fail (checked for the watchdog, the relay check, the stuck-SSR check, the heartbeat tolerance, the serial guard and the status-line length).
+
+**Still unverified.** Nothing below has been done yet, and none of it can be done on a PC:
+
+* A compile with the ESP32 Arduino core and TFT_eSPI, and a run on the real board.
+* The real Shelly's answers. The firmware reads `output` and `apower` from `Switch.GetStatus` as Shelly's Gen2+ API documentation describes them. If it cannot read an answer it says so on the serial port and skips those two checks, and the lamp test in the build guide is where this gets confirmed.
+* The oven. The PID gains are starting values, and the model oven in the test is a guess.
+* The meter's clip fit, and the MAX6675 boss pattern.
+
 ## Update — v12.0: CrowPanel 2.8, cable-only, landscape front panel (2026-10-10)
 
 Owner requirements: no modifications to the display board (cables only), no right-angle fork lugs (straight bare wire under the SSR clamps), landscape screen, long side facing the user.

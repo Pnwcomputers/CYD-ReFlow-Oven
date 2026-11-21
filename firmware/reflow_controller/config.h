@@ -1,5 +1,5 @@
-// Reflow controller configuration. Edit the board choice, Wi-Fi and Shelly
-// settings below before flashing.
+// Reflow controller configuration: board choice, pins, control gains, limits.
+// Wi-Fi and Shelly address go in secrets.h (see below).
 #pragma once
 #include <stdint.h>
 
@@ -10,17 +10,45 @@
 // #define BOARD_FREENOVE_S3_35   // Freenove ESP32-S3 Display 3.5" (FNK0104N, ST77922, 480x320)
 
 // ---------------- Wi-Fi and Shelly ----------------
+// Put your real values in secrets.h: copy secrets.example.h to secrets.h in this
+// folder and edit it. secrets.h is git-ignored, so your Wi-Fi password does not
+// end up in the repository. The values below are only placeholders.
+#if defined(__has_include)
+#if __has_include("secrets.h")
+#include "secrets.h"
+#endif
+#endif
+#ifndef WIFI_SSID
 #define WIFI_SSID      "your-ssid"
+#endif
+#ifndef WIFI_PASSWORD
 #define WIFI_PASSWORD  "your-password"
+#endif
+#ifndef SHELLY_HOST
 #define SHELLY_HOST    "192.168.1.50"   // Shelly 1PM Gen4 IP (give it a DHCP reservation)
+#endif
 
-// true: a run will not start unless the Shelly answers, and the run aborts if the
-// heartbeat fails twice in a row. Set false only for bench tests with a lamp load.
+// true: a run will not start unless the Shelly answers, and the run aborts if no
+// heartbeat gets through for SHELLY_LOST_ABORT_MS. Set false only for bench tests
+// without the Shelly.
 #define SHELLY_REQUIRED true
 
 static const uint32_t SHELLY_HEARTBEAT_MS    = 15000;  // re-arm interval
+static const uint32_t SHELLY_RETRY_MS        = 2000;   // retry interval while calls fail
 static const uint32_t SHELLY_TOGGLE_AFTER_S  = 30;     // Shelly auto-off if heartbeats stop
+static const uint32_t SHELLY_LOST_ABORT_MS   = 25000;  // abort the run after this long without one
 static const uint32_t SHELLY_HTTP_TIMEOUT_MS = 3000;
+static const uint32_t ARM_TIMEOUT_MS         = 15000;  // START to heating: relay closed and SSR checked by then
+// Stuck-SSR check, before every run and at each heartbeat: with the Shelly relay
+// closed and the SSR off for SSR_CHECK_SETTLE_MS (long enough for the Shelly's
+// power reading to settle), the Shelly must read less than SSR_STUCK_POWER_W.
+static const uint32_t SSR_CHECK_SETTLE_MS    = 5000;
+static const float    SSR_STUCK_POWER_W      = 40.0f;
+static_assert(SSR_CHECK_SETTLE_MS + 2 * SHELLY_HTTP_TIMEOUT_MS < ARM_TIMEOUT_MS, "arming must outlast the SSR check");
+// The run must stop cleanly before the Shelly opens the relay by itself, and a
+// single missed heartbeat must leave time for retries.
+static_assert(SHELLY_LOST_ABORT_MS < SHELLY_TOGGLE_AFTER_S * 1000UL, "abort before the Shelly times out");
+static_assert(SHELLY_HEARTBEAT_MS + 2 * SHELLY_RETRY_MS < SHELLY_LOST_ABORT_MS, "leave room for retries");
 
 // ---------------- Pins ----------------
 #if defined(BOARD_FREENOVE_S3_35)
@@ -68,7 +96,7 @@ static const float PID_KI = 0.0006f;
 static const float PID_KD = 0.20f;
 // The oven lags badly, so the PID chases the setpoint this many seconds ahead.
 static const float SETPOINT_LOOKAHEAD_S = 15.0f;
-// Hold the profile clock while at full power and this far below the setpoint.
+// Hold the profile clock while the oven is this far below the setpoint.
 static const float PROFILE_HOLD_LAG_C = 10.0f;
 
 // ---------------- Safety limits ----------------
@@ -79,3 +107,5 @@ static const float    RUNAWAY_DUTY       = 0.80f;   // "heating hard"...
 static const uint32_t RUNAWAY_WINDOW_MS  = 60000;   // ...for this long...
 static const float    RUNAWAY_MIN_RISE_C = 5.0f;    // ...must raise temp by this much
 static const uint8_t  TC_MAX_BAD_READS   = 4;       // consecutive open/invalid reads
+static const float    START_MAX_C        = 60.0f;   // a run will not start above this (profiles start cold)
+static const uint32_t LOOP_STALL_MS      = 5000;    // control loop silent this long: the Shelly task cuts the heat

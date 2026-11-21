@@ -1,0 +1,15 @@
+# Your Wi-Fi name, password and Shelly address (copy secrets.example.h)
+firmware/reflow_controller/secrets.h
+
+# OpenSCAD renders and verification scratch
+OUT/
+*.log
+
+# Host test build
+firmware/host_test/build/
+
+# Python, editors, OS
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
