@@ -56,7 +56,8 @@ static uint8_t tcReadByte() {
   return d;
 }
 
-// Returns degrees C, or NAN if the thermocouple input is open (bit D2).
+// Returns degrees C, or NAN if the thermocouple input is open (bit D2) or the
+// data line is stuck (all ones or all zeros: check the SO, SCK and CS wires).
 // The MAX6675 needs up to 0.22 s per conversion: call no faster than every 250 ms.
 float tcRead() {
   digitalWrite(TC_CS, LOW);
@@ -65,7 +66,9 @@ float tcRead() {
   v |= tcReadByte();
   digitalWrite(TC_CS, HIGH);
   digitalWrite(TC_SCK, LOW);
-  if (v & 0x4) return NAN;
+  if (v == 0xFFFF || v == 0x0000) return NAN;   // SO stuck high or low: wiring fault
+  if (v & 0x8000) return NAN;                   // dummy sign bit must be 0
+  if (v & 0x4) return NAN;                      // open thermocouple
   return (v >> 3) * 0.25f;
 }
 
@@ -107,7 +110,7 @@ void loop() {
     lastRead = millis();
     lastTemp = tcRead();
     if (streaming) {
-      if (isnan(lastTemp)) Serial.println("T: open");
+      if (isnan(lastTemp)) Serial.println("T: no reading / open");
       else Serial.printf("T: %.2f C\n", lastTemp);
     }
   }

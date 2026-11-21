@@ -5,8 +5,14 @@
 // safety aborts, and a Shelly watchdog (Switch.Set toggle_after) so the Shelly
 // opens on its own if this board hangs or reboots.
 //
+// Two tasks: loop() on core 1 runs the control loop and the screen; shellyTask
+// on core 0 talks to the Shelly, so a slow network call never delays the SSR.
+// Each watches the other: loop() aborts if the Shelly stops answering, and the
+// Shelly task cuts the heat if loop() stops running.
+//
 // Setup and Arduino IDE settings per board: README.md in this folder.
 // Settings: config.h. Profiles: profiles.h. Display/touch per board: board.h.
+// Structs and enums: types.h (not in this file, see the note there).
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -16,6 +22,7 @@
 #include <Preferences.h>
 #include <math.h>
 #include "config.h"
+#include "types.h"
 #include "profiles.h"
 #include "board.h"
 #include "driver/gpio.h"
@@ -24,8 +31,10 @@
 // SSR drive. Never drive the pin to the "on" level except in ssrOn().
 // =====================================================================
 static volatile bool ssrState = false;
+static volatile uint32_t ssrOffSinceMs = 0;   // when the SSR was last switched off
 
 static void ssrOff() {
+  if (ssrState) ssrOffSinceMs = millis();
 #if SSR_ACTIVE_LOW
   pinMode(SSR_PIN, INPUT);              // released: on-board pull-up -> SSR sees 0 V
 #else
@@ -36,6 +45,7 @@ static void ssrOff() {
 }
 
 static void ssrOn() {
+  if (ssrState) return;                 // already on: don't reconfigure the pin every loop
   pinMode(SSR_PIN, OUTPUT);
 #if SSR_ACTIVE_LOW
   digitalWrite(SSR_PIN, LOW);           // sink -> SSR sees ~3.3 V
@@ -78,64 +88,151 @@ static float tcRead() {
 // =====================================================================
 // Shared state between the control loop (core 1) and the Shelly task (core 0)
 // =====================================================================
-enum class Shelly : uint8_t { Unknown, On, Off, Error };
 static volatile bool     shellyWantOn = false;     // control loop -> task
 static volatile Shelly   shellyState = Shelly::Unknown;
-static volatile uint8_t  shellyFailures = 0;
+static volatile uint32_t shellyLastOkMs = 0;       // last "stay on" call the Shelly answered
+static volatile bool     shellyOpened = false;     // task -> loop: the Shelly opened its relay itself
 static volatile bool     wifiUp = false;
 static volatile bool     runActive = false;        // published to Shelly KVS
+static volatile uint32_t loopAliveMs = 0;          // loop -> task: stamped on every pass of loop()
+static volatile bool     loopStalled = false;      // task -> loop: loop() stopped, heat was cut
+static volatile uint32_t armStartMs = 0;           // loop -> task: when START was pressed
+static volatile bool     ssrCheckDone = false;     // task -> loop: idle power was measured for this run
+static volatile float    ssrCheckPowerW = NAN;     // ...and this is it (NAN = the Shelly didn't say)
+static volatile bool     ssrStuck = false;         // task -> loop: power flowed with the SSR off
 
-static bool shellyGet(const String& path) {
+// Milliseconds since a time stamp that the other task writes. Signed, so a stamp
+// written just after `now` was read gives a small negative number, not 49 days.
+static inline int32_t msSince(uint32_t now, uint32_t stamp) { return (int32_t)(now - stamp); }
+
+// One HTTP GET to the Shelly. body, if not null, receives the answer.
+static bool shellyGet(const String& path, String* body) {
   if (WiFi.status() != WL_CONNECTED) return false;
   HTTPClient http;
   http.setTimeout(SHELLY_HTTP_TIMEOUT_MS);
   http.setConnectTimeout(SHELLY_HTTP_TIMEOUT_MS);
   if (!http.begin(String("http://") + SHELLY_HOST + path)) return false;
   int code = http.GET();
+  if (code == 200 && body) *body = http.getString();
   http.end();
   return code == 200;
 }
 
-static bool shellySetOn() {
-  return shellyGet(String("/rpc/Switch.Set?id=0&on=true&toggle_after=") + SHELLY_TOGGLE_AFTER_S);
+// Reads the Shelly's relay state and power. Returns false if it didn't answer.
+static bool shellyStatus(ShellyStatus& st) {
+  String body;
+  if (!shellyGet("/rpc/Switch.GetStatus?id=0", &body)) return false;
+  body.replace(" ", "");
+  st.output = body.indexOf("\"output\":true") >= 0 ? 1 : body.indexOf("\"output\":false") >= 0 ? 0 : -1;
+  int i = body.indexOf("\"apower\":");
+  st.watts = i >= 0 ? body.substring(i + 9).toFloat() : NAN;
+  // An answer this code can't read: carry on without that check (the Shelly's
+  // timeout, its script and the control loop's own limits still apply).
+  static bool warned = false;
+  if ((st.output < 0 || i < 0) && !warned) {
+    warned = true;
+    Serial.println("# Shelly status not understood: relay and stuck-SSR checks are off");
+  }
+  return true;
 }
-static bool shellySetOff() { return shellyGet("/rpc/Switch.Set?id=0&on=false"); }
+
+static bool shellySetOn() {
+  return shellyGet(String("/rpc/Switch.Set?id=0&on=true&toggle_after=") + SHELLY_TOGGLE_AFTER_S, nullptr);
+}
+static bool shellySetOff() { return shellyGet("/rpc/Switch.Set?id=0&on=false", nullptr); }
 static bool shellyPublish(bool active) {
   // Read by the Shelly supervisor script (shelly/reflow_supervisor.js).
-  return shellyGet(String("/rpc/KVS.Set?key=reflow_active&value=") + (active ? "true" : "false"));
+  return shellyGet(String("/rpc/KVS.Set?key=reflow_active&value=") + (active ? "true" : "false"), nullptr);
+}
+
+// One pass of the Shelly task. While the relay should be on: one "stay on" call
+// per SHELLY_HEARTBEAT_MS, or one per SHELLY_RETRY_MS while calls are failing.
+// The control loop aborts the run if none gets through for SHELLY_LOST_ABORT_MS;
+// the Shelly itself opens the relay SHELLY_TOGGLE_AFTER_S after the last one.
+static void shellyStep() {
+  static uint32_t lastTry = 0, lastWifiTry = 0, lastPublishTry = 0, armedAtMs = 0, lastCheckTry = 0;
+  static bool triedOn = false, armed = false, published = false, publishedValue = false;
+  uint32_t now = millis();
+
+  // Control loop stuck (it stamps loopAliveMs on every pass): cut the heat from
+  // this task and stop re-arming the Shelly. loop() reports it if it comes back.
+  if (msSince(now, loopAliveMs) > (int32_t)LOOP_STALL_MS) {
+    ssrOff();
+    shellyWantOn = false;
+    loopStalled = true;
+  }
+
+  wifiUp = WiFi.status() == WL_CONNECTED;
+  if (!wifiUp && now - lastWifiTry > 10000) {
+    lastWifiTry = now;
+    WiFi.reconnect();
+  }
+
+  if (shellyWantOn) {
+    ShellyStatus st = {1, NAN};
+    uint32_t interval = shellyState == Shelly::On ? SHELLY_HEARTBEAT_MS : SHELLY_RETRY_MS;
+    if (!shellyOpened && (!triedOn || now - lastTry >= interval)) {
+      triedOn = true;
+      lastTry = now;
+      // Close the relay once per run, then only keep a closed relay closed. If
+      // the Shelly has opened it (its power, current or temperature limit, the
+      // supervisor script, its timeout, or someone in the app), leave it open
+      // and tell the control loop.
+      uint32_t offSince = ssrOffSinceMs;
+      bool wasOff = !ssrState;
+      bool answered = !armed || shellyStatus(st);
+      // Power although the SSR was off from well before the question until after
+      // the answer: the SSR has failed closed.
+      if (answered && armed && wasOff && !ssrState && ssrOffSinceMs == offSince
+          && msSince(now, offSince) >= (int32_t)SSR_CHECK_SETTLE_MS && st.watts > SSR_STUCK_POWER_W) {
+        ssrStuck = true;
+      }
+      if (answered && st.output == 0) {
+        shellyOpened = true;
+        shellyState = Shelly::Off;
+      } else if (answered && shellyWantOn && shellySetOn()) {   // (not if the run just ended)
+        shellyLastOkMs = millis();
+        shellyState = Shelly::On;
+        if (!armed) { armed = true; armedAtMs = shellyLastOkMs; }
+      } else {
+        shellyState = Shelly::Error;
+      }
+    }
+    // Stuck-SSR check, once per run: the relay is closed and the control loop is
+    // holding the SSR off until this is done, so the oven should draw nothing.
+    if (armed && !ssrCheckDone && !shellyOpened
+        && msSince(now, armedAtMs) >= (int32_t)SSR_CHECK_SETTLE_MS
+        && msSince(now, armStartMs) >= (int32_t)SSR_CHECK_SETTLE_MS
+        && now - lastCheckTry >= SHELLY_RETRY_MS) {
+      lastCheckTry = now;
+      if (shellyStatus(st)) {
+        if (st.output == 0) { shellyOpened = true; shellyState = Shelly::Off; }
+        else { ssrCheckPowerW = st.watts; ssrCheckDone = true; }
+      }
+    }
+  } else {
+    // Keep trying to open the relay until the Shelly confirms.
+    if (shellyState != Shelly::Off && (triedOn || now - lastTry >= SHELLY_RETRY_MS)) {
+      lastTry = now;
+      shellyState = shellySetOff() ? Shelly::Off : Shelly::Error;
+    }
+    triedOn = false;
+    armed = false;
+  }
+
+  bool a = runActive;
+  if (wifiUp && (!published || a != publishedValue) && now - lastPublishTry >= 500) {
+    lastPublishTry = now;
+    if (shellyPublish(a)) { published = true; publishedValue = a; }
+  }
 }
 
 static void shellyTask(void*) {
-  uint32_t lastBeat = 0, lastWifiTry = 0;
-  bool published = false, publishedValue = false;
   WiFi.mode(WIFI_STA);
   WiFi.setAutoReconnect(true);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   for (;;) {
-    uint32_t now = millis();
-    wifiUp = WiFi.status() == WL_CONNECTED;
-    if (!wifiUp && now - lastWifiTry > 10000) {
-      lastWifiTry = now;
-      WiFi.reconnect();
-    }
-
-    if (shellyWantOn) {
-      bool due = shellyState != Shelly::On || now - lastBeat >= SHELLY_HEARTBEAT_MS;
-      if (due) {
-        lastBeat = now;
-        if (shellySetOn()) { shellyState = Shelly::On; shellyFailures = 0; }
-        else { shellyState = Shelly::Error; if (shellyFailures < 255) shellyFailures++; }
-      }
-    } else if (shellyState != Shelly::Off) {
-      // Keep trying to open the relay until the Shelly confirms.
-      if (shellySetOff()) { shellyState = Shelly::Off; shellyFailures = 0; }
-      else { shellyState = Shelly::Error; vTaskDelay(pdMS_TO_TICKS(1000)); }
-    }
-
-    bool a = runActive;
-    if (wifiUp && (!published || a != publishedValue)) {
-      if (shellyPublish(a)) { published = true; publishedValue = a; }
-    }
+    shellyStep();
     vTaskDelay(pdMS_TO_TICKS(200));
   }
 }
@@ -143,10 +240,9 @@ static void shellyTask(void*) {
 // =====================================================================
 // Controller state
 // =====================================================================
-enum class Mode : uint8_t { Idle, Arming, Running, Cooling, Done, Aborted };
 static Mode mode = Mode::Idle;
 static uint8_t profileIdx = 0;
-static uint32_t runStartMs = 0, armStartMs = 0;
+static uint32_t runStartMs = 0;
 static float tempC = NAN;
 static uint8_t badReads = 0;
 static float duty = 0;
@@ -160,10 +256,10 @@ static bool runawayTracking = false;
 static char abortReason[64] = "";
 
 static const Profile& prof() { return PROFILES[profileIdx]; }
-// Profile clock. It stops while the oven is at full power and still more than
-// PROFILE_HOLD_LAG_C behind the profile, so a slow oven still reaches each
-// stage (the profile stretches instead of being cut short). MAX_RUN_MS and the
-// runaway check still bound the run in wall-clock time.
+// Profile clock. It stops while the oven is more than PROFILE_HOLD_LAG_C behind
+// the profile, so a slow oven still reaches each stage (the profile stretches
+// instead of being cut short). MAX_RUN_MS and the no-temperature-rise check
+// still bound the run in wall-clock time.
 static float profT = 0;
 static float runSeconds() { return profT; }
 
@@ -190,34 +286,47 @@ static void startRun() {
   integ = 0; lastErr = 0; havePrevErr = false; duty = 0;
   runawayTracking = false;
   abortReason[0] = 0;
+  shellyOpened = false;
+  ssrCheckDone = false;
+  ssrCheckPowerW = NAN;
+  ssrStuck = false;
+  armStartMs = millis();
   shellyWantOn = true;
   runActive = true;
-  armStartMs = millis();
   mode = Mode::Arming;
   Serial.printf("# arming: %s\n", prof().name);
 }
 
-static void pidStep(float sp, float dt) {
-  float err = sp - tempC;
+// spAhead is the profile SETPOINT_LOOKAHEAD_S from now, spNow the profile now.
+// P and D chase the look-ahead (the oven lags); the integral works on the real
+// error, so it settles the holds without winding up during the ramps.
+static void pidStep(float spAhead, float spNow, float dt) {
+  float err = spAhead - tempC;
   float deriv = havePrevErr ? (err - lastErr) / dt : 0;
   lastErr = err; havePrevErr = true;
   float p = PID_KP * err, d = PID_KD * deriv;
   float out = p + PID_KI * integ + d;
+  float errNow = spNow - tempC;
   // Anti-windup: integrate only when not pushing further into saturation.
-  if (!((out >= 1 && err > 0) || (out <= 0 && err < 0))) integ += err * dt;
-  integ = constrain(integ, -0.5f / PID_KI, 1.0f / PID_KI);
+  if (!((out >= 1 && errNow > 0) || (out <= 0 && errNow < 0))) integ += errNow * dt;
+  integ = constrain(integ, -0.2f / PID_KI, 0.8f / PID_KI);
   out = p + PID_KI * integ + d;
   duty = constrain(out, 0.0f, 1.0f);
 }
 
 // Returns true if a safety check aborted the run.
 static bool safetyChecks(float t, float spNow) {
-  if (badReads >= TC_MAX_BAD_READS) { abortRun("Thermocouple open / not reading"); return true; }
+  if (badReads >= TC_MAX_BAD_READS) { abortRun("Thermocouple not reading"); return true; }
   if (isnan(tempC)) return false;
   if (tempC > HARD_MAX_C) { abortRun("Over max temperature"); return true; }
   if (tempC > spNow + OVERSHOOT_ABORT_C && t > 30) { abortRun("Too far above profile"); return true; }
   if (millis() - runStartMs > MAX_RUN_MS) { abortRun("Max run time exceeded"); return true; }
-  if (SHELLY_REQUIRED && shellyFailures >= 2) { abortRun("Lost contact with Shelly"); return true; }
+  if (shellyOpened) { abortRun("Shelly opened its relay"); return true; }
+  if (ssrStuck) { abortRun("SSR stuck on: replace it"); return true; }
+  if (SHELLY_REQUIRED && msSince(millis(), shellyLastOkMs) > (int32_t)SHELLY_LOST_ABORT_MS) {
+    abortRun("Lost contact with Shelly");
+    return true;
+  }
   // Runaway / probe-out: heating hard for a minute with no temperature rise.
   if (duty >= RUNAWAY_DUTY) {
     if (!runawayTracking) { runawayTracking = true; runawayStartMs = millis(); runawayStartTemp = tempC; }
@@ -239,10 +348,11 @@ Preferences prefs;
 static const uint16_t C_BG = TFT_BLACK, C_FG = TFT_WHITE, C_DIM = 0x7BEF;
 static const uint16_t C_PROFILE = 0x4A69, C_ACTUAL = TFT_RED, C_BTN = 0x2124;
 
-struct Btn { int16_t x, y, w, h; const char* label; uint16_t color; };
 static Btn BTN_PREV, BTN_NEXT, BTN_START, BTN_STOP, BTN_OK;
 static int GX, GY, GW, GH;          // graph area
 static int BAR_Y;                   // top of the bottom button bar
+static int TEMP_W;                  // pixel width of the widest temperature readout
+static const int STATUS_CHARS = 29; // status line length: must end left of the temperature
 
 static void layout() {
   const int bh = H >= 300 ? 52 : 40, bw = W >= 480 ? 160 : 120, sw = W >= 480 ? 70 : 50;
@@ -251,8 +361,11 @@ static void layout() {
   BTN_NEXT  = {(int16_t)(8 + sw), (int16_t)BAR_Y, (int16_t)sw, (int16_t)bh, ">", C_BTN};
   BTN_START = {(int16_t)(W - bw - 4), (int16_t)BAR_Y, (int16_t)bw, (int16_t)bh, "START", 0x0400};
   BTN_STOP  = {(int16_t)(W - bw - 4), (int16_t)BAR_Y, (int16_t)bw, (int16_t)bh, "STOP", 0xA000};
+  // The abort reason is drawn to the left of OK. Keep reasons short: the host
+  // test checks that every one of them fits on the 320 px screen.
   BTN_OK    = {(int16_t)(W - bw - 4), (int16_t)BAR_Y, (int16_t)bw, (int16_t)bh, "OK", C_BTN};
   GX = 30; GY = 34; GW = W - GX - 6; GH = BAR_Y - GY - 8;
+  TEMP_W = gfx.textWidth("888.8 C", 4);
 }
 
 static bool screenDirty = true;
@@ -341,29 +454,34 @@ static void drawCoolingNote() {
 }
 
 static void drawStatus() {
-  // Top-right: live temperature and status, refreshed in place.
-  char buf[64];
+  // Top-right: live temperature, refreshed in place. Font 4 is proportional, so
+  // pad to the widest reading or a shorter one leaves part of the old one behind.
+  char buf[64], line[64];
   gfx.setTextDatum(TR_DATUM);
   gfx.setTextColor(isnan(tempC) ? TFT_RED : TFT_YELLOW, C_BG);
-  if (isnan(tempC)) snprintf(buf, sizeof(buf), "  --- C");
-  else snprintf(buf, sizeof(buf), "  %5.1f C", tempC);
+  if (isnan(tempC)) snprintf(buf, sizeof(buf), "--- C");
+  else snprintf(buf, sizeof(buf), "%.1f C", tempC);
+  gfx.setTextPadding(TEMP_W);
   gfx.drawString(buf, W - 4, 2, 4);
+  gfx.setTextPadding(0);
 
-  gfx.setTextDatum(TL_DATUM);
-  gfx.setTextColor(C_DIM, C_BG);
+  // Under the title: one status line, always STATUS_CHARS long so it overwrites
+  // itself and stays left of the temperature on the 320 px screen.
   const char* sh = shellyState == Shelly::On ? "on" : shellyState == Shelly::Off ? "off"
                  : shellyState == Shelly::Error ? "ERR" : "?";
   if (mode == Mode::Running || mode == Mode::Cooling || mode == Mode::Arming) {
     float t = mode == Mode::Arming ? 0 : runSeconds();
-    const char* phase = mode == Mode::Arming ? "arming" : mode == Mode::Cooling ? "COOLING"
-                      : t < prof().reflow_start_s ? "preheat/soak" : "REFLOW";
-    snprintf(buf, sizeof(buf), "%3ds SP%4.0f %3d%% %s Shelly:%s     ", (int)t,
+    const char* phase = mode == Mode::Arming ? "arming" : mode == Mode::Cooling ? "COOL"
+                      : t < prof().reflow_start_s ? "heat" : "REFLOW";
+    snprintf(line, sizeof(line), "%3ds SP%3.0f %3d%% %-6s Sh:%s", (int)t,
              profileSetpoint(prof(), t), (int)(duty * 100), phase, sh);
-    gfx.drawString(buf, 4, 22, 1);
-  } else if (mode == Mode::Idle) {
-    snprintf(buf, sizeof(buf), "WiFi:%s Shelly:%s     ", wifiUp ? "ok" : "--", sh);
-    gfx.drawString(buf, 4, 22, 1);
+  } else {
+    snprintf(line, sizeof(line), "WiFi:%s Shelly:%s", wifiUp ? "ok" : "--", sh);
   }
+  snprintf(buf, sizeof(buf), "%-*.*s", STATUS_CHARS, STATUS_CHARS, line);
+  gfx.setTextDatum(TL_DATUM);
+  gfx.setTextColor(C_DIM, C_BG);
+  gfx.drawString(buf, 4, 22, 1);
   markDirty();
 }
 
@@ -418,17 +536,24 @@ void setup() {
   displayInit(prefs, false);
   layout();
 
-  prefs.begin("reflow", true);
+  prefs.begin("reflow", false);             // read-write: creates the namespace on first boot
   profileIdx = prefs.getUChar("prof", 0) % NUM_PROFILES;
   prefs.end();
 
+  shellyWantOn = false;                     // the task opens the Shelly relay at boot
+  loopAliveMs = millis();
   xTaskCreatePinnedToCore(shellyTask, "shelly", 8192, nullptr, 1, nullptr, 0);
-  shellyWantOn = false;                     // make sure the Shelly is off at boot
   screenDirty = true;
 }
 
 void loop() {
   uint32_t now = millis();
+  loopAliveMs = now;
+  if (loopStalled) {                        // the Shelly task cut the heat while loop() was stuck
+    loopStalled = false;
+    if (mode == Mode::Arming || mode == Mode::Running || mode == Mode::Cooling)
+      abortRun("Controller stalled");
+  }
 
   // --- Temperature ---
   if (now - lastTcMs >= TC_PERIOD_MS) {
@@ -448,20 +573,26 @@ void loop() {
       break;
 
     case Mode::Arming:
+      // SSR stays off here. With the Shelly: wait for its relay to close, then
+      // for the stuck-SSR check (power through the Shelly with the SSR off).
       ssrOff();
-      if (badReads >= TC_MAX_BAD_READS || isnan(tempC)) { abortRun("Thermocouple open / not reading"); break; }
-      if (!SHELLY_REQUIRED || shellyState == Shelly::On) {
-        runStartMs = millis();
-        profT = 0;
-        pwmWindowStart = runStartMs;
-        lastControlMs = 0;
-        mode = Mode::Running;
-        screenDirty = true;
-        beep(100);
-        Serial.println("# running");
-      } else if (now - armStartMs > 10000) {
-        abortRun("Shelly not reachable");
+      if (badReads >= TC_MAX_BAD_READS || isnan(tempC)) { abortRun("Thermocouple not reading"); break; }
+      if (tempC > START_MAX_C) { abortRun("Oven too hot to start"); break; }
+      if (SHELLY_REQUIRED) {
+        if (shellyOpened) { abortRun("Shelly opened its relay"); break; }
+        if (now - armStartMs > ARM_TIMEOUT_MS) { abortRun("Shelly not reachable"); break; }
+        if (shellyState != Shelly::On || !ssrCheckDone) break;
+        if (ssrCheckPowerW > SSR_STUCK_POWER_W) { abortRun("SSR stuck on: replace it"); break; }
+        Serial.printf("# SSR off, Shelly reads %.1f W\n", (float)ssrCheckPowerW);
       }
+      runStartMs = millis();
+      profT = 0;
+      pwmWindowStart = runStartMs;
+      lastControlMs = 0;
+      mode = Mode::Running;
+      screenDirty = true;
+      beep(100);
+      Serial.println("# running");
       break;
 
     case Mode::Running: {
@@ -471,10 +602,10 @@ void loop() {
         float dt = lastControlMs ? (now - lastControlMs) / 1000.0f : 0;
         lastControlMs = now;
         if (safetyChecks(t, spNow)) break;
-        bool lagging = duty >= 0.99f && !isnan(tempC) && tempC < spNow - PROFILE_HOLD_LAG_C;
+        bool lagging = !isnan(tempC) && tempC < spNow - PROFILE_HOLD_LAG_C;
         if (!lagging) profT += dt;
         if (dt <= 0) dt = CONTROL_PERIOD_MS / 1000.0f;
-        if (!isnan(tempC)) pidStep(profileSetpoint(prof(), t + SETPOINT_LOOKAHEAD_S), dt);
+        if (!isnan(tempC)) pidStep(profileSetpoint(prof(), t + SETPOINT_LOOKAHEAD_S), spNow, dt);
         Serial.printf("%.1f,%.1f,%.2f,%d,%d,run\n", t, spNow, tempC, (int)(duty * 100), ssrState ? 1 : 0);
         plotPoint();
       }
@@ -543,7 +674,8 @@ void loop() {
   // Serial commands for bench work: 'x' = abort, 'g' = start current profile.
   while (Serial.available()) {
     char c = (char)Serial.read();
-    if (c == 'x') abortRun("Stopped from serial");
+    if (c == 'x' && (mode == Mode::Arming || mode == Mode::Running || mode == Mode::Cooling))
+      abortRun("Stopped from serial");
     else if (c == 'g' && mode == Mode::Idle) startRun();
   }
 }
