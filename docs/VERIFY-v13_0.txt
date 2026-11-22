@@ -1,0 +1,117 @@
+Box 184.0 x 140.0 x 83.0, shell 80.0
+== 1. Mesh health and bed fit ==
+bottom                 extents [184.0, 137.0, 80.0] watertight True winding True bed-fit True -> PASS
+lid                    extents [184.0, 140.0, 28.5] watertight True winding True bed-fit True -> PASS
+front_panel            extents [184.0, 80.0, 7.1] watertight True winding True bed-fit True -> PASS
+crowpanel_test_coupon  extents [99.2, 67.5, 7.1] watertight True winding True bed-fit True -> PASS
+oven_socket_coupon     extents [114.0, 114.0, 3.0] watertight True winding True bed-fit True -> PASS
+iec_test_coupon        extents [66.0, 46.0, 3.0] watertight True winding True bed-fit True -> PASS
+kp200_test_coupon      extents [105.0, 149.0, 10.0] watertight True winding True bed-fit True -> PASS
+iec_trim_plate         extents [58.0, 48.0, 1.5] watertight True winding True bed-fit True -> PASS
+drok_meter_coupon      extents [168.0, 169.0, 3.0] watertight True winding True bed-fit True -> PASS
+-> PASS
+
+== 2. Downward surfaces in print orientation (above z 0.3) ==
+bottom                 35 regions; largest flat-bridge region dimension 48.0 mm; 16 non-flat regions steeper than 45 deg; 8 faces at exactly 45 deg
+    bridge x 141.0-159.0 y 113.9-117.9 z 5.4  size 18.0 x 4.0  area 72 mm2
+    bridge x 45.5-50.5 y 17.5-22.5 z 6.0  size 5.0 x 5.0  area 25 mm2
+    bridge x 77.5-82.5 y 17.5-22.5 z 6.0  size 5.0 x 5.0  area 25 mm2
+    bridge x 97.5-102.5 y 81.5-86.5 z 6.0  size 5.0 x 5.0  area 25 mm2
+    bridge x 7.2-7.8 y 131.0-137.0 z 14.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 7.2-7.8 y 131.0-137.0 z 67.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 85.2-85.8 y 131.0-137.0 z 14.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 85.2-85.8 y 131.0-137.0 z 67.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 96.2-96.8 y 131.0-137.0 z 11.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 176.2-176.8 y 131.0-137.0 z 11.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 96.0-144.0 y 0.0-3.0 z 32.8  size 48.0 x 3.0  area 144 mm2
+    bridge x 0.0-2.5 y 8.6-33.4 z 34.4  size 2.5 x 24.8  area 62 mm2
+    bridge x 6.0-18.0 y 6.0-18.0 z 0.8  size 12.0 x 12.0  area 113 mm2
+    bridge x 6.0-18.0 y 119.0-131.0 z 0.8  size 12.0 x 12.0  area 113 mm2
+    bridge x 166.0-178.0 y 6.0-18.0 z 0.8  size 12.0 x 12.0  area 113 mm2
+    bridge x 166.0-178.0 y 119.0-131.0 z 0.8  size 12.0 x 12.0  area 113 mm2
+    bridge x 181.0-184.0 y 115.5-116.5 z 18.0  size 3.0 x 1.0  area 3 mm2
+    bridge x 181.0-184.0 y 125.7-134.7 z 41.4  size 3.0 x 9.0  area 27 mm2
+    bridge x 96.6-97.4 y 104.0-106.0 z 30.0  size 0.8 x 2.0  area 2 mm2
+    STEEP  x 7.8-9.0 y 131.0-137.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 6.0-7.2 y 131.0-137.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 7.8-9.0 y 131.0-137.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 6.0-7.2 y 131.0-137.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 85.8-87.0 y 131.0-137.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 84.0-85.2 y 131.0-137.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 85.8-87.0 y 131.0-137.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 84.0-85.2 y 131.0-137.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 96.8-98.0 y 131.0-137.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 95.0-96.2 y 131.0-137.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 176.8-178.0 y 131.0-137.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 175.0-176.2 y 131.0-137.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 181.0-184.0 y 113.2-115.5 z 16.8  size 3.0 x 2.3  area 8 mm2
+    STEEP  x 181.0-184.0 y 116.5-118.8 z 16.8  size 3.0 x 2.3  area 8 mm2
+    STEEP  x 97.4-99.1 y 104.0-106.0 z 29.1  size 1.7 x 2.0  area 4 mm2
+    STEEP  x 94.9-96.6 y 104.0-106.0 z 29.1  size 1.7 x 2.0  area 4 mm2
+lid                    6 regions; largest flat-bridge region dimension 22.0 mm; 4 non-flat regions steeper than 45 deg; 0 faces at exactly 45 deg
+    bridge x 118.5-140.5 y 109.5-125.0 z 1.2  size 22.0 x 15.5  area 337 mm2
+    bridge x 118.5-140.5 y 22.0-37.5 z 1.2  size 22.0 x 15.5  area 337 mm2
+    STEEP  x 137.5-141.7 y 122.0-126.2 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 117.3-121.5 y 122.0-126.2 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 137.5-141.7 y 20.8-25.0 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 117.3-121.5 y 20.8-25.0 z 0.0  size 4.2 x 4.2  area 9 mm2
+front_panel            none steeper than 45 deg (2 faces at exactly 45 deg)
+crowpanel_test_coupon  none steeper than 45 deg (0 faces at exactly 45 deg)
+oven_socket_coupon     none steeper than 45 deg (0 faces at exactly 45 deg)
+iec_test_coupon        none steeper than 45 deg (0 faces at exactly 45 deg)
+kp200_test_coupon      6 regions; largest flat-bridge region dimension 22.0 mm; 4 non-flat regions steeper than 45 deg; 0 faces at exactly 45 deg
+    bridge x 41.5-63.5 y 23.0-38.5 z 1.2  size 22.0 x 15.5  area 337 mm2
+    bridge x 41.5-63.5 y 110.5-126.0 z 1.2  size 22.0 x 15.5  area 337 mm2
+    STEEP  x 60.5-64.7 y 21.8-26.0 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 40.3-44.5 y 21.8-26.0 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 60.5-64.7 y 123.0-127.2 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 40.3-44.5 y 123.0-127.2 z 0.0  size 4.2 x 4.2  area 9 mm2
+iec_trim_plate         none steeper than 45 deg (0 faces at exactly 45 deg)
+drok_meter_coupon      none steeper than 45 deg (0 faces at exactly 45 deg)
+
+== 2b. Bambu Studio 'floating cantilever' rule (0.2 mm layers, supports off) ==
+bottom                 0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+lid                    0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+front_panel            0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+crowpanel_test_coupon  0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+oven_socket_coupon     0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+iec_test_coupon        0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+kp200_test_coupon      0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+iec_trim_plate         0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+drok_meter_coupon      0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+-> PASS
+
+== 3. Interference (installed orientation) ==
+installed lid   bounds [[0.0, 0.0, 54.5], [184.0, 140.0, 83.0]]
+installed panel bounds [[0.0, 132.9, 0.0], [184.0, 140.0, 80.0]]
+shell vs lid  :     0.000 mm3 ok
+shell vs panel:     0.000 mm3 ok
+lid   vs panel:     0.000 mm3 ok
+heatsink               shell    0.000  lid    0.000  panel    0.000  ok
+ssr                    shell    0.000  lid    0.000  panel    0.000  ok
+ssr_wiring_zone        shell    0.000  lid    0.000  panel    0.000  ok
+ssr_ac_wire_channel    shell    0.000  lid    0.000  panel    0.000  ok
+ssr_dc_wire_zone       shell    0.000  lid    0.000  panel    0.000  ok
+inlet                  shell    0.000  lid    0.000  panel    0.000  ok
+oven_socket            shell    0.000  lid    0.000  panel    0.000  ok
+shelly                 shell    0.000  lid    0.000  panel    0.000  ok
+kp200_body             shell    0.000  lid    0.000  panel    0.000  ok
+junction_zone          shell    0.000  lid    0.000  panel    0.000  ok
+crow_lcm               shell    0.000  lid    0.000  panel    0.000  ok
+crow_pcb               shell    0.000  lid    0.000  panel    0.000  ok
+crow_cable_zone        shell    0.000  lid    0.000  panel    0.000  ok
+crow_spk_plug          shell    0.000  lid    0.000  panel    0.000  ok
+usb_plug               shell    0.000  lid    0.000  panel    0.000  ok
+max6675                shell    0.000  lid    0.000  panel    0.000  ok
+drok_meter             shell    0.000  lid    0.000  panel    0.000  ok
+drok_terminals         shell    0.000  lid    0.000  panel    0.000  ok
+keepout vs keepout (positive-volume overlaps only):
+-> PASS (0 problems)
+
+== 4. Probe rays through every opening ==
+43393 rays
+   lid slot           heatsink (grounded) 1368, lid 6131, panel 158, shell 6167
+   intake slot        escaped 468, heatsink (grounded) 10446, lid 4189, shell 10241
+   USB-C slot         CrowPanel PCB 1800, lid 40, panel 1043, shell 717
+   thermocouple hole  CrowPanel PCB 97, panel 48, shell 480
+-> PASS: no straight probe reaches a live part (0 rays reach live parts)

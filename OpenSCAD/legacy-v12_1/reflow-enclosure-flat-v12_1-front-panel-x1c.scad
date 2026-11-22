@@ -9,6 +9,12 @@
 //  - Its split-core CT goes on the oven hot wire (SSR T2 -> socket hot) and
 //    lies on the AC floor between the oven socket and the inlet.
 //
+//  v12.1 lid re-export (2026-11-21): one-layer skins close the four KP200
+//    holes at the roof of the yoke-ear recesses (kp_hole_skin). The lid prints
+//    outer face down, so that roof is a bridge 1.2 mm above the bed; with open
+//    holes in it the first roof layer drew the hole edges in mid-air and Bambu
+//    Studio warned of a "floating cantilever". Pierce the skins at assembly.
+//
 //  v12.0 CHANGE (2026-10, cable-only display + landscape front panel):
 //  - Display is now the Elecrow CrowPanel 2.8" ESP32 HMI (ESP32-WROOM-32-N4,
 //    ILI9341V, resistive touch). It is wired with cables only: SSR on the
@@ -187,6 +193,7 @@ kp_ear_h = 20;
 kp_ear_recess = 1.2;
 kp_ear_corner_r = 3;
 kp_ear_chamfer = 1.2;
+kp_hole_skin = 0.2;         // one-layer skin over the KP200 holes at the recess roof (0 = open holes); pierce at assembly
 kp_capscrew_offset = 6;
 kp_capscrew_protrude = 6;
 kp_capscrew_clear_dia = 5;
@@ -545,6 +552,7 @@ module crowpanel_test_coupon() {
 //  Lid (unchanged features: KP200 flush mount, outlet slots, lid screws)
 // ============================================================================
 module lid_print_orientation() {
+    kp_hole_skins(kp_center_x, kp_center_y);
     difference() {
         union() {
             cube([box_w, box_d, lid_t]);
@@ -632,12 +640,28 @@ module kp_tab_recess() {
     }
 }
 
+// The lid prints outer face down, so the roof of each ear recess is a bridge
+// kp_ear_recess above the bed. A one-layer skin closes the screw hole and the
+// captive-screw hole at that roof: the first roof layer is then a plain bridge
+// (no hole edges drawn in mid-air), and the skins are pierced at assembly.
+// Print coordinates; (cx, cy) = KP200 centre.
+module kp_hole_skins(cx, cy) {
+    if (kp_hole_skin > 0)
+        for (s = [-1, 1]) {
+            translate([cx, cy + s * kp_screw_spacing / 2, kp_ear_recess])
+                cylinder(d = kp_screw_clear_dia + 0.4, h = kp_hole_skin);
+            translate([cx, cy + s * (kp_screw_spacing / 2 + kp_capscrew_offset), kp_ear_recess])
+                cylinder(d = kp_capscrew_clear_dia + 0.4, h = kp_hole_skin);
+        }
+}
+
 module kp200_test_coupon() {
     coupon_w = kp_wid_x + 20;
     coupon_h = kp_len_y + 20;
     coupon_t = lid_t;
     cx = coupon_w / 2;
     cy = coupon_h / 2;
+    kp_hole_skins(cx, cy);
     difference() {
         union() {
             cube([coupon_w, coupon_h, coupon_t]);
