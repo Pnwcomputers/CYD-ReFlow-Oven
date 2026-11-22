@@ -12,33 +12,67 @@ drok_meter_coupon      extents [168.0, 169.0, 3.0] watertight True winding True 
 -> PASS
 
 == 2. Downward surfaces in print orientation (above z 0.3) ==
-bottom                 14 regions; largest flat-bridge region dimension 48.0 mm; 7 non-flat regions steeper than 45 deg; 6 faces at exactly 45 deg
-    bridge x 247.0-250.0 y 140.7-149.7 z 41.4  size 3.0 x 9.0  area 27 mm2
-    STEEP  x 247.0-250.0 y 42.2-47.8 z 20.8  size 3.0 x 5.7  area 19 mm2
-    STEEP  x 6.5-9.5 y 146.0-152.0 z 13.5  size 3.0 x 6.0  area 20 mm2
-    STEEP  x 6.5-9.5 y 146.0-152.0 z 66.5  size 3.0 x 6.0  area 20 mm2
-    STEEP  x 61.5-64.5 y 146.0-152.0 z 13.5  size 3.0 x 6.0  area 20 mm2
-    STEEP  x 61.5-64.5 y 146.0-152.0 z 66.5  size 3.0 x 6.0  area 20 mm2
-    STEEP  x 161.0-164.0 y 146.0-152.0 z 10.5  size 3.0 x 6.0  area 20 mm2
-    STEEP  x 241.0-244.0 y 146.0-152.0 z 10.5  size 3.0 x 6.0  area 20 mm2
+bottom                 28 regions; largest flat-bridge region dimension 48.0 mm; 14 non-flat regions steeper than 45 deg; 6 faces at exactly 45 deg
+    bridge x 7.7-8.3 y 146.0-152.0 z 14.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 7.7-8.3 y 146.0-152.0 z 67.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 62.7-63.3 y 146.0-152.0 z 14.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 62.7-63.3 y 146.0-152.0 z 67.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 162.2-162.8 y 146.0-152.0 z 11.1  size 0.5 x 6.0  area 3 mm2
+    bridge x 242.2-242.8 y 146.0-152.0 z 11.1  size 0.5 x 6.0  area 3 mm2
     bridge x 94.0-142.0 y 0.0-3.0 z 44.8  size 48.0 x 3.0  area 144 mm2
     bridge x 0.0-2.5 y 17.6-42.4 z 34.4  size 2.5 x 24.8  area 62 mm2
     bridge x 6.0-18.0 y 6.0-18.0 z 0.8  size 12.0 x 12.0  area 113 mm2
     bridge x 6.0-18.0 y 134.0-146.0 z 0.8  size 12.0 x 12.0  area 113 mm2
     bridge x 232.0-244.0 y 6.0-18.0 z 0.8  size 12.0 x 12.0  area 113 mm2
     bridge x 232.0-244.0 y 134.0-146.0 z 0.8  size 12.0 x 12.0  area 113 mm2
-lid                    2 regions; largest flat-bridge region dimension 0.0 mm; 2 non-flat regions steeper than 45 deg; 0 faces at exactly 45 deg
-    STEEP  x 35.3-59.7 y 109.5-126.2 z 0.0  size 24.4 x 16.7  area 324 mm2
-    STEEP  x 35.3-59.7 y 20.8-37.5 z 0.0  size 24.4 x 16.7  area 324 mm2
+    bridge x 247.0-250.0 y 44.5-45.5 z 22.0  size 3.0 x 1.0  area 3 mm2
+    bridge x 247.0-250.0 y 140.7-149.7 z 41.4  size 3.0 x 9.0  area 27 mm2
+    STEEP  x 8.3-9.5 y 146.0-152.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 6.5-7.7 y 146.0-152.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 8.3-9.5 y 146.0-152.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 6.5-7.7 y 146.0-152.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 63.3-64.5 y 146.0-152.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 61.5-62.7 y 146.0-152.0 z 13.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 63.3-64.5 y 146.0-152.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 61.5-62.7 y 146.0-152.0 z 66.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 162.8-164.0 y 146.0-152.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 161.0-162.2 y 146.0-152.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 242.8-244.0 y 146.0-152.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 241.0-242.2 y 146.0-152.0 z 10.5  size 1.2 x 6.0  area 8 mm2
+    STEEP  x 247.0-250.0 y 42.2-44.5 z 20.8  size 3.0 x 2.3  area 8 mm2
+    STEEP  x 247.0-250.0 y 45.5-47.8 z 20.8  size 3.0 x 2.3  area 8 mm2
+lid                    6 regions; largest flat-bridge region dimension 22.0 mm; 4 non-flat regions steeper than 45 deg; 0 faces at exactly 45 deg
+    bridge x 36.5-58.5 y 109.5-125.0 z 1.2  size 22.0 x 15.5  area 337 mm2
+    bridge x 36.5-58.5 y 22.0-37.5 z 1.2  size 22.0 x 15.5  area 337 mm2
+    STEEP  x 35.3-39.5 y 122.0-126.2 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 55.5-59.7 y 122.0-126.2 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 35.3-39.5 y 20.8-25.0 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 55.5-59.7 y 20.8-25.0 z 0.0  size 4.2 x 4.2  area 9 mm2
 front_panel            none steeper than 45 deg (0 faces at exactly 45 deg)
 crowpanel_test_coupon  none steeper than 45 deg (0 faces at exactly 45 deg)
 oven_socket_coupon     none steeper than 45 deg (0 faces at exactly 45 deg)
 iec_test_coupon        none steeper than 45 deg (0 faces at exactly 45 deg)
-kp200_test_coupon      2 regions; largest flat-bridge region dimension 0.0 mm; 2 non-flat regions steeper than 45 deg; 0 faces at exactly 45 deg
-    STEEP  x 40.3-64.7 y 21.8-38.5 z 0.0  size 24.4 x 16.7  area 324 mm2
-    STEEP  x 40.3-64.7 y 110.5-127.2 z 0.0  size 24.4 x 16.7  area 324 mm2
+kp200_test_coupon      6 regions; largest flat-bridge region dimension 22.0 mm; 4 non-flat regions steeper than 45 deg; 0 faces at exactly 45 deg
+    bridge x 41.5-63.5 y 23.0-38.5 z 1.2  size 22.0 x 15.5  area 337 mm2
+    bridge x 41.5-63.5 y 110.5-126.0 z 1.2  size 22.0 x 15.5  area 337 mm2
+    STEEP  x 40.3-44.5 y 21.8-26.0 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 60.5-64.7 y 21.8-26.0 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 40.3-44.5 y 123.0-127.2 z 0.0  size 4.2 x 4.2  area 9 mm2
+    STEEP  x 60.5-64.7 y 123.0-127.2 z 0.0  size 4.2 x 4.2  area 9 mm2
 iec_trim_plate         none steeper than 45 deg (0 faces at exactly 45 deg)
 drok_meter_coupon      none steeper than 45 deg (0 faces at exactly 45 deg)
+
+== 2b. Bambu Studio 'floating cantilever' rule (0.2 mm layers, supports off) ==
+bottom                 0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+lid                    0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+front_panel            0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+crowpanel_test_coupon  0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+oven_socket_coupon     0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+iec_test_coupon        0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+kp200_test_coupon      0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+iec_trim_plate         0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+drok_meter_coupon      0 flagged area(s); largest distance 0.0 mm -> no slicer warning
+-> PASS
 
 == 3. Interference (installed orientation) ==
 installed lid   bounds [[0.0, 0.0, 73.0], [250.0, 155.0, 83.0]]

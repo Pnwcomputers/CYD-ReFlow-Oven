@@ -80,6 +80,7 @@ The bench sketch was compiled and simulated on a PC against stub Arduino headers
    * Front panel: 4 display inserts in the standoffs.
    * Lid: the 2 KP200 inserts.
 2. **Lid:**
+   * On the outer face, inside the two shallow recesses beside the KP200 window, the four holes are closed by a paper-thin printed skin (it lets the recess roof print cleanly without supports). Push a small screwdriver through each one.
    * Fit the KP200 into its window and screw it to its two inserts.
    * Snap the DROK meter in from above (the outside face). Its long side runs front-to-back; turn it so the digits are upright from the side you'll stand at.
 3. **Display:**

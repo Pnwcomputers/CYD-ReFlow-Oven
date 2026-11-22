@@ -1,19 +1,23 @@
 # Usage:
 #   S=OpenSCAD/reflow-enclosure-flat-v12_1-front-panel-x1c.scad
-#   for p in bottom lid front_panel crowpanel_test_coupon oven_socket_coupon iec_test_coupon kp200_test_coupon iec_trim_plate; do
+#   for p in bottom lid front_panel crowpanel_test_coupon oven_socket_coupon iec_test_coupon kp200_test_coupon iec_trim_plate drok_meter_coupon; do
 #     openscad -o OUT/$p.stl -D "part=\"$p\"" $S > OUT/$p.log 2>&1; done
 #   grep -h "KO|" OUT/bottom.log | sed "s/ECHO: //" > OUT/keepouts.txt
 #   python3 tools/verify_enclosure.py OUT $S [CROW_STEP_PARTS_DIR]
 # CROW_STEP_PARTS_DIR (optional): one STL per solid of Elecrow's
 # "3D_File_CrowPanel_2.8-ESP32_HMI-2.1.stp", named sNNN.stl in STEP order
 # (see tools/step_parts.py). Enables check 5 (real board vs printed parts).
-# Needs: trimesh, numpy, manifold3d, shapely, rtree, networkx.
+# Needs: trimesh, numpy, scipy, manifold3d, shapely, rtree, networkx.
 """Verification for the v12 enclosure.
 
 Checks, all on freshly rendered meshes:
   1. Mesh health: weld, watertight, consistent winding, bed fit (X1C 256 x 256).
   2. Supports: every downward surface steeper than 45 degrees above the bed,
-     clustered, with its span, per part in print orientation.
+     per part in print orientation. Flat ceilings (bridges) and sloped faces
+     are clustered separately, so a flat roof that joins a chamfer is still
+     reported as a bridge with its span.
+  2b. Slicer warning: Bambu Studio's "floating cantilever" rule, re-implemented
+     from its source (TreeSupport::detect_overhangs), run on 0.2 mm slices.
   3. Interference: shell, installed lid and installed front panel vs every
      component keepout box and vs each other; keepout-vs-keepout overlaps.
   4. Probe rays: straight rigid probes through every lid outlet slot, front
@@ -22,9 +26,11 @@ Checks, all on freshly rendered meshes:
   5. (optional) Elecrow's STEP board, placed by the SCAD transform, vs the
      printed parts.
 """
-import re, sys, glob, itertools
+import re, sys, glob, itertools, math, warnings
 import numpy as np
 import trimesh
+from shapely.geometry import Polygon, MultiPolygon, Point
+from shapely.ops import unary_union
 
 D = sys.argv[1]
 SRC = open(sys.argv[2]).read()
@@ -91,15 +97,16 @@ for p in parts:
     if len(idx) == 0:
         print(f"{p:22s} none steeper than 45 deg ({len(idx45)} faces at exactly 45 deg)")
         continue
-    sub = mm.submesh([idx], append=True)
     rows = []
-    for c in sub.split(only_watertight=False):
-        if c.area < 1.0:
+    for flat, sel in ((True, idx[nz[idx] < -0.99]), (False, idx[nz[idx] >= -0.99])):
+        if len(sel) == 0:
             continue
-        b = c.bounds
-        ext = b[1] - b[0]
-        flat = np.all(c.face_normals[:, 2] < -0.99)
-        rows.append((b, ext, flat, min(ext[0], ext[1]), c.area))
+        for c in mm.submesh([sel], append=True).split(only_watertight=False):
+            if c.area < 1.0:
+                continue
+            b = c.bounds
+            ext = b[1] - b[0]
+            rows.append((b, ext, flat, min(ext[0], ext[1]), c.area))
     worst_bridge = max([max(r[1][0], r[1][1]) for r in rows if r[2]], default=0)
     steep = [r for r in rows if not r[2]]
     print(f"{p:22s} {len(rows)} regions; largest flat-bridge region dimension {worst_bridge:.1f} mm; "
@@ -108,6 +115,80 @@ for p in parts:
         o = mm.bounds[0]
         print(f"    {'bridge' if flat else 'STEEP':6s} x {b[0][0]-o[0]:.1f}-{b[1][0]-o[0]:.1f} "
               f"y {b[0][1]-o[1]:.1f}-{b[1][1]-o[1]:.1f} z {b[0][2]-o[2]:.1f}  size {ext[0]:.1f} x {ext[1]:.1f}  area {area:.0f} mm2")
+
+# ---------------------------------------------------------------- 2b
+# Bambu Studio warns "floating cantilever" when supports are off and
+# TreeSupport::detect_overhangs finds, on some layer, an overhang area
+# (layer minus the layer below grown by layer_height / tan(30 deg)) that has
+#   (a) an outline or a hole edge with no vertex over the layer below (grown by
+#       one extrusion width): e.g. a screw hole through a bridged ceiling, or
+#   (b) an outline vertex more than 3 mm from the supported rim,
+# and the largest such distance is over 6 mm (PrintObject::is_support_necessary).
+# Only the polygon VERTICES are tested, so a plain straight bridge edge passes.
+def _slice(m, z):
+    sec = m.section(plane_origin=[0, 0, z], plane_normal=[0, 0, 1])
+    if sec is None:
+        return MultiPolygon()
+    p2d, T = sec.to_2D()
+    out = []
+    for poly in p2d.polygons_full:
+        def tr(coords):
+            a = np.asarray(coords)
+            return (T @ np.c_[a, np.zeros(len(a)), np.ones(len(a))].T).T[:, :2]
+        out.append(Polygon(tr(poly.exterior.coords), [tr(h.coords) for h in poly.interiors]))
+    return unary_union(out)
+
+
+def cantilever_scan(m, lh=0.2, thr_deg=30.0, ext_w=0.45):
+    off = lh / math.tan(math.radians(thr_deg))
+    z0 = m.bounds[0][2]
+    found, lower = [], None
+    for i in range(int(round(m.extents[2] / lh))):
+        cur = _slice(m, z0 + (i + 0.5) * lh)
+        if lower is not None and not cur.is_empty and not lower.is_empty:
+            over = cur.difference(lower.buffer(off, join_style=2))
+            thresh = lower.buffer(ext_w, join_style=2)
+            rim = lower.buffer(max(ext_w, off) + 0.1, join_style=2)
+            for g in (over.geoms if hasattr(over, "geoms") else [over]):
+                if g.geom_type != "Polygon" or g.area < 1e-3:
+                    continue
+                g = g.simplify(0.001)          # Clipper drops collinear vertices
+                hit = None
+                for k, ring in enumerate([g.exterior] + list(g.interiors)):
+                    pts = [Point(c) for c in ring.coords]
+                    if not any(thresh.contains(q) for q in pts):
+                        hit = ("outline" if k == 0 else "hole edge") + " in mid-air", max(thresh.distance(q) for q in pts)
+                        break
+                if hit is None:
+                    base = g.intersection(rim)
+                    if base.is_empty:
+                        continue
+                    d = max(base.distance(Point(c)) for c in g.exterior.coords)
+                    if d > 3:
+                        hit = "edge far from support", d
+                if hit:
+                    found.append((i * lh, g.bounds, hit[0], hit[1]))
+        lower = cur
+    return found
+
+
+print("\n== 2b. Bambu Studio 'floating cantilever' rule (0.2 mm layers, supports off) ==")
+ok2b = True
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    for p in parts:
+        mm = meshes[p]
+        found = cantilever_scan(mm)
+        worst = max([f[3] for f in found], default=0.0)
+        warn = worst > 6.0
+        ok2b &= not warn
+        print(f"{p:22s} {len(found)} flagged area(s); largest distance {worst:.1f} mm -> "
+              f"{'slicer WARNS' if warn else 'no slicer warning'}")
+        o = mm.bounds[0]
+        for z, b, why, d in found:
+            if d > 3:
+                print(f"    z {z:.1f}  x {b[0]-o[0]:.1f}-{b[2]-o[0]:.1f} y {b[1]-o[1]:.1f}-{b[3]-o[1]:.1f}  {why}, {d:.1f} mm")
+print(f"-> {'PASS' if ok2b else 'FAIL'}")
 
 # ---------------------------------------------------------------- 3
 print("\n== 3. Interference (installed orientation) ==")
