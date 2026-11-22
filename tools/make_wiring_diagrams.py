@@ -1,4 +1,4 @@
-"""Generate the v12.1 illustrated wiring and layout sheets (SVG).
+"""Generate the v13.0 illustrated wiring and layout sheets (SVG).
 
 Usage: python3 tools/make_wiring_diagrams.py
 Writes into docs/wiring/:
@@ -146,7 +146,7 @@ def shelly(s, x, y):
     s.text(x + 100, y + 76, "1PM Gen4", 15, "bold", "middle", "#cfe0f5")
     s.text(x + 100, y + 100, "relay + power meter", 12, anchor="middle", fill="#cfe0f5")
     s.text(x + 100, y + 118, "Wi-Fi watchdog", 12, anchor="middle", fill="#cfe0f5")
-    s.text(x + 100, y + 170, "pocket on the left wall", 12, anchor="middle", fill="#444")
+    s.text(x + 100, y + 170, "pocket on the left side wall", 12, anchor="middle", fill="#444")
     s.text(x + 100, y + 186, "SW terminal: leave empty", 12, anchor="middle", fill="#444")
 
 
@@ -328,7 +328,7 @@ def table(s, x, y, cols, rows, widths, size=13, rh=22, swatch=None):
 # ====================================================================== sheet 1
 def sheet_ac(path):
     s = Sheet(1800, 1500, "Sheet 1 of 3 — AC mains wiring (120 V)",
-              "Reflow oven controller v12.1. Schematic, not to scale. Every wire has a tag (A1…A15) that matches the table. "
+              "Reflow oven controller v13.0. Schematic, not to scale. Every wire has a tag (A1…A15) that matches the table. "
               "UNPLUG the cord before touching anything on this sheet.")
     flow(s, 30, 84, [("Wall outlet", "120 V AC"), ("Inlet", "15 A fuse + rocker"), ("HOT Wago", "splits the feed"),
                      ("Shelly relay", "safety cut-off"), ("SSR", "pulsed by the ESP32"), ("CT clamp", "meter reads amps"),
@@ -336,7 +336,7 @@ def sheet_ac(path):
 
     # enclosure outline (AC bay)
     s.rect(20, 150, 1480, 960, "none", "#9aa5b1", 2, 12, dash="10,6")
-    s.text(36, 1100, "AC BAY of the enclosure (mains). The DROK meter and the KP200 sit in the lid above this bay.", 13, "bold", fill="#b22222")
+    s.text(36, 1100, "MAINS BAY of the enclosure. The DROK meter and the KP200 sit in the lid above it.", 13, "bold", fill="#b22222")
 
     # devices
     wall_plug(s, 60, 200)
@@ -353,7 +353,7 @@ def sheet_ac(path):
     t = ssr(s, 1030, 180)
     s.term(*t["T1"], "1  T1", "b"); s.term(*t["T2"], "2  T2", "b")
     s.term(*t["T3"], "3 +", "t", color="#888"); s.term(*t["T4"], "4 −", "t", color="#888")
-    s.text(1110, 426, "1 / 2 = AC end, toward the KP200", 12, "bold", "middle")
+    s.text(1110, 426, "1 / 2 = AC end, toward the socket", 12, "bold", "middle")
     s.text(1110, 443, "3 / 4 = control input: see sheet 2", 12, anchor="middle", fill="#666")
     s.circ(985, 380, 9, "#d9d9d9", "#111", 2); s.circ(985, 380, 3.5, "#555", "#111", 1)
     s.text(985, 404, "ring", 11, "bold", "middle"); s.text(985, 417, "lug", 11, "bold", "middle")
@@ -369,7 +369,7 @@ def sheet_ac(path):
     s.term(1345, 640, "", "t"); s.text(1362, 662, "HOT", 11, "bold", fill="#fff")
     s.term(1290, 710, "", "l"); s.text(1302, 714, "N", 12, "bold", fill="#fff")
     s.term(1290, 770, "", "l"); s.text(1302, 774, "G", 12, "bold", fill="#fff")
-    s.text(1375, 830, "Oven socket · left wall", 12.5, "bold", "middle")
+    s.text(1375, 830, "Oven socket · right side wall", 12.5, "bold", "middle")
     s.note(1292, 848, ["HOT = narrow slot, brass screw", "N = wide slot, silver screw", "G = round hole, green screw"], 11.5, "#444", 15)
     oven(s, 1540, 640)
     s.wire([(1540, 760), (1505, 760), (1505, 725), (1462, 725)], "#333", 9)
@@ -460,10 +460,10 @@ def sheet_lv(path):
     s.rect(40, 170, 1330, 880, "none", "#9aa5b1", 2, 12, dash="10,6")
     s.rect(446, 172, 12, 338, "#6b7480", "#444", 1, 0)
     s.rect(446, 600, 12, 448, "#6b7480", "#444", 1, 0)
-    s.text(60, 196, "AC BAY (mains: sheet 1)", 14, "bold", fill="#b22222")
-    s.text(480, 196, "DC BAY (3.3 V / 5 V only)", 14, "bold", fill=BLUE)
-    s.text(372, 531, "U-slot in the divider (the only crossing)", 12, "bold", fill="#333")
-    s.text(1372, 1040, "right wall", 12, "bold", "end", "#555")
+    s.text(60, 196, "MAINS BAY (sheet 1)", 14, "bold", fill="#b22222")
+    s.text(480, 196, "DISPLAY POCKET (3.3 / 5 V)", 14, "bold", fill=BLUE)
+    s.text(372, 531, "Slot in the pocket wall (the only crossing)", 12, "bold", fill="#333")
+    s.text(1372, 1040, "left side wall (seen from the front)", 12, "bold", "end", "#555")
 
     # CrowPanel
     X, Y = 720, 230
@@ -480,13 +480,13 @@ def sheet_lv(path):
     t = ssr(s, 150, 470, heatsink=False)
     s.term(*t["T3"], "3 +", "t"); s.term(*t["T4"], "4 −", "t")
     s.term(*t["T1"], "1", "b", color="#999"); s.term(*t["T2"], "2", "b", color="#999")
-    s.text(230, 702, "SSR control end (3 / 4) faces the divider", 12, "bold", "middle")
+    s.text(230, 702, "SSR control end (3 / 4) faces the display pocket", 12, "bold", "middle")
     s.text(230, 720, "terminals 1 / 2 are mains: sheet 1", 12, anchor="middle", fill="#666")
 
     # MAX6675
     mx = max6675(s, 1026, 760)
     s.text(1282, 800, "MAX6675 module", 14, "bold")
-    s.text(1282, 818, "DC floor", 12, fill="#444")
+    s.text(1282, 818, "pocket floor, cable-tied", 12, fill="#444")
     s.term(1066, 880, "", "b"); s.term(1106, 880, "", "b")
     s.text(1046, 912, "+", 16, "bold", "middle"); s.text(1126, 912, "−", 16, "bold", "middle")
 
@@ -497,7 +497,7 @@ def sheet_lv(path):
     s.rect(1560, 828, 60, 24, "#b9c0c8", "#555", 1.5, 10)
     s.circ(1624, 840, 7, "#e9e9e9", "#555", 2)
     s.text(1240, 946, "K thermocouple: yellow +, red −", 12.5, "bold", "middle")
-    s.text(1240, 992, "passes through the round hole in the right wall", 12, anchor="middle", fill="#444")
+    s.text(1240, 992, "passes through the round hole in the left side wall", 12, anchor="middle", fill="#444")
     s.text(1640, 960, "Probe tip in the middle of the", 12, anchor="middle", fill="#444")
     s.text(1640, 976, "oven, next to the board, in air.", 12, anchor="middle", fill="#444")
 
@@ -536,7 +536,7 @@ def sheet_lv(path):
     s.text(225, 222, "KP200 in the lid (mains: sheet 1)", 12, "bold", "middle")
     usb_adapter(s, 318, 318)
     s.wire([(353, 318), (353, 156), (1420, 156), (1420, Y + 172), (X + w + 4, Y + 172)], "#555", 5, tag="USB", tagpos=(600, 156))
-    s.text(640, 148, "USB-A to USB-C cable, 5 V. Runs OUTSIDE the box and enters through the slot in the right wall.", 12.5, fill="#333")
+    s.text(640, 148, "USB-A to USB-C cable, 5 V. Runs OUTSIDE the box and enters through the slot in the left side wall.", 12.5, fill="#333")
     s.rect(1364, Y + 152, 14, 40, "#fff", "#555", 2, 3)
 
     # Wi-Fi link to the Shelly
@@ -578,15 +578,33 @@ def sheet_lv(path):
 
 
 # ====================================================================== sheet 3
-def sheet_layout(path, ko):
-    s = Sheet(1800, 1560, "Sheet 3 of 3 — Where everything sits (to scale) and how to get at it",
-              "Enclosure v12.1, 250 x 155 x 83 mm. Dimensions in mm, from the OpenSCAD model and its verified keep-out boxes. "
-              "View A is from above, standing at the front panel.")
-    K = 5.0
-    ox, oy = 60, 150
+# Model facts used below that are not keep-out boxes (all from the v13.0 SCAD)
+BOX_W, BOX_D, BOX_H, SHELL_H, WALL = 184, 140, 83, 80, 3
+FP_IN = BOX_D - 3
+LV_X0, LV_SIDE = 92, 90                 # pocket interior starts / its side wall starts
+LV_LOW, LV_TOP = (104, 106), (118, 120)  # pocket rear wall, lower and upper part (Y)
+LV_STEP = (58, 72)                      # the wall leans forward between these heights
+POSTS = [(3, 12, 127.6), (79, 92, 127.6), (92, 101, 127), (172, 181, 127)]
+LID_SCREWS = [(7.5, 132.3), (83.5, 132.3), (7.5, 7.5), (7.5, 68.5), (82, 7.5), (176.5, 7.5), (176.5, 50), (176.5, 115)]
+TIE_ANCHORS = [(48, 20), (80, 20), (100, 84)]
+VENT = dict(x0=14, x1=80, yc=105.3, n=6, gap=6, w=3)
+INTAKE = dict(x0=15.5, x1=78.5, z0=6, z1=30)
+HOLD = dict(x0=10, x1=86.4, y0=80.4, y1=82.8, yend=124, z=54.5)
+LID_RIBS = [(86.5, 180.5, 12.6, 15.0), (93, 180, 121.7, 124.1)]   # x0, x1, y0, y1; both 8 mm tall
+KP_FACE = (87, 2, 172, 131)
+DROK_FACE = (7.75, 14, 84.25, 62)
+SADDLE = (133, 106.5, 167, 125.3)
 
-    def px(x):   # plan: +X is on the viewer's left when standing at the front
-        return ox + (250 - x) * K
+
+def sheet_layout(path, ko):
+    s = Sheet(1800, 2075, "Sheet 3 of 3 — Where everything sits (to scale) and how to get at it",
+              "Enclosure v13.0, 184 x 140 x 83 mm. Dimensions in mm, from the OpenSCAD model and its verified keep-out boxes. "
+              "Left and right are as you stand at the front panel, facing the display.")
+    K = 6.6
+    ox, oy = 70, 150
+
+    def px(x):   # plan: model +X is on your left when you stand at the front
+        return ox + (BOX_W - x) * K
 
     def py(y):   # rear wall at the top, front panel at the bottom
         return oy + y * K
@@ -599,186 +617,276 @@ def sheet_layout(path, ko):
         for i, t in enumerate(lines):
             s.text(cx, cy + i * 16, t, size, weight if i == 0 else "normal", "middle", fill)
 
-    s.text(ox, oy - 14, "A. Top view, lid removed (lid-mounted parts shown as dashed outlines)", 16, "bold")
-    prect(0, 0, 250, 155, "#f3f5f7", "#333", 3, rx=6)
-    prect(3, 3, 247, 152, "#ffffff", "#999", 1)
-    prect(156, 0, 158, 152, "#6b7480", "#444", 1)
-    prect(0, 152, 250, 155, "#44505c", "#222", 1)
-    s.text(px(125), py(155) + 20, "FRONT PANEL (display side)  —  you stand here", 13, "bold", "middle")
-    s.text(px(60), py(0) + 12, "REAR WALL", 11, "bold", "middle", "#555")
-    s.text(px(250) - 8, py(77), "RIGHT WALL: USB-C slot + thermocouple hole", 12, "bold", "middle", "#555", rot=-90)
-    s.text(px(0) + 16, py(77), "LEFT WALL: oven socket", 12, "bold", "middle", "#555", rot=90)
-    s.text(px(45), py(10) + 5, "AC BAY", 14, "bold", "middle", "#b22222")
-    s.text(px(203), py(10) + 5, "DC BAY", 14, "bold", "middle", BLUE)
-
     def k(n):
         return ko[n]
-    (x0, y0, z0), (x1, y1, z1) = k("heatsink"); prect(x0, y0, x1, y1, "url(#fins)", "#6f7780"); plabel(x0, y0, x1, y1, ["Heatsink", "fins front-to-back, top at z 54"])
+
+    s.text(ox, oy - 14, "A. Top view, lid removed (parts that hang from the lid are dashed)", 16, "bold")
+    prect(0, 0, BOX_W, BOX_D, "#f3f5f7", "#333", 3, rx=6)
+    prect(3, 3, BOX_W - 3, FP_IN, "#ffffff", "#999", 1)
+    # display pocket
+    prect(LV_X0, LV_LOW[1], BOX_W - 3, FP_IN, "#eef5ff", "none", 0, rx=0)
+    prect(LV_SIDE, LV_LOW[0], BOX_W - 3, LV_LOW[1], "#6b7480", "#444", 1, rx=0)
+    prect(LV_SIDE, LV_LOW[0], LV_X0, FP_IN, "#6b7480", "#444", 1, rx=0)
+    prect(LV_X0, LV_TOP[0], BOX_W - 3, LV_TOP[1], "none", "#6b7480", 1.2, "5,4", rx=0)
+    prect(0, FP_IN, BOX_W, BOX_D, "#44505c", "#222", 1)
+    for x0, x1, y0 in POSTS:
+        prect(x0, y0, x1, FP_IN, "#aeb7c1", "#555", 1, rx=1)
+    s.text(px(BOX_W / 2), py(BOX_D) + 22, "FRONT PANEL  —  you stand here", 13.5, "bold", "middle")
+    s.text(px(60), py(0) - 6, "REAR WALL", 11.5, "bold", "middle", "#555")
+    s.text(px(BOX_W) - 10, py(62), "LEFT SIDE WALL: USB-C slot + thermocouple hole", 12, "bold", "middle", "#555", rot=-90)
+    s.text(px(0) + 18, py(84), "RIGHT SIDE WALL: oven socket", 12, "bold", "middle", "#555", rot=90)
+
+    (x0, y0, z0), (x1, y1, z1) = k("heatsink"); prect(x0, y0, x1, y1, "url(#fins)", "#6f7780"); plabel(x0, y0 + 26, x1, y1, ["Heatsink", "drops into its fence, top at z 54"])
     (x0, y0, z0), (x1, y1, z1) = k("ssr"); prect(x0, y0, x1, y1, "#f2f2f2", "#222", 2); plabel(x0, y0, x1, y1, ["SSR-40DA"])
-    s.text(px(140), py(86), "1 2", 11, "bold", "middle", "#b22222"); s.text(px(88), py(86), "3 4", 11, "bold", "middle", BLUE)
-    (x0, y0, z0), (x1, y1, z1) = k("ssr_wiring_zone"); prect(x0, y0, x1, y1, "#fff4d6", "#c79a1e", 1, "5,4"); s.text(px(92), py(69.5), "SSR wire bends", 10.5, anchor="middle", fill="#7a5c00")
-    (x0, y0, z0), (x1, y1, z1) = k("inlet"); prect(x0, y0, x1, y1, "#262626", "#111", 2); plabel(x0, y0, x1, y1 - 14, ["FILSHU inlet", "body + wire space", "z 17-45 (under the meter)"], 12, "#fff")
+    s.text(px(x0) - 6, py((y0 + y1) / 2) + 4, "1 2", 11, "bold", "end", "#b22222"); s.text(px(x1) + 6, py((y0 + y1) / 2) + 4, "3 4", 11, "bold", "start", BLUE)
+    (x0, y0, z0), (x1, y1, z1) = k("ssr_wiring_zone"); prect(x0, y0, x1, y1, "#fff4d6", "#c79a1e", 1, "5,4")
+    (a0, b0, c0), (a1, b1, c1) = k("ssr_ac_wire_channel"); prect(a0, b0, a1, b1, "#ffe9e9", "#b22222", 1, "4,3")
+    (a0, b0, c0), (a1, b1, c1) = k("ssr_dc_wire_zone"); prect(a0, b0, a1, b1, "#e8f1ff", BLUE, 1, "4,3")
+    (x0, y0, z0), (x1, y1, z1) = k("junction_zone"); prect(x0, y0, x1, y1, "#e9f7ee", "#1a8f3a", 2, "6,4")
+    (x0, y0, z0), (x1, y1, z1) = k("inlet"); prect(x0, y0, x1, y0 + 28, "#262626", "#111", 2); prect(x0, y0 + 28, x1, y1, "#777", "#111", 1, "4,3", 0.45)
+    plabel(x0, y0, x1, y0 + 28, ["FILSHU inlet", "z 5-33"], 12, "#fff")
     (x0, y0, z0), (x1, y1, z1) = k("oven_socket"); prect(x0, y0, x1, y1, "#2a2a2a", "#111", 2); plabel(x0, y0, x1, y1, ["Oven", "socket"], 12, "#fff")
-    (x0, y0, z0), (x1, y1, z1) = k("shelly"); prect(x0, y0, x1, y1, "#1c3f6e", "#0d2240", 2); s.text(px(11.6), py(86), "Shelly 1PM", 12, "bold", "middle", "#fff", rot=90)
-    (x0, y0, z0), (x1, y1, z1) = k("max6675"); prect(x0, y0, x1, y1, "#1b4fa0", "#0d2a59", 2); plabel(x0, y0 - 12, x1, y0, ["MAX6675"], 12)
-    (x0, y0, z0), (x1, y1, z1) = k("crow_pcb"); prect(x0, y0, x1, y1, "#12233a", "#0a1322", 2); plabel(x0, y0 - 16, x1 - 40, y0 - 8, ["CrowPanel"], 12)
-    prect(36, 13, 78, 45, "#e9f7ee", "#1a8f3a", 2, "6,4"); plabel(36, 13, 78, 45, ["CT clamp + Wagos", "lie here on the floor", "(42 x 32, free to z 35)"], 11.5, "#14592a")
-    prect(64, 6, 96, 14, "none", "none", 0)
-    for bx_, by_ in ((10, 10), (80, 10), (10, 55), (168, 10), (237, 10)):
-        s.circ(px(bx_), py(by_), 4.25 * K, "#dfe4ea", "#555", 1.5); s.circ(px(bx_), py(by_), 1.6 * K, "#fff", "#555", 1)
+    (x0, y0, z0), (x1, y1, z1) = k("shelly"); prect(x0, y0, x1, y1, "#1c3f6e", "#0d2240", 2); s.text(px((x0 + x1) / 2) + 4, py((y0 + y1) / 2), "Shelly 1PM", 12, "bold", "middle", "#fff", rot=-90)
+    prect(*SADDLE, "#cfd8e3", "#555", 1)
+    (x0, y0, z0), (x1, y1, z1) = k("max6675"); prect(x0, y0, x1, y1, "#1b4fa0", "#0d2a59", 2); plabel(x0, y0, x1, y1, ["MAX6675"], 12, "#fff")
+    (x0, y0, z0), (x1, y1, z1) = k("crow_pcb"); prect(x0, y0, x1, y1, "#12233a", "#0a1322", 2); plabel(x0, y0, x1, y1, ["CrowPanel on the front panel"], 11.5, "#fff")
+    for ax, ay in TIE_ANCHORS:
+        prect(ax - 4.5, ay - 2.5, ax + 4.5, ay + 2.5, "#ffffff", "#1a8f3a", 1.5, rx=1)
+    for bx_, by_ in LID_SCREWS:
+        s.circ(px(bx_), py(by_), 4.0 * K, "#dfe4ea", "#555", 1.5); s.circ(px(bx_), py(by_), 1.6 * K, "#fff", "#555", 1)
+
     # lid-mounted parts (dashed)
-    (x0, y0, z0), (x1, y1, z1) = k("kp200_body"); prect(x0, y0, x1, y1, "#f1f1f1", "#555", 2, "7,4", 0.75); plabel(x0, y0 + 36, x1, y1, ["KP200 body", "hangs from the lid", "z 35-80"], 12)
-    prect(5, 17, 90, 146, "none", "#555", 1.5, "3,5")
-    s.text(px(47.5), py(140), "KP200 faceplate on top of the lid (85 x 129)", 11, anchor="middle", fill="#555")
+    (x0, y0, z0), (x1, y1, z1) = k("kp200_body"); prect(x0, y0, x1, y1, "#f1f1f1", "#555", 2, "7,4", 0.72); plabel(x0, y0 + 30, x1, y1, ["KP200 body", "hangs from the lid, z 35-80", "inlet wires run underneath"], 12)
+    prect(*KP_FACE, "none", "#555", 1.5, "3,5")
+    s.text(px(158.5), py(24), "KP200 faceplate", 10.5, "bold", "middle", "#555")
+    s.text(px(158.5), py(26.6), "on top of the lid, 85 x 129", 10.5, anchor="middle", fill="#555")
     (x0, y0, z0), (x1, y1, z1) = k("drok_meter")
-    mcx, mcy = (x0 + x1) / 2, (y0 + y1) / 2
-    prect(mcx - 24, mcy - 38.25, mcx + 24, mcy + 38.25, "none", "#b22222", 2, "3,5")
-    prect(x0, y0, x1, y1, "#4a90d9", "#b22222", 3.5, "8,4", 0.22)
-    s.rect(px(x1) + 6, py(52.5), (x1 - x0) * K - 12, 17 * K, "#ffffff", "#b22222", 1.5, 5, op=0.92)
-    plabel(x0, 52.5, x1, 69.5, ["DROK meter (in the lid)", "body 45 x 73.4, z 58.5-80", "face 48 x 76.5 on top"], 12, "#8a1010")
-    # vents
-    for i in range(6):
-        vy = 122.3 - 15 + i * 6 - 1.5
-        prect(80, vy, 146, vy + 3, "none", "#888", 1, "2,3", rx=1)
-    s.text(px(113), py(101.5), "lid vent slots above the heatsink", 10.5, anchor="middle", fill="#555")
+    prect(*DROK_FACE, "none", "#b22222", 2, "3,5")
+    prect(x0, y0, x1, y1, "#4a90d9", "#b22222", 3, "8,4", 0.2)
+    s.rect(px(x1) + 14, py(33.6), (x1 - x0) * K - 28, 9.6 * K, "#ffffff", "#b22222", 1.5, 5, op=0.95)
+    plabel(x0, 33.6, x1, 43.2, ["DROK meter (in the lid)", "body 73.4 x 45, z 58.5-80", "face 76.5 x 48 on top, reads from the front"], 12, "#8a1010")
+    s.text(px(65), py(27.6), "Wagos + CT on the floor", 11.5, "bold", "middle", "#14592a")
+    s.text(px(65), py(30.3), "58 x 37, free to z 40", 10.5, anchor="middle", fill="#14592a")
+    for i in range(VENT["n"]):
+        vy = VENT["yc"] - (VENT["n"] - 1) * VENT["gap"] / 2 + i * VENT["gap"] - VENT["w"] / 2
+        prect(VENT["x0"], vy, VENT["x1"], vy + VENT["w"], "none", "#888", 1, "2,3", rx=1)
+    s.text(px(47), py(86.8), "lid vent slots", 10.5, anchor="middle", fill="#555")
+    # lid ribs
+    prect(HOLD["x0"], HOLD["y0"], HOLD["x1"], HOLD["y1"], "#f5c16c", "#a86a00", 1, rx=0, op=0.85)
+    prect(HOLD["x1"] - 2.4, HOLD["y0"], HOLD["x1"], HOLD["yend"], "#f5c16c", "#a86a00", 1, rx=0, op=0.85)
+    for rx0, rx1, ry0, ry1 in LID_RIBS:
+        prect(rx0, ry0, rx1, ry1, "#f5c16c", "#a86a00", 1, rx=0, op=0.85)
 
-    # dimensions on plan
-    def hdim(xa, xb, y, lab, above=True):
-        s.line(px(xa), py(y), px(xb), py(y), "#b22222", 1.5, arrow="arr")
-        s.line(px(xb), py(y), px(xa), py(y), "#b22222", 1.5, arrow="arr")
-        s.text((px(xa) + px(xb)) / 2, py(y) + (-5 if above else 15), lab, 11.5, "bold", "middle", "#b22222")
+    # callouts
+    def call(x, y, tx, ty, lines, anchor="start", col="#333"):
+        s.line(px(x), py(y), tx, ty, col, 1.2)
+        s.circ(px(x), py(y), 3, col, col, 0)
+        for i, t in enumerate(lines):
+            s.text(tx + (5 if anchor == "start" else -5), ty + 4 + i * 15, t, 11, "bold" if i == 0 else "normal", anchor, col)
 
-    hdim(90, 106, 76, "16", True)
-    s.line(px(149), py(80.5), px(149), py(105.8), "#b22222", 1.5, arrow="arr"); s.line(px(149), py(105.8), px(149), py(80.5), "#b22222", 1.5, arrow="arr")
-    s.text(px(149) + 7, py(100), "25 to vents", 11, "bold", fill="#b22222")
-
-    # wire run arrows (plan)
-    def run(pts, col, lab=None, lpos=None):
+    def run(pts, col):
         d = " ".join(f"{px(x):.0f},{py(y):.0f}" for x, y in pts)
         s.raw(f'<polyline points="{d}" fill="none" stroke="{col}" stroke-width="3.5" stroke-dasharray="2,7" stroke-linecap="round"/>')
         s.circ(px(pts[-1][0]), py(pts[-1][1]), 5, col, col, 0)
-        if lab:
-            s.text(px(lpos[0]), py(lpos[1]), lab, 11, "bold", "middle", col)
 
-    run([(96, 49), (86, 49), (76, 40)], "#111")
-    s.text(px(86), py(47), "inlet → Wagos", 10.5, "bold", "middle")
-    run([(19.6, 74), (30, 71), (82, 71)], "#111", "Shelly O → SSR 1", (50, 75))
-    run([(82, 63), (58, 63), (55, 45), (35, 36)], "#111", "SSR 2 → CT → socket hot", (52, 61))
-    run([(144, 84), (158, 84), (166, 110), (170, 138)], BLUE)
-    s.text(px(186), py(106), "SSR 3/4 → J7", 11, "bold", "middle", BLUE)
-    s.text(px(186), py(110), "through the U-slot", 10.5, anchor="middle", fill=BLUE)
-    run([(186, 38), (212, 60), (212, 138)], BLUE)
-    s.text(px(228), py(84), "MAX6675", 11, "bold", "middle", BLUE)
-    s.text(px(228), py(88), "→ J6 / J10", 11, "bold", "middle", BLUE)
+    run([(100, 40), (92, 30)], "#111")
+    run([(166, 62), (158, 54), (100, 54), (88, 49), (12, 49)], "#111")
+    run([(8, 45), (14, 39), (22, 33)], "#111")
+    run([(80, 66), (86, 80), (97, 100), (97, 108), (112, 126)], BLUE)
+    run([(181, 116), (170, 116), (166, 116)], BLUE)
 
-    # ---------------------------------------------------------------- section
-    sx, sy = 60, 1010
-    Ks = 5.2
+    # ---------------------------------------------------------------- notes column
+    nx = 1330
+    s.text(nx, 150, "What the dotted wire runs are", 15, "bold")
+    s.note(nx, 172, [
+        "Black: inlet → Wagos · Shelly O → SSR 1 (along the floor,",
+        "  behind the SSR) · SSR 2 → CT → oven socket hot.",
+        "Blue: SSR 3 / 4 → slot in the pocket wall → J7 ·",
+        "  thermocouple → hole in the left side wall → MAX6675.",
+        "Orange bars: ribs on the underside of the lid.",
+        "Green outlines on the floor: cable-tie anchors.",
+    ], 12, lh=18)
+    s.text(nx, 304, "Mounting, part by part", 16, "bold")
+    s.note(nx, 328, [
+        "Heatsink + SSR",
+        "• Wire the SSR on the bench, then lower the pair into",
+        "  the 5 mm fence. Terminals 1 / 2 end up toward the",
+        "  oven socket, 3 / 4 toward the display pocket.",
+        "• An L-shaped rib under the lid stops 0.5 mm above",
+        "  the heatsink, so it cannot lift out of the fence.",
+        "",
+        "DROK meter",
+        "• Snaps into a 74.0 x 45.6 mm hole in the lid from",
+        "  above, long side left-to-right. Turn it so the digits",
+        "  are upright from the front. Fit the coupon first.",
+        "",
+        "KP200",
+        "• Two screws into the lid bosses, as before. Its body",
+        "  hangs over the inlet wiring; its faceplate reaches",
+        "  over the display pocket.",
+        "",
+        "Wagos and CT",
+        "• Loose on the floor between the oven socket and the",
+        "  inlet, held by cable ties through the two anchors.",
+        "  Clip the CT around the SSR 2 → socket hot wire only.",
+        "",
+        "Shelly",
+        "• Drops into its pocket on the left side wall. The lid",
+        "  boss behind it is clear of its way in.",
+        "",
+        "MAX6675",
+        "• Lay a cable tie under the saddle's bar first, set the",
+        "  board on the two pads, then close the tie over it.",
+        "  Fits boards 25 to 32.5 mm long, up to 16 mm wide.",
+        "",
+        "Display",
+        "• Four standoffs on the back of the front panel,",
+        "  connectors down, USB-C toward the left side wall.",
+    ], 12.5, lh=19)
+    for row in (0, 7, 12, 17, 22, 26, 31):
+        s.rect(nx - 10, 328 + row * 19 - 14, 5, 19, "#b22222", "#b22222", 0, 1)
 
-    def qy(y):
-        return sx + y * Ks
+    # ---------------------------------------------------------------- sections
+    Ks = 5.3
 
-    def qz(z):
-        return sy + (95 - z) * Ks
+    def make_section(sx, sy):
+        def qy(y):
+            return sx + y * Ks
 
-    def qrect(y0, z0, y1, z1, fill, stroke="#333", sw=1.5, dash=None, op=None):
-        s.rect(qy(y0), qz(z1), (y1 - y0) * Ks, (z1 - z0) * Ks, fill, stroke, sw, 2, dash, op)
+        def qz(z):
+            return sy + (BOX_H + 8 - z) * Ks
 
-    s.text(sx, sy - 14, "B. Side section through the meter (cut at X = 130, looking from the divider toward the left wall)", 16, "bold")
-    qrect(0, 0, 152, 3, "#c9d1d9"); qrect(0, 0, 3, 80, "#c9d1d9"); qrect(152, 0, 155, 80, "#44505c")
-    qrect(0, 80, 155, 83, "#c9d1d9", "#333", 2)
+        def qrect(y0, z0, y1, z1, fill, stroke="#333", sw=1.5, dash=None, op=None):
+            s.rect(qy(y0), qz(z1), (y1 - y0) * Ks, (z1 - z0) * Ks, fill, stroke, sw, 2, dash, op)
+
+        def qpoly(pts, fill, stroke="#333", sw=1.5):
+            d = " ".join(f"{qy(y):.1f},{qz(z):.1f}" for y, z in pts)
+            s.raw(f'<polygon points="{d}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>')
+
+        def vdim(y, za, zb, lab, side=1):
+            s.line(qy(y), qz(za), qy(y), qz(zb), "#b22222", 1.5, arrow="arr"); s.line(qy(y), qz(zb), qy(y), qz(za), "#b22222", 1.5, arrow="arr")
+            s.text(qy(y) + 7 * side, qz((za + zb) / 2) + 4, lab, 11.5, "bold", "start" if side > 0 else "end", "#b22222")
+
+        def hdim(ya, yb, z, lab, above=True):
+            s.line(qy(ya), qz(z), qy(yb), qz(z), "#b22222", 1.5, arrow="arr"); s.line(qy(yb), qz(z), qy(ya), qz(z), "#b22222", 1.5, arrow="arr")
+            s.text(qy((ya + yb) / 2), qz(z) + (-5 if above else 15), lab, 11.5, "bold", "middle", "#b22222")
+
+        def shell():
+            qrect(0, 0, FP_IN, 3, "#c9d1d9"); qrect(0, 0, 3, SHELL_H, "#c9d1d9")
+            qrect(0, SHELL_H, BOX_D, BOX_H, "#c9d1d9", "#333", 2)
+            s.text(qy(70), qz(-5.5), "floor", 11, anchor="middle", fill="#555")
+            s.text(qy(-2), qz(40), "rear wall", 11, "bold", "middle", "#555", rot=-90)
+            s.text(qy(BOX_D + 3.5), qz(40), "front panel", 11, "bold", "middle", "#555", rot=90)
+        return qy, qz, qrect, qpoly, vdim, hdim, shell
+
+    # --- B: through the heatsink column
+    sx, sy = 70, 1215
+    qy, qz, qrect, qpoly, vdim, hdim, shell = make_section(sx, sy)
+    s.text(sx, sy - 16, "B. Section through the heatsink, seen from the left side", 16, "bold")
+    shell()
+    qrect(FP_IN, 0, BOX_D, SHELL_H, "#44505c")
+    s.rect(qy(FP_IN) - 1, qz(INTAKE["z1"]), 3 * Ks + 2, (INTAKE["z1"] - INTAKE["z0"]) * Ks, "#ffffff", "#ffffff", 0, 0)
     (x0, y0, z0), (x1, y1, z1) = k("drok_meter")
-    s.rect(qy(y0 - 0.3), qz(83.2), (y1 - y0 + 0.6) * Ks, 3.4 * Ks, "#ffffff", "#ffffff", 0, 0)   # cutout through the lid
-    for i in range(6):
-        vy = 122.3 - 15 + i * 6 - 1.5
-        s.rect(qy(vy), qz(83.2), 3 * Ks, 3.4 * Ks, "#ffffff", "#ffffff", 0, 0)
-    (a0, b0, c0), (a1, b1, c1) = k("inlet"); qrect(0, c0, b0 + 28, c1, "#262626", "#111", 2); qrect(b0 + 28, c0, b1, c1, "#555", "#111", 1, "4,3", 0.5)
-    s.text(qy(17), qz(29), "Inlet body", 12, "bold", "middle", "#fff"); s.text(qy(41), qz(29), "its wires", 11, anchor="middle", fill="#fff")
-    (a0, b0, c0), (a1, b1, c1) = k("ssr_wiring_zone"); qrect(b0, c0, b1, c1, "#fff4d6", "#c79a1e", 1, "5,4"); s.text(qy((b0 + b1) / 2), qz(28), "SSR wire", 11.5, "bold", "middle", "#7a5c00"); s.text(qy((b0 + b1) / 2), qz(24), "bends", 11.5, "bold", "middle", "#7a5c00")
+    s.rect(qy(y0 - 0.3), qz(BOX_H + 0.2), (y1 - y0 + 0.6) * Ks, 3.4 * Ks, "#ffffff", "#ffffff", 0, 0)
+    for i in range(VENT["n"]):
+        vy = VENT["yc"] - (VENT["n"] - 1) * VENT["gap"] / 2 + i * VENT["gap"] - VENT["w"] / 2
+        s.rect(qy(vy), qz(BOX_H + 0.2), VENT["w"] * Ks, 3.4 * Ks, "#ffffff", "#ffffff", 0, 0)
+    (a0, b0, c0), (a1, b1, c1) = k("junction_zone"); qrect(b0, c0, b1, c1, "#e9f7ee", "#1a8f3a", 1.5, "6,4")
+    s.text(qy((b0 + b1) / 2), qz(27), "Wagos + CT", 12, "bold", "middle", "#14592a"); s.text(qy((b0 + b1) / 2), qz(22.5), "loose, cable-tied", 11, anchor="middle", fill="#14592a")
+    qrect(17.5, 3, 22.5, 8, "#ffffff", "#1a8f3a", 1.5)
+    (a0, b0, c0), (a1, b1, c1) = k("ssr_wiring_zone"); qrect(b0, c0, b1, c1, "#fff4d6", "#c79a1e", 1, "5,4"); s.text(qy((b0 + b1) / 2), qz(30), "SSR", 11, "bold", "middle", "#7a5c00"); s.text(qy((b0 + b1) / 2), qz(26), "screws", 11, "bold", "middle", "#7a5c00")
     (a0, b0, c0), (a1, b1, c1) = k("ssr"); qrect(b0, c0, b1, c1, "#f2f2f2", "#222", 2); s.text(qy((b0 + b1) / 2), qz(28), "SSR", 13, "bold", "middle")
     (a0, b0, c0), (a1, b1, c1) = k("heatsink"); qrect(b0, c0, b1, c1, "url(#fins)", "#6f7780", 2); s.text(qy((b0 + b1) / 2), qz(28), "Heatsink", 13, "bold", "middle")
     qrect(y0, z0, y1, z1, "#0b2a5c", "#b22222", 2.5)
-    qrect(y0 - 1.57, 83, y1 + 1.57, 85.5, "#1d1d1d", "#000", 2)
+    qrect(DROK_FACE[1], BOX_H, DROK_FACE[3], BOX_H + 2.5, "#1d1d1d", "#000", 2)
     (a0, b0, c0), (a1, b1, c1) = k("drok_terminals"); qrect(b0, c0, b1, c1, "#e9f7ee", "#1a8f3a", 1.5, "5,4")
-    s.text(qy((y0 + y1) / 2), qz(70.5), "DROK meter body 21.5 deep", 12.5, "bold", "middle", "#fff")
-    s.text(qy((y0 + y1) / 2), qz(66), "snaps in from above, clips grip the lid", 11.5, anchor="middle", fill="#cfe0f5")
-    s.text(qy(36), qz(53.5), "7 mm: screw heads + wires", 11, "bold", "middle", "#14592a")
-    s.text(qy((y0 + y1) / 2), qz(88), "face 76.5 long, sits on top of the lid", 11.5, "bold", "middle")
-    s.text(qy(122), qz(88), "vent slots", 11.5, anchor="middle", fill="#555")
-    s.text(qy(77), qz(-5.5), "floor", 11, anchor="middle", fill="#555")
-    s.text(qy(-2), qz(40), "rear wall", 11, "bold", "middle", "#555", rot=-90)
-    s.text(qy(158.5), qz(40), "front panel", 11, "bold", "middle", "#555", rot=90)
+    s.text(qy((y0 + y1) / 2), qz(70.5), "DROK meter body", 12.5, "bold", "middle", "#fff")
+    s.text(qy((y0 + y1) / 2), qz(66), "21.5 deep, clips grip the lid", 11, anchor="middle", fill="#cfe0f5")
+    s.text(qy((y0 + y1) / 2), qz(53.6), "7 mm: its screws + wires", 10.5, "bold", "middle", "#14592a")
+    qrect(HOLD["y0"], HOLD["z"], HOLD["y1"], SHELL_H, "#f5c16c", "#a86a00", 1.5)
+    s.text(qy(86), qz(66), "hold-down rib", 11, "bold", fill="#7a4d00"); s.text(qy(86), qz(62), "0.5 above the heatsink", 10.5, fill="#7a4d00")
+    s.text(qy(105), qz(BOX_H + 3.2), "vent slots", 11, anchor="middle", fill="#555")
+    s.text(qy(132), qz(42), "intake", 10.5, "bold", "middle", "#555", rot=-90)
+    hdim(127, FP_IN, 58, "10", True)
+    vdim(70, 51, 58.53, "7.5", -1)
+    vdim(118, 54, 80, "26 to the lid")
 
-    def vdim(y, za, zb, lab, side=1):
-        s.line(qy(y), qz(za), qy(y), qz(zb), "#b22222", 1.5, arrow="arr"); s.line(qy(y), qz(zb), qy(y), qz(za), "#b22222", 1.5, arrow="arr")
-        s.text(qy(y) + 7 * side, qz((za + zb) / 2) + 4, lab, 11.5, "bold", "start" if side > 0 else "end", "#b22222")
+    # --- C: through the display pocket
+    sx2 = 70 + (BOX_D + 22) * Ks
+    qy, qz, qrect, qpoly, vdim, hdim, shell = make_section(sx2, sy)
+    s.text(sx2, sy - 16, "C. Section through the KP200 and the display pocket, seen from the left side", 16, "bold")
+    shell()
+    # pocket wall (stepped), drawn as two faces 2 mm apart
+    qpoly([(104, 3), (104, 58), (118, 72), (118, 80), (120, 80), (120, 70.6), (106, 56.6), (106, 3)], "#6b7480", "#444", 1)
+    # front panel with window, and the lid bead in its top chamfer
+    (a0, b0, c0), (a1, b1, c1) = k("crow_lcm")
+    qpoly([(FP_IN, 0), (BOX_D, 0), (BOX_D, 78.5), (138.5, SHELL_H), (FP_IN, SHELL_H)], "#44505c", "#222", 1.2)
+    s.rect(qy(FP_IN) - 1, qz(67.1), 3 * Ks + 2, 44.2 * Ks, "#bfe3ff", "#ffffff", 0, 0)
+    qpoly([(138.8, SHELL_H), (BOX_D, SHELL_H), (BOX_D, 78.8)], "#c9d1d9", "#333", 1)
+    (a0, b0, c0), (a1, b1, c1) = k("inlet"); qrect(0, c0, b0 + 28, c1, "#262626", "#111", 2); qrect(b0 + 28, c0, b1, c1, "#777", "#111", 1, "4,3", 0.5)
+    s.text(qy(17), qz(17), "Inlet body", 12, "bold", "middle", "#fff"); s.text(qy(41), qz(17), "its wires", 11, anchor="middle", fill="#fff")
+    (a0, b0, c0), (a1, b1, c1) = k("kp200_body")
+    s.rect(qy(b0 + 2), qz(BOX_H + 0.2), (b1 - b0 - 4) * Ks, 3.4 * Ks, "#ffffff", "#ffffff", 0, 0)
+    qrect(b0, c0, b1, c1 + 3, "#f1f1f1", "#555", 2)
+    qrect(KP_FACE[1], BOX_H, KP_FACE[3], BOX_H + 2.5, "#fafafa", "#555", 1.5)
+    s.text(qy((b0 + b1) / 2), qz(62), "KP200 body", 13, "bold", "middle"); s.text(qy((b0 + b1) / 2), qz(57), "hangs from the lid", 11.5, anchor="middle", fill="#444")
+    s.text(qy(45), qz(BOX_H + 4.2), "KP200 faceplate, 129 long", 11, "bold", "middle", "#444")
+    for rx0, rx1, ry0, ry1 in LID_RIBS:
+        qrect(ry0, 72, ry1, SHELL_H, "#f5c16c", "#a86a00", 1.2)
+    (a0, b0, c0), (a1, b1, c1) = k("max6675"); qrect(SADDLE[1], 3, SADDLE[3], 7, "#cfd8e3", "#555", 1); qrect(b0, c0, b1, c1, "#1b4fa0", "#0d2a59", 1.5)
+    s.text(qy((b0 + b1) / 2), qz(12.5), "MAX", 10.5, "bold", "middle", "#fff")
+    (a0, b0, c0), (a1, b1, c1) = k("crow_pcb"); qrect(b0, c0, b1 - 1.6, c1, "#31486b", "#0a1322", 1, "3,3", 0.45); qrect(b1 - 1.6, c0, b1, c1, "#12233a", "#0a1322", 1.5)
+    (a0, b0, c0), (a1, b1, c1) = k("crow_lcm"); qrect(b0, c0, b1, c1, "#8fb8e8", "#0a1322", 1)
+    s.text(qy(113), qz(44), "display", 11, "bold", "middle", BLUE); s.text(qy(113), qz(40), "pocket", 11, "bold", "middle", BLUE); s.text(qy(113), qz(36), "3.3 / 5 V", 10.5, anchor="middle", fill=BLUE)
+    s.text(qy(80), qz(20), "mains bay: wiring space", 11.5, "bold", "middle", "#b22222"); s.text(qy(80), qz(15.5), "under the KP200", 11, anchor="middle", fill="#b22222")
+    vdim(55, 3, 35, "32", 1)
+    hdim(106, FP_IN, 9.5 + 15, "31", True)
+    hdim(120, FP_IN, 75.2, "17", True)
+    s.line(qy(139.4), qz(79.4), qy(133), qz(88.5), "#333", 1.2); s.text(qy(133) - 4, qz(88.5) + 4, "lid bead holds the panel's top edge", 11, "bold", "end")
 
-    vdim(30, 44.75, 51.5, "6.8 clear above the inlet")
-    vdim(75, 51, 58.5, "7.5 SSR top to meter", 1)
-    vdim(118, 54, 80, "26 heatsink to lid")
-    vdim(83.5, 58.5, 80, "21.5", 1)
+    # ---------------------------------------------------------------- bottom band
+    by0 = 1790
+    s.rect(56, by0 - 26, 500, 232, "#f7f9fb", "#b8c2cc", 1.2, 8)
+    s.text(70, by0, "Clearances (mm)", 15, "bold")
+    table(s, 70, by0 + 10, ["Between", "Gap"], [
+        ["Heatsink ↔ front panel (intake plenum)", "10"],
+        ["Heatsink top ↔ lid rib / lid", "0.5 / 26"],
+        ["SSR top ↔ meter body", "7.5"],
+        ["KP200 body ↔ inlet top / floor", "2.3 / 32"],
+        ["KP200 body ↔ pocket wall / Shelly", "2.3 / 12.4"],
+        ["KP200 body ↔ heatsink fence (wire channel)", "17"],
+        ["Meter face ↔ lid vent slots", "26.8"],
+    ], [390, 82], 12.5, 24)
 
-    # ---------------------------------------------------------------- notes
-    nx = 1375
-    s.text(nx - 20, 150, "Mounting and orientation", 17, "bold")
-    s.note(nx - 20, 176, [
-        "DROK meter",
-        "• Snaps into a 45.6 x 74.0 mm hole in the lid, from above.",
-        "  No screws. Print the cutout coupon first and pick",
-        "  the cell it clicks into without rattling.",
-        "• Long axis runs front-to-back. Crosswise does not",
-        "  fit: only 66 mm between the KP200 faceplate and",
-        "  the divider, and the body is 73.4 mm.",
-        "• The hole is symmetric, so choose which way it",
-        "  reads at assembly: turn it so the digits are",
-        "  upright from the side you stand at (left-wall end",
-        "  or display end).",
-        "• It stays in the AC bay: its L / N terminals are",
-        "  mains and must not enter the DC bay.",
-        "",
-        "CT clamp",
-        "• Clips around the SSR 2 → socket hot wire and",
-        "  lies on the AC floor between the oven socket and",
-        "  the inlet, with the Wagos. Zip-tie it to the wire",
-        "  so it cannot wander toward the heatsink.",
-        "",
-        "Service access",
-        "• Everything is reached by lifting the lid",
-        "  (9 screws). The meter and KP200 come up with it.",
-        "• Leave about 150 mm of slack in the meter's L / N",
-        "  and CT leads and the KP200 wires, so the lid can",
-        "  be laid on its back beside the box, still wired.",
-        "• To remove the meter: lid off, squeeze the two",
-        "  side clips, push it out upward.",
-        "• Route the meter leads along the rear wall, away",
-        "  from the heatsink and clear of the vent slots.",
-        "• Display, Grove cables: front panel (6 screws).",
-        "",
-        "Printing (Bambu X1C, ASA, no supports)",
-        "• Lid: outer face down, already mirrored.",
-        "  The meter hole is a plain through-cut.",
-        "• Only the lid changed from v12.0. The bottom",
-        "  shell and front panel are the same parts.",
-        "• Checked on the model: no overhang past 45°,",
-        "  no part-to-part or part-to-component overlap,",
-        "  no straight probe path to a live terminal.",
+    cx1 = 620
+    s.text(cx1, by0, "Service access", 16, "bold")
+    s.note(cx1, by0 + 26, [
+        "• Lid: 8 screws, all outside the KP200 faceplate. The meter and the",
+        "  KP200 come up with it. Leave 150 mm of slack in their wires so the",
+        "  lid can lie on its back beside the box, still connected.",
+        "• Front panel: 6 screws. With the lid on, swing the bottom edge out,",
+        "  then lower the panel out of the lid's bead. Refit top edge first.",
+        "• Display and Grove cables: on the front panel, in the pocket.",
+        "• Nothing stands on the floor between the parts: the lid bosses hang",
+        "  from the walls, so a wire can be laid in from above anywhere.",
+        "• Shelly, Wagos, inlet and socket terminals: lid off, all from above.",
     ], 12.5, lh=19.5)
-    for yy in (176, 176 + 14 * 19.5, 176 + 20 * 19.5, 176 + 32 * 19.5):
-        s.rect(nx - 28, yy - 15, 6, 20, "#b22222", "#b22222", 0, 1)
-
-    s.rect(nx - 30, 1010, 400, 300, "#f7f9fb", "#b8c2cc", 1.2, 8)
-    s.text(nx - 14, 1036, "Clearances (mm)", 15, "bold")
-    table(s, nx - 14, 1048, ["Between", "Gap"], [
-        ["Meter body ↔ divider", "3.5"],
-        ["Meter body ↔ rear wall", "2.6"],
-        ["Meter face ↔ KP200 faceplate", "16"],
-        ["Meter face ↔ lid vent slots", "25"],
-        ["Meter body ↔ SSR top", "7.5"],
-        ["Meter body ↔ inlet top", "13.8"],
-        ["Meter body ↔ KP200 body", "37"],
-        ["Heatsink top ↔ lid", "26"],
-        ["Meter ↔ Shelly", "88"],
-    ], [290, 78], 12.5, 24)
+    cx2 = 1210
+    s.text(cx2, by0, "Printing (Bambu X1C, ASA, no supports)", 16, "bold")
+    s.note(cx2, by0 + 26, [
+        "• Bottom: floor down. Lid: outer face down (already mirrored).",
+        "  Front panel: face down.",
+        "• Pierce the four thin skins in the KP200 holes with a 3.5 mm",
+        "  drill or the screw itself.",
+        "• Checked on the model: nothing overhangs past 45°, no Bambu",
+        "  'floating cantilever' warning, no overlap between parts or",
+        "  with a component, no straight probe path through any slot",
+        "  to a live terminal.",
+        "• The CrowPanel, inlet, socket, KP200 and meter coupons from",
+        "  v12 are unchanged and still valid.",
+    ], 12.5, lh=19.5)
+    for xx in (cx1, cx2):
+        s.rect(xx - 10, by0 - 15, 5, 20, "#b22222", "#b22222", 0, 1)
     s.save(path)
 
 
@@ -791,18 +899,25 @@ def read_keepouts(scad_log_lines):
     return ko
 
 
-# Keep-out boxes echoed by the SCAD model (openscad ... 2>&1 | grep "KO|"), v12.1
-KEEPOUTS = """KO|heatsink|73|94.6|3|153|144|54
-KO|ssr|82|71.1|6|144|94.6|51
-KO|ssr_wiring_zone|82|51.1|6|144|71.1|51
-KO|inlet|94|3|17.25|142|51|44.75
-KO|oven_socket|2.5|16.5|8.5|35|43.5|35.5
-KO|shelly|3.6|64.6|3|19.6|106.6|40
-KO|kp200_body|25|46.25|35|70|116.75|80
-KO|crow_pcb|160.05|140.75|18|245.75|147.9|72
-KO|max6675|168|22.5|8|186|37.5|9.6
-KO|drok_meter|107.5|5.565|58.53|152.5|78.935|80
-KO|drok_terminals|107.5|5.565|51.53|152.5|78.935|58.53""".splitlines()
+# Keep-out boxes echoed by the SCAD model (openscad ... 2>&1 | grep "KO|"), v13.0
+KEEPOUTS = """KO|heatsink|7|77.6|3|87|127|54
+KO|ssr|16|54.1|6|78|77.6|51
+KO|ssr_wiring_zone|16|40.1|6|78|54.1|51
+KO|ssr_ac_wire_channel|3|42.1|6|16|62.1|51
+KO|ssr_dc_wire_zone|78|42.1|6|90|74.5|51
+KO|inlet|96|3|5.25|144|51|32.75
+KO|oven_socket|2.5|7.5|8.5|35|34.5|35.5
+KO|shelly|164.4|58.6|3|180.4|100.6|40
+KO|kp200_body|107|31.25|35|152|101.75|80
+KO|junction_zone|36|3|8.1|94|40.1|40
+KO|crow_lcm|102.3|132.9|20|171.5|136.4|70
+KO|crow_pcb|94.05|125.75|18|179.75|132.9|72
+KO|crow_cable_zone|103.55|125.75|3|152.52|132.9|18
+KO|crow_spk_plug|118.76|125.75|72|128.76|131.3|79
+KO|usb_plug|179.75|126.92|27.65|209|133.42|40.05
+KO|max6675|133|107.9|7.05|165.5|123.9|21
+KO|drok_meter|9.315|15.5|58.53|82.685|60.5|80
+KO|drok_terminals|9.315|15.5|51.53|82.685|60.5|58.53""".splitlines()
 
 if __name__ == "__main__":
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

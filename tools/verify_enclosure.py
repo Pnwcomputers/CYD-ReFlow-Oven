@@ -1,5 +1,5 @@
 # Usage:
-#   S=OpenSCAD/reflow-enclosure-flat-v12_1-front-panel-x1c.scad
+#   S=OpenSCAD/reflow-enclosure-compact-v13_0-x1c.scad
 #   for p in bottom lid front_panel crowpanel_test_coupon oven_socket_coupon iec_test_coupon kp200_test_coupon iec_trim_plate drok_meter_coupon; do
 #     openscad -o OUT/$p.stl -D "part=\"$p\"" $S > OUT/$p.log 2>&1; done
 #   grep -h "KO|" OUT/bottom.log | sed "s/ECHO: //" > OUT/keepouts.txt
@@ -242,6 +242,14 @@ live = {
     "oven socket terminals": ([20, osk[0][1], osk[0][2]], osk[1]),
     "Shelly terminals": sh,
 }
+# v13 additions: the meter's terminals, the loose Wagos and CT, and the KP200's
+# side screw terminals (3 mm slabs on its two long sides) count as live too.
+for _name, _key in [("meter terminals", "drok_terminals"), ("Wago / CT zone", "junction_zone")]:
+    if _key in ko:
+        live[_name] = ko[_key]
+kp = ko["kp200_body"]
+live["KP200 side terminals (-X)"] = ([kp[0][0] - 3, kp[0][1], kp[0][2]], [kp[0][0], kp[1][1], kp[1][2]])
+live["KP200 side terminals (+X)"] = ([kp[1][0], kp[0][1], kp[0][2]], [kp[1][0] + 3, kp[1][1], kp[1][2]])
 block = {
     "heatsink (grounded)": ko["heatsink"],
     "SSR body (insulating)": ([ssr[0][0], ssr[0][1] + 3, ssr[0][2]], ssr[1]),

@@ -2,6 +2,29 @@
 
 Reviewed against commit `663b7d9` (2026-07-24), the v10.3 OpenSCAD source, every repo mesh, the project's earlier design discussions, and current manufacturer and datasheet sources. Anything that could not be verified is labeled as such. Sources are listed at the end.
 
+## Update — v13.0: compact enclosure (2026-11-22)
+
+**Why.** v12 gave the display its own bay, 89 mm wide and the full depth of the box, for a board stack 12 mm deep. That bay was about a litre of air and a third of the footprint. v13.0 keeps every part and the whole wire list and takes the box from 250 × 155 × 83 mm to **184 × 140 × 83 mm**.
+
+**What changed.**
+
+* The display sits in a pocket behind the front panel, 31 mm deep at the floor and 17 mm deep at the top, with a rear wall that leans forward at 45° between the two. The KP200 sits in the lid above it: its faceplate overhangs its body by 29 mm at each end, and the front overhang now covers the pocket.
+* The mains bay is an L around the pocket with about 208 cm² of floor (228 before). Heatsink and SSR are where they were relative to the front panel, with the same slots. The intake plenum grew from 8 to 10 mm so that two full-height posts with room for heat-set inserts fit in it.
+* The inlet moved 12 mm down; its wiring runs under the KP200 body, which leaves 32 mm of height there. The DROK meter turned crosswise and now reads from the front.
+* The lid screws went from 9 to 8 and into bosses that hang from the walls. No boss stands on the floor between the parts, and no screw is under the KP200 faceplate (in v12 the faceplate covered the lid screws near it).
+* Under the lid: an L-shaped rib 0.5 mm above the heatsink, two stiffening ribs at the KP200, and a bead that holds the front panel's top edge.
+* The MAX6675 moved from four bosses on a guessed hole pattern to a cable-tie saddle that takes the common module sizes. Three cable-tie anchors were added on the mains floor.
+
+**What the checks found, and what was done about it.**
+
+* With the KP200 next to the heatsink column, straight probe paths ran from the lid's vent slots to the KP200's side terminals. The lid's L-shaped rib closes them. The probe check now treats the KP200's side terminals, the meter's terminals and the Wago zone as live. Run against v12.1 with the same rule, it reports 2,365 rays from the vent slots onto the KP200 body, which the old check counted as blocked.
+* A lid boss above the Shelly would have blocked its way in; it was moved behind the Shelly's pocket.
+* The first corner bosses had a flat 8.5 mm ceiling between the two walls; the root now runs down the corner so the underside is a slope.
+
+**Checked on the model** (`tools/verify_enclosure.py`, output in `docs/VERIFY-v13_0.txt`): all parts watertight; nothing overhangs past 45° other than short bridges; no Bambu Studio "floating cantilever" flag under the re-implemented rule; zero interference between the three parts and with 18 component keep-out boxes; 43,393 probe rays, none reaching a live part.
+
+**Not checked.** Nothing has been printed or sliced in Bambu Studio. The MAX6675 module and the meter's CT have not been measured. The check against Elecrow's STEP model was not repeated: the display mount is the same geometry as v12.0, and the new pocket walls are checked against the board's keep-out boxes only. Lid stiffness under plug forces is judged from rib geometry, not calculated or tested.
+
 ## Update — v12.1: panel meter, reflow firmware, firmware review (2026-11-21)
 
 **Enclosure v12.1.** A DROK AC panel meter (Amazon B0B3WVG2V9; measured face 76.5 × 48 mm, body 73.37 × 45 mm, 21.47 mm deep) snaps into the lid over the AC bay, above the inlet. Only the lid changed; the bottom shell and front panel are still the v12.0 files.

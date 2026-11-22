@@ -1,6 +1,6 @@
-# Build Guide — v12.1
+# Build Guide — v13.0
 
-Build one controller from the v12.1 design: what to buy, what to print, what order to do it in, and what to check at each step.
+Build one controller from the v13.0 design (the compact 184 × 140 × 83 mm enclosure): what to buy, what to print, what order to do it in, and what to check at each step.
 
 **Wiring sheets** (in [`docs/wiring/`](wiring/), also as one [printable PDF](wiring/reflow-wiring-all-sheets.pdf)):
 
@@ -12,7 +12,7 @@ Background and the reasons behind each choice are in the [README](../README.md) 
 
 > ⚠️ Mains wiring. Work with the inlet cord unplugged, and meter before every first power-up.
 
-**Directions in this guide** follow the SCAD model: the *left wall* is X = 0 (AC bay: Shelly, oven socket), the *right wall* is X = 250 (DC bay: USB-C, thermocouple), the *rear wall* carries the inlet, and the *front panel* carries the display. Standing at the front panel, the left wall is on **your right**.
+**Directions in this guide** are as you stand at the front panel, facing the display. The display is on your left and the heatsink's intake slots are on your right. The *right side wall* carries the oven socket, the *left side wall* the USB-C slot and the thermocouple hole, and the *rear wall* the inlet. (Before v13.0 this guide used the CAD model's directions, which are the mirror image.)
 
 ## 1. Parts
 
@@ -23,7 +23,7 @@ Everything needed to build one from scratch. Product links for the main parts ar
 | 1 | Elecrow CrowPanel 2.8" ESP32 HMI | On Amazon as Elecrow's "ESP32 Display 2.8 Inch (NerdMiner)" 2-pack, B0H11B33ZK. **Not** the CrowPanel *Advance*. Elecrow's retail kit comes with a USB-A→C cable, one Grove-to-DuPont cable, a stylus and an acrylic case (case not used); check what your pack includes |
 | 1 | Black & Decker TO1313SBD toaster oven | 1150 W, 9.6 A |
 | 1 | FILSHU C14 inlet module, 15 A, fused rocker, 14 AWG leads | Snaps into the rear wall |
-| 1 | FILSHU NEMA 5-15R panel socket, 15 A, 14 AWG leads | Snaps into the left wall |
+| 1 | FILSHU NEMA 5-15R panel socket, 15 A, 14 AWG leads | Snaps into the right side wall |
 | 1 | Shelly 1PM Gen4 | EU `S4SW-001P16EU` in the reference build (supply range 110–240 V~). The US version is sold as "Shelly 1PM Gen4 UL-Certified" |
 | 1 | Inkbird SSR-40DA + aluminium heatsink | Input 3–32 VDC |
 | 1 | MAX6675 module + K-type thermocouple probe | |
@@ -36,15 +36,15 @@ Everything needed to build one from scratch. Product links for the main parts ar
 | 1 | DROK AC multimeter 50–300 V / 100 A with split-core CT | Amazon B0B3WVG2V9. Snaps into the lid |
 | ~0.5 m each | 18 AWG hook-up wire, 600 V: black, white | Meter voltage leads (14 AWG also works if the meter's terminals take it) |
 | 1 | 14 AWG ring terminal sized for a heatsink screw | Heatsink ground bond. Measure the screw first |
-| ~15 cm | Heat-shrink tubing rated 600 V, to fit over the 4-wire Grove cable | Sleeves the SSR control cable through the AC bay; check the rating printed on the tubing |
+| ~15 cm | Heat-shrink tubing rated 600 V, to fit over the 4-wire Grove cable | Sleeves the SSR control cable through the mains bay; check the rating printed on the tubing |
 | small | Heat-shrink for the unused DuPont ends | 5 ends: J7 pins 1 and 4, J10 pins 2–4 |
-| 19 | M3 heat-set inserts for a 4.2 mm pocket, ≤ 4 mm long | Same kind as the CYD bosses. 9 lid, 6 front panel, 4 display |
+| 18 | M3 heat-set inserts for a 4.2 mm pocket, ≤ 4 mm long | Same kind as the CYD bosses. 8 lid, 6 front panel, 4 display |
 | 2 | Inserts matching the KP200's own screw thread | 4.5 mm pockets in the lid |
-| 9 | M3 × 6 countersunk | Lid: 3 mm lid + 3 mm into the insert |
+| 8 | M3 × 6 countersunk | Lid: 3 mm lid + 3 mm into the insert |
 | 6 | M3 × 8 countersunk | Front panel: 3 mm panel + 5 mm (pocket is 6 mm deep) |
 | 4 | M3 × 5 pan head | CrowPanel to standoffs: 1.6 mm PCB + 3.4 mm |
 | 4 | Self-adhesive rubber feet, ≤ 12 mm diameter | Recesses are 12 mm, 0.8 mm deep |
-| 2 | Small zip ties | CT clamp to its wire; meter leads |
+| 6 | Small cable ties, about 2.5 mm wide | One for the MAX6675 on its saddle; the rest for the Wagos, the CT and the wiring at the three floor anchors |
 | 1 | Incandescent lamp in a plug-in holder | Test load for section 5, in place of the oven |
 | ~1 kg | ASA filament | Bottom shell, front panel, lid, coupons |
 
@@ -52,12 +52,14 @@ Everything needed to build one from scratch. Product links for the main parts ar
 
 All files are in `STL/` and `3MF/`, already oriented. No supports. ASA, ≥ 3 perimeters, 30–40 % gyroid.
 
-1. **Coupons first:** `3MF/reflow-v12_0-coupons.3mf` (oven-socket, inlet and CrowPanel coupons on one plate).
+1. **Coupons first:** `3MF/reflow-v12_0-coupons.3mf` (oven-socket, inlet and CrowPanel coupons on one plate). The coupons are unchanged in v13.0, so ones you have already printed and fitted still count.
    * Oven-socket coupon: find the cell the socket snaps into firmly (rows: 24.5 / 24.75 / 25.0 mm cut, dimples on the left edge; columns: 2.0 / 2.5 / 3.0 mm panel, dimples on the top edge). If it isn't the centre cell (24.75 / 2.5), set `os_cut` / `os_panel_t` in the SCAD and re-export the bottom shell.
    * Inlet coupon: the FILSHU inlet snaps in.
    * CrowPanel coupon: see section 3, step 4.
    * **DROK meter coupon** (`3MF/reflow-v12_1-drok-meter-coupon.3mf`, dimpled side up as exported): six cutouts. Columns are the cutout size (1, 2, 3 dimples on the bottom edge: 45.2 × 73.6, 45.6 × 74.0, 46.0 × 74.4 mm). The row with 1 dimple on its left edge is thinned to 2.0 mm around the hole; the row with 2 dimples is the full 3.0 mm lid thickness. Push the meter in from the smooth side. The lid is modelled on the middle cell of the 3.0 mm row. If another cell holds it better, set `drok_cut_w`, `drok_cut_l` and `drok_panel_t` near the top of the SCAD file to that cell's values and re-export the lid (`part = "lid"`).
-2. **Main parts:** `reflow-v12_0-bottom.stl`, `reflow-v12_0-front-panel.stl` (outer face down, as exported), `reflow-v12_1-lid.stl` (pre-mirrored: don't mirror it in the slicer). The bottom shell and front panel did not change in v12.1. These are 250 mm wide, 3 mm per side from the plate edge: **brim ≤ 3 mm**, or brim ears on the corners.
+2. **Main parts:** `reflow-v13_0-bottom.stl` (floor down), `reflow-v13_0-front-panel.stl` (outer face down, as exported), `reflow-v13_0-lid.stl` (outer face down, pre-mirrored: don't mirror it in the slicer). They are 184 mm wide, so a normal brim fits on the 256 mm plate.
+   * The model is checked not to need supports, including against Bambu Studio's "floating cantilever" rule. If the slicer still shows a support warning on one of these files, don't print it with the warning: note which part and where.
+   * The pocket wall in the bottom shell leans at 45° and the lid bosses hang from the walls on 45° undersides. Both print as they are.
 
 ## 3. Bench checks before building in (USB power only, no mains)
 
@@ -69,44 +71,45 @@ All files are in `STL/` and `3MF/`, already oriented. No supports. ASA, ≥ 3 pe
    * Press RESET and power-cycle a few times: the SSR LED must stay **off**.
    * `t` → temperature stream: room temperature, rising when you hold the probe tip.
 4. Fit the bare board to the CrowPanel coupon (4 inserts, 4 × M3 × 5, connectors toward the notched edge). The whole active area shows, the glass doesn't touch the plastic (designed gap 0.6 mm), and touch works at the edges.
-5. Hold your USB-C cable's plug body against the right-wall slot size (15 × 9 mm): it must pass.
+5. Hold your USB-C cable's plug body against the size of the slot in the left side wall (15 × 9 mm): it must pass.
 
 The bench sketch was compiled and simulated on a PC against stub Arduino headers (checked: the MAX6675 bit decode, the open-thermocouple flag, the SSR on/auto-off sequence, and no `digitalWrite` before `pinMode`). It has not been built with the ESP32 toolchain; the Arduino IDE build is the first real compile.
 
 ## 4. Assemble
 
 1. **Inserts:**
-   * Bottom shell: 9 lid inserts (vertical, tops of the bosses and the two front-left posts) and 6 front-panel inserts (horizontal, in the front faces of the 4 posts).
+   * Bottom shell: 8 lid inserts (vertical: in the six bosses that hang from the walls and in the tops of the two tall front posts) and 6 front-panel inserts (horizontal: two in the front face of each tall post, one in each low post in the display pocket).
    * Front panel: 4 display inserts in the standoffs.
    * Lid: the 2 KP200 inserts.
 2. **Lid:**
    * On the outer face, inside the two shallow recesses beside the KP200 window, the four holes are closed by a paper-thin printed skin (it lets the recess roof print cleanly without supports). Push a small screwdriver through each one.
    * Fit the KP200 into its window and screw it to its two inserts.
-   * Snap the DROK meter in from above (the outside face). Its long side runs front-to-back; turn it so the digits are upright from the side you'll stand at.
+   * Snap the DROK meter in from above (the outside face). Its long side runs left-to-right; turn it so the digits are upright from the front.
 3. **Display:**
    * If the acrylic case is fitted, take it off; it isn't used, and the board itself stays unmodified. Screw the board to the front panel, connectors toward the panel's bottom edge.
    * Plug the three Grove cables into J7, J6 and J10 now; the connectors face down and are harder to reach later.
 4. **SSR on the bench:**
-   * Mount the SSR on the heatsink so that, once installed, **`T1`/`T2` are at the end toward the KP200 and the left wall**, and `T3`/`T4` are at the end toward the divider.
+   * Mount the SSR on the heatsink so that, once installed, **`T1`/`T2` are at the end toward the oven-socket side wall** (your right), and `T3`/`T4` are at the end toward the display pocket.
    * Land the two AC wires on `T1` and `T2`: stranded, twisted, **not tinned**, fully under the clamp plates. Leave them long enough to reach the Shelly `O` and the socket.
-   * Pre-form the upper AC wire's bend downward: the channel beside the KP200 body is 11.5 mm wide.
+   * Pre-form the two AC wires' bends toward the rear: the channel between the SSR's end and the side wall is 13 mm wide.
    * Fit the ring terminal and green wire under a heatsink screw.
 5. **Bottom shell:**
-   * Heatsink into its fence (fins front-to-back, SSR facing the rear wall).
-   * Shelly into its pocket on the left wall.
-   * Inlet into the rear wall and socket into the left wall (both snap in).
-   * MAX6675 on the DC floor bosses: the boss pattern (13 × 10 mm, 3.5 mm holes) is not from a measurement of your module, so check it. If it doesn't match, use foam tape, or set `max_hole_dx` / `max_hole_dy` in the SCAD to your module's hole spacing and re-export the bottom shell before printing it.
+   * Heatsink into its fence (fins front-to-back, SSR facing the rear wall). The fence is 5 mm high; a rib under the lid holds the heatsink down once the lid is on.
+   * Shelly into its pocket on the left side wall, behind the display pocket. It drops straight in from above.
+   * Inlet into the rear wall and socket into the right side wall (both snap in).
+   * MAX6675 onto its saddle on the floor of the display pocket. Lay a cable tie under the saddle's bar first, set the board on the two pads between the lips with its screw terminals toward the left side wall, then close the tie over the board (not over the terminal block). The saddle takes boards 25 to 32.5 mm long and up to 16 mm wide. No MAX6675 module was measured for this, so check yours; if it is a little wider, trim the lips with a knife.
 6. **AC wiring:** follow [sheet 1](wiring/reflow-wiring-ac-mains.png) and the terminal map below.
-   * **CT clamp:** open it, close it around the SSR `T2` → socket-hot wire only (A15), and let it lie on the AC floor between the oven socket and the inlet, next to the Wagos (a 42 × 32 mm area, free up to 35 mm high). Zip-tie it to the wire.
-   * **Meter leads:** land the two voltage leads and the CT pair on the meter's rear terminals as labelled on the meter. Leave about 150 mm of slack on these and on the KP200 wires, so the lid can be laid on its back beside the box while still wired. Route them along the rear wall, away from the heatsink and the vent slots.
+   * **CT clamp:** open it, close it around the SSR `T2` → socket-hot wire only (A15), and let it lie on the floor between the oven socket and the inlet with the Wagos (a 58 × 37 mm zone, free to 37 mm above the floor). Tie the CT and the Wagos down through the two floor anchors there, so nothing can drift toward the SSR's terminals.
+   * **Inlet and KP200 wires:** the inlet's leads run forward under the KP200's body (32 mm of height there). A third floor anchor, in the channel between the heatsink and the KP200, holds the KP200's and the Shelly's wires.
+   * **Meter leads:** land the two voltage leads and the CT pair on the meter's rear terminals as labelled on the meter. Leave about 150 mm of slack on these and on the KP200 wires, so the lid can be laid on its back beside the box while still wired. Route them down behind the SSR, away from the heatsink and the vent slots.
 7. **Low-voltage wiring** ([sheet 2](wiring/reflow-wiring-low-voltage.png)):
-   * Slide the 600 V heat-shrink over the J7 cable, drop the cable into the divider's U-slot (it is beside the SSR's DC end), and land IO32 (J7 pin 2) on `T4` and 3V3 (J7 pin 3) on `T3`. Grove wires are thin: fold the stripped end double before clamping, or crimp a ferrule.
+   * Slide the 600 V heat-shrink over the J7 cable, thread its bare ends through the slot in the display pocket's rear wall (at the heatsink end of the pocket, 9 mm above the floor), and land IO32 (J7 pin 2) on `T4` and 3V3 (J7 pin 3) on `T3`. The heat-shrink covers the cable from the slot to the SSR. Grove wires are thin: fold the stripped end double before clamping, or crimp a ferrule.
    * Insulate the unused ends.
-   * Route J6/J10 along the DC floor to the MAX6675. Pass the thermocouple through the right-wall hole.
+   * Route J6/J10 to the MAX6675 on the pocket floor. Pass the thermocouple through the hole in the left side wall.
 8. **Close up:**
-   * Front panel on (6 × M3 × 8): its rib slides along the AC side of the divider.
-   * Lid on (9 × M3 × 6). The lid also clamps the panel's top edge. The KP200 sits in the lid; its faceplate covers the lid screws near it. Check that the meter's leads fold down beside the inlet and nothing is pinched: the meter body ends 7.5 mm above the SSR and 13.8 mm above the inlet.
-   * Plug the USB cable into the KP200's adapter and in through the right-wall slot.
+   * Front panel on (6 × M3 × 8).
+   * Lid on (8 × M3 × 6; every screw is outside the KP200's faceplate). Lower it straight down: its front bead drops over the panel's chamfered top edge, its L-shaped rib over the heatsink, and its front rib into the top of the display pocket behind the board. Check that the meter's leads fold down behind the SSR and nothing is pinched: the meter body ends 7.5 mm above the SSR.
+   * Plug the USB cable into the KP200's adapter and in through the slot in the left side wall.
 
 ### AC terminal map
 
@@ -180,7 +183,7 @@ The firmware is in [`firmware/reflow_controller/`](../firmware/reflow_controller
 
 ## 7. Service
 
-* Everything inside is reached by taking the lid off (9 screws). The meter and KP200 lift with it; with the slack from step 4.6 the lid lies on its back beside the box.
+* Everything in the mains bay is reached by taking the lid off (8 screws, all visible). The meter and KP200 lift with it; with the slack from step 4.6 the lid lies on its back beside the box.
 * DROK meter out: lid off, squeeze the clips on the two long sides, push it up and out.
-* Display and Grove cables: front panel (6 screws).
+* Display, Grove cables and MAX6675: front panel (6 screws). With the lid on, swing the panel's bottom edge out and lower it out of the bead under the lid's front edge. Refit top edge first.
 * Fuse: in the inlet's drawer, from outside, cord unplugged.

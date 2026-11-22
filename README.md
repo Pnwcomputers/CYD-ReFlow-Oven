@@ -8,12 +8,12 @@ This is a custom-built, cost-conscious reflow toaster oven controller for solder
 
 The controller is housed in a standalone, 3D-printed bench enclosure next to the toaster oven. The touchscreen sits in **landscape on the front panel** (the long side). A panel meter in the lid shows what the oven is drawing.
 
-**Current version: v12.1** (enclosure, wiring sheets and firmware all in this repo).
+**Current version: v13.0** (compact enclosure, wiring sheets and firmware all in this repo).
 
 | If you want to… | Go to |
 | :--- | :--- |
 | Build one, step by step | [docs/BUILD-GUIDE.md](docs/BUILD-GUIDE.md) |
-| Hook up the wires | [Wiring sheets](#wiring-diagrams-v121) ([printable PDF](docs/wiring/reflow-wiring-all-sheets.pdf)) |
+| Hook up the wires | [Wiring sheets](#wiring-diagrams-v130) ([printable PDF](docs/wiring/reflow-wiring-all-sheets.pdf)) |
 | Flash and run the controller | [firmware/reflow_controller/README.md](firmware/reflow_controller/README.md) |
 | Print the enclosure | [Print advisory](#print-advisory) and [slicer settings](#slicer-configurations) |
 | See why it is built this way | [docs/DESIGN-REVIEW-2026-10.md](docs/DESIGN-REVIEW-2026-10.md) |
@@ -38,13 +38,13 @@ The controller is housed in a standalone, 3D-printed bench enclosure next to the
 | **Reflow firmware** | 🟡 Written and PC-tested, not yet run on hardware | `firmware/reflow_controller/`: four profiles, PID with slow-PWM, safety aborts, touch UI, Shelly heartbeat, stuck-SSR check. The real sketch runs on a PC against a simulated oven and Shelly ([`firmware/host_test/`](firmware/host_test/README.md): 27 scenarios, both boards). The first real compile is in the Arduino IDE |
 | **Shelly supervisor script** | 🟡 Written and PC-tested, not yet installed | `firmware/shelly/reflow_supervisor.js`: max on-time, over-temperature, power-while-idle, and a 5-minute lockout after any trip |
 | **Metering** | 🟡 Designed in | DROK AC multimeter ([B0B3WVG2V9](https://www.amazon.com/dp/B0B3WVG2V9)) snaps into the lid; its split-core CT goes on the oven hot wire |
-| **Enclosure** | 🟡 v12.1 modelled and checked, print pending | OpenSCAD parametric design, **250 × 155 × 83 mm, ASA**, prints on a Bambu X1C without supports. Checked by surface scan, interference test and probe-ray test (see [Slicer Configurations](#slicer-configurations)) |
+| **Enclosure** | 🟡 v13.0 modelled and checked, print pending | OpenSCAD parametric design, **184 × 140 × 83 mm, ASA** (v12 was 250 × 155: a third less bench area with the same parts), prints on a Bambu X1C without supports. Checked by surface scan, interference test and probe-ray test (see [Slicer Configurations](#slicer-configurations)) |
 | **Wiring documentation** | ✅ Done | Three illustrated sheets with tagged wires and wire lists |
 
 **Carried forward from the CYD era (validated on the CYD):** resistive touch UI, MAX6675 reading with a live graph, SSR switching at 3.3 V drive.
 
 **Safety design:**
-* **Isolation:** An internal divider wall separates mains AC from the low-voltage side; one SSR-control pass-through only.
+* **Isolation:** The display, its cables and the thermocouple amplifier sit in their own pocket behind the front panel, walled off from the mains bay. One slot for the SSR control pair is the only crossing.
 * **Fail-safes:** Fused rocker inlet, a Shelly 1PM Gen4 in the oven's hot path (survives a shorted SSR), SSR drive that is **off whenever the ESP32 is not actively driving it**, a KP200 that can cut the controller's power, and the oven's own thermostat left in circuit at maximum.
 * **Firmware aborts:** open thermocouple, 260 °C hard limit, 30 °C overshoot, heating hard with no temperature rise, 15-minute run limit, lost Shelly heartbeat, relay opened by the Shelly, SSR stuck on, stalled control loop, STOP button.
 * **Two watchers:** the control loop and the Shelly link run as separate tasks. If the Shelly stops answering, the control loop aborts; if the control loop stops running, the Shelly task releases the SSR and opens the relay.
@@ -71,12 +71,13 @@ Everything in this table is on hand for the reference build as of 2026-11 (the d
 | **Inlet Fuse** | 15 A, 5 × 20 mm, time-delay | A 15 A time-delay fuse is fitted in the reference build. Check that its body is **ceramic** (glass bodies have low breaking capacity) and swap it if not |
 | **Power Cord (wall → inlet)** | NEMA 5-15P to IEC C13, **14 AWG SJT, rated 15 A** | **Required.** Typical PC cords are 18 AWG (10 A); 9.6 A would load one to 96 % |
 | **Accessory Outlet** | [KP200 Smart Outlet Module](https://a.co/d/0it13pHO) | **Always-live**, feeds the display's 5 V through a USB adapter. Top socket blanked |
-| **Oven Feed** | FILSHU 15A 125V NEMA 5-15R panel-mount socket, 14 AWG leads | Snaps into the left wall (model X = 0). 27 × 27 mm face, ~35 mm deep, cutout spec 24.5–25.0 mm square. 9.6 A is 64 % of its 15 A rating |
+| **Oven Feed** | FILSHU 15A 125V NEMA 5-15R panel-mount socket, 14 AWG leads | Snaps into the right side wall (as you face the front), toward the rear. 27 × 27 mm face, ~35 mm deep, cutout spec 24.5–25.0 mm square. 9.6 A is 64 % of its 15 A rating |
 | **Splices** | [Wago](https://a.co/d/0g3QaYkX) 221-series lever nuts: **3 × 221-415** (5-port) | Hot, neutral and ground junctions (UL 486C: 600 V, 20 A, 24–12 AWG). The hot junction carries 4 wires since the meter was added, so the 3-port 221-413 used before v12.1 is too small |
 | **Internal AC wire** | 14 AWG stranded UL 1015 (600 V, 105 °C), black / white / green, ~1 m each | Plus a 14 AWG ring terminal for the heatsink ground bond |
-| **Sleeving** | 600 V heat-shrink over the SSR control cable, small heat-shrink for unused DuPont ends | The control cable runs a short way through the AC bay |
-| **Heat-set inserts** | 19 × M3 for 4.2 mm pockets + 2 for the KP200 (4.5 mm pockets) | 9 lid-screw (shell), 6 front-panel (shell posts, horizontal), 4 display standoffs (front panel) |
-| **Screws** | 9 × M3 × 6 countersunk (lid), 6 × M3 × 8 countersunk (front panel), 4 × M3 × 5 pan head (display) | Each length stops short of the bottom of its insert pocket (lid 2 mm, panel 1 mm, display 0.6 mm) |
+| **Sleeving** | 600 V heat-shrink over the SSR control cable, small heat-shrink for unused DuPont ends | The control cable runs a short way through the mains bay |
+| **Heat-set inserts** | 18 × M3 for 4.2 mm pockets + 2 for the KP200 (4.5 mm pockets) | 8 lid-screw (shell), 6 front-panel (shell posts, horizontal), 4 display standoffs (front panel) |
+| **Screws** | 8 × M3 × 6 countersunk (lid), 6 × M3 × 8 countersunk (front panel), 4 × M3 × 5 pan head (display) | Each length stops short of the bottom of its insert pocket (lid 2 mm, panel 1 mm, display 0.6 mm) |
+| **Cable ties** | About 6, 2.5 mm wide | One holds the MAX6675 on its saddle; the rest tie the Wagos, the CT and the wiring to the three floor anchors |
 | **Enclosure Material** | **ASA**, about 1 kg | Glass transition ~100 °C vs PETG ~81 °C; the heatsink stands on the printed floor. **Do not use PLA** |
 
 ---
@@ -86,22 +87,27 @@ Everything in this table is on hand for the reference build as of 2026-11 (the d
 ```text
 CYD-ReFlow-Oven/
 ├── 3MF/
-│   ├── reflow-v12_0-coupons.3mf                    # Socket + inlet + CrowPanel coupons, one plate — print FIRST
-│   ├── reflow-v12_1-drok-meter-coupon.3mf          # DROK meter cutout coupon — print FIRST
-│   ├── reflow-v12_1-lid.3mf                        # v12.1 lid (same part as the STL)
-│   ├── legacy-v11_0/                               # v11 coupons (socket and inlet coupons are unchanged in v12)
+│   ├── reflow-v13_0-bottom.3mf                     # v13.0 print files (same parts as the STLs)
+│   ├── reflow-v13_0-front-panel.3mf
+│   ├── reflow-v13_0-lid.3mf
+│   ├── reflow-v12_0-coupons.3mf                    # Socket + inlet + CrowPanel coupons, one plate — print FIRST (unchanged in v13)
+│   ├── reflow-v12_1-drok-meter-coupon.3mf          # DROK meter cutout coupon — print FIRST (unchanged in v13)
+│   ├── legacy-v12_1/                               # v12.1 lid for the 250 × 155 mm box
+│   ├── legacy-v11_0/
 │   └── legacy-v10_3/
 ├── OpenSCAD/
-│   ├── reflow-enclosure-flat-v12_1-front-panel-x1c.scad  # ✅ CURRENT master source of record
+│   ├── reflow-enclosure-compact-v13_0-x1c.scad     # ✅ CURRENT master source of record
+│   ├── legacy-v12_1/                               # v12.1 source (250 × 155 mm box, full-depth low-voltage bay)
 │   └── legacy-v11_0/                               # v11 source (230 mm box, CYD on the lid)
 ├── STL/
-│   ├── reflow-v12_0-bottom.stl                     # Bottom shell: floor, rear/side walls, divider, posts (unchanged in v12.1)
-│   ├── reflow-v12_1-lid.stl                        # Lid with the DROK meter cutout, pre-mirrored for printing
+│   ├── reflow-v13_0-bottom.stl                     # Bottom shell: floor, walls, display pocket, posts, lid bosses
+│   ├── reflow-v13_0-front-panel.stl                # Front panel with display window, printed face down
+│   ├── reflow-v13_0-lid.stl                        # Lid: KP200 mount, DROK cutout, vents, ribs; pre-mirrored for printing
 │   ├── reflow-v12_1-drok-meter-coupon.stl          # 3 meter cutout sizes × 2 panel thicknesses
-│   ├── reflow-v12_0-front-panel.stl                # Front panel with display window, printed face down (unchanged in v12.1)
 │   ├── reflow-v12_0-crowpanel-coupon.stl           # Display region of the front panel, 1:1
 │   ├── reflow-v12_0-oven-socket-coupon.stl         # 3 cut sizes × 3 panel thicknesses
 │   ├── reflow-v12_0-iec-coupon.stl                 # Inlet cutout + clip reliefs
+│   ├── legacy-v12_1/                               # v12.0 bottom and front panel, v12.1 lid (250 × 155 mm box)
 │   ├── legacy-v11_0/                               # v11 230 mm box (CYD on the lid)
 │   └── legacy-v10_3/
 ├── firmware/
@@ -129,8 +135,8 @@ CYD-ReFlow-Oven/
 │   │   ├── reflow-wiring-low-voltage.*             #    Sheet 2: display, sensor, SSR drive, USB, Wi-Fi link, D1–D7
 │   │   ├── reflow-layout-clearances.*              #    Sheet 3: to-scale layout, clearances, service access
 │   │   └── reflow-wiring-all-sheets.pdf            #    All three, for printing
-│   ├── VERIFY-v12_1.txt                            # Output of tools/verify_enclosure.py for v12.1
-│   └── DESIGN-REVIEW-2026-10.md                    # Design re-review (Oct 2026) + v11 and v12 updates
+│   ├── VERIFY-v13_0.txt                            # Output of tools/verify_enclosure.py for v13.0
+│   └── DESIGN-REVIEW-2026-10.md                    # Design re-review (Oct 2026) + v11, v12 and v13 updates
 ├── tools/
 │   ├── verify_enclosure.py                         # Mesh health, supports, slicer-warning rule, interference, probe rays, real-board fit
 │   ├── step_parts.py                               # Splits Elecrow's STEP into per-solid STLs for the fit check
@@ -143,13 +149,13 @@ CYD-ReFlow-Oven/
 
 ### Print advisory
 
-> ⚠️ **v12.1:** Print the coupons first, in ASA: `3MF/reflow-v12_0-coupons.3mf` and `3MF/reflow-v12_1-drok-meter-coupon.3mf`.
+> ⚠️ **Print the coupons first**, in ASA: `3MF/reflow-v12_0-coupons.3mf` and `3MF/reflow-v12_1-drok-meter-coupon.3mf`. They are unchanged in v13.0: every cutout and the display mount are the same, so coupons you already printed and fitted still count.
 > 1. **Oven-socket coupon:** 3 cut sizes (rows: 24.5 / 24.75 / 25.0 mm; dimples on the left edge = row) × 3 panel thicknesses (columns: 2.0 / 2.5 / 3.0 mm; dimples on the top edge = column). Pick the cell where the socket snaps in firmly; set `os_cut` / `os_panel_t` if they differ from 24.75 / 2.5.
 > 2. **Inlet coupon:** confirm the FILSHU inlet snaps in.
 > 3. **CrowPanel coupon:** fit 4 inserts, screw the bare board on (M3 × 5, connectors toward the notched edge), and check from the front that the whole active area shows and the glass does not touch the plastic (designed gap 0.6 mm).
 > 4. **DROK meter coupon:** 3 cutout sizes (columns: 45.2 × 73.6 / 45.6 × 74.0 / 46.0 × 74.4 mm; dimples on the bottom edge) × 2 panel thicknesses (rows: 1 dimple on the left edge = 2.0 mm, 2 dimples = 3.0 mm). Push the meter in from the smooth side and pick the cell it clicks into. If it isn't the middle cell of the 3.0 mm row, set `drok_cut_w` / `drok_cut_l` / `drok_panel_t` and re-export the lid.
 >
-> Then print the bottom (`v12_0`), front panel (`v12_0`) and lid (`v12_1`). The box is 250 mm wide, leaving 3 mm per side on the 256 mm plate: **limit the brim to 3 mm** (or use brim ears at the corners).
+> Then print `reflow-v13_0-bottom`, `reflow-v13_0-front-panel` and `reflow-v13_0-lid`. The parts are 184 mm wide, which leaves 36 mm on each side of the 256 mm plate, so a normal brim fits.
 
 ---
 
@@ -172,16 +178,16 @@ The line splits at the hot Wago. The oven path is switched twice; the accessory 
                             ↓                       ↓
                  [DROK CT clamp on this wire]  bottom socket
                             ↓                       ↓
-          [NEMA 5-15R panel socket, left wall] [USB adapter] → USB-C → CrowPanel
-                            ↓                  (cable enters through the right wall)
+          [NEMA 5-15R socket, right side wall] [USB adapter] → USB-C → CrowPanel
+                            ↓                  (cable enters the left side wall)
           [Black & Decker Toaster Oven]
 ```
 
 **Why the split:** SSRs typically fail *shorted*. Killing the controller's power cannot stop a welded triac — only a mechanical contact in the oven's own hot conductor can. The Shelly is therefore the primary cutoff. The KP200 remains a useful secondary (no controller power means no SSR drive), and keeping the controller on an always-live feed means the display and thermocouple readout stay alive during an emergency stop so you can watch the temperature fall.
 
-> 🛑 **Design Rule:** An IEC C14 inlet is an *input* connector. Never use a male inlet as an energized power output. The oven feed is a **female** NEMA 5-15R panel socket on the left wall (`os_center_y = 30`, `os_center_z = 22`), so live contacts are recessed and the oven's own plug provides strain relief.
+> 🛑 **Design Rule:** An IEC C14 inlet is an *input* connector. Never use a male inlet as an energized power output. The oven feed is a **female** NEMA 5-15R panel socket in the right side wall (`os_center_y = 21`, `os_center_z = 22`), so live contacts are recessed and the oven's own plug provides strain relief.
 
-**Orientation.** Model X runs left → right, Y rear → front. The front panel (display, intake slots) is on the long side at Y = 155. "Left wall" and "right wall" in this repo are **model** directions. Facing the front, the display is on **your left** and the AC bay on your right; the oven socket is in the side wall on your right (the model's left wall, X = 0); the USB-C cable and thermocouple enter the side wall on your left (the model's right wall, X = 250); the inlet is on the rear wall. The DROK meter and the KP200 are in the lid over the AC bay.
+**Orientation.** From v13.0, left and right in this repo are **as you stand at the front panel, facing the display**. (Earlier versions used the CAD model's X direction, which is the mirror image. The SCAD comments now avoid the words and say *socket wall* and *USB wall*.) Facing the front: the display is on your left and the heatsink's intake slots are on your right. The oven socket is in the right side wall, toward the rear. The USB-C cable and the thermocouple enter the left side wall, toward the front. The inlet is on the rear wall, left of centre. In the lid: the KP200 on the left, the DROK meter at the right rear (it reads from the front), the vent slots at the right front.
 
 ### Signal Flow
 
@@ -221,15 +227,15 @@ The Shelly has **no ground terminal** — it is double-insulated. The SSR has **
 ### DROK panel meter
 
 * **Voltage leads:** two thin wires from the hot and neutral Wagos to the meter's 50–300 V input. They carry almost no current but sit behind the 15 A fuse, so use 600 V rated wire and keep them short.
-* **CT clamp:** open it and close it around the SSR `T2` → socket-hot wire **only**. Around hot and neutral together it reads zero. It lies on the AC floor between the oven socket and the inlet, next to the Wagos (a 42 × 32 mm area, free up to 35 mm high); zip-tie it to its wire so it cannot wander toward the heatsink.
+* **CT clamp:** open it and close it around the SSR `T2` → socket-hot wire **only**. Around hot and neutral together it reads zero. It lies on the floor between the oven socket and the inlet with the Wagos (a 58 × 37 mm zone, free to 37 mm above the floor, with two cable-tie anchors); tie it down so it cannot wander toward the SSR's terminals.
 * **What it shows:** line voltage whenever the rocker is on, and the oven's own draw: about 9.6 A / 1150 W while the SSR is on, pulsing during a run. If the watts read wrong or negative, turn the clamp around.
 * **Terminals:** the drawings show the rear terminals generically. Use the labels printed on the back of your meter for which two screws are the voltage input and which two take the CT.
 * **Service slack:** leave about 150 mm of slack on the meter's leads (and the KP200's), so the lid can be laid on its back beside the box while still wired.
 
 ### SSR wiring (straight wire, no lugs)
 
-* **Orientation:** mount the SSR on the heatsink with its **AC terminals (`T1`, `T2`) at the end toward the KP200** (model −X, the left-wall side: toward the Shelly and oven socket) and its **DC terminals (`T3`, `T4`) at the end toward the divider**. Turn the SSR 180° on the heatsink if yours is the other way round.
-* **Clearance (modelled and checked as keepouts):** the wires leave the clamps straight out of the SSR ends. At the AC end there is an 11.5 mm channel the full height of the SSR between its end and the KP200 body, and below the KP200 (which starts 35 mm above the floor) a free run of 28 mm to the left. At the DC end there are 12 mm to the divider, with the control pass-through right there.
+* **Orientation:** mount the SSR on the heatsink with its **AC terminals (`T1`, `T2`) at the end toward the oven-socket side wall** (your right, facing the front) and its **DC terminals (`T3`, `T4`) at the end toward the display pocket**. Turn the SSR 180° on the heatsink if yours is the other way round.
+* **Clearance (modelled and checked as keepouts):** the wires leave the clamps straight out of the SSR ends. At the AC end there is a 13 mm channel, the full height of the SSR, between its end and the side wall; the wires turn toward the rear there, to the oven socket and the Wagos. At the DC end there are 12 mm to the display pocket's side wall, and the control slot is a short run along the heatsink from there.
 * **Terminations:** strip to the depth of the clamp plate, twist the strands, and seat them fully under the plate. **Do not tin the ends with solder:** tinned ends compress and loosen under a screw clamp ([Wiring Harness News](https://wiringharnessnews.com/2901/)); ferrules are the alternative if you want one. The NEC sets no terminal bending space for 14–10 AWG ([Table 312.6(A)](https://open-exam-prep.com/study-guides/mn-electrician/ch13-boxes-cabinets/cabinets-cutout-bending-space)), but pre-form the upper AC wire's bend on the bench.
 * **Order:** wire the SSR on the bench before dropping the heatsink into its fence. The terminal screws face the rear of the box and are awkward to reach in place.
 
@@ -269,7 +275,7 @@ The controller tells the Shelly whether a run is active by writing the key `refl
 
 **After a trip the script holds the relay open for 5 minutes.** If anything closes it in that time, it is opened again at once, and a run started then aborts with "Shelly opened its relay". The reason is in the Shelly's script log. To clear the lockout sooner, stop and start the script.
 
-### Wiring Diagrams (v12.1)
+### Wiring Diagrams (v13.0)
 
 Three illustrated sheets in [`docs/wiring/`](docs/wiring/) (SVG, PNG, and one [PDF](docs/wiring/reflow-wiring-all-sheets.pdf) for printing). Every wire carries a tag that matches the wire list on its sheet. The devices are drawn as simplified likenesses and terminal positions are schematic: go by the labels printed on each part.
 
@@ -317,7 +323,7 @@ Pin 1 is the end marked with the triangle on the connector symbol. On-board peri
 4. Power-cycle and press RESET a few times while watching the SSR LED: it must stay off.
 5. Fit the board on the CrowPanel coupon (window and glass gap), and check the USB-C cable's overmold fits the 15 × 9 mm slot.
 
-**Divider crossing.** One open-top U-slot (`ctrl_hole`, y = 76, slot bottom z = 15), right beside the SSR's DC end, for the J7 SSR pair only. Low-voltage wiring never routes through the AC chamber otherwise. USB enters the DC bay from outside.
+**Pocket crossing.** One closed slot (`ctrl_slot`, 6 × 18 mm, 9 mm above the floor) in the display pocket's rear wall, at the end nearest the SSR's DC terminals, for the J7 SSR pair only. Thread the cable's bare ends through from the pocket side. Low-voltage wiring never runs in the mains bay otherwise. USB and the thermocouple enter the pocket from outside.
 
 ---
 
@@ -400,29 +406,37 @@ The USB-C port is reachable from outside the box (the side wall on your left, fa
 
 ## 🖨️ Enclosure & 3D Printing Production
 
-The enclosure is three printed parts: an open-front **bottom shell** (floor, rear and side walls, AC/DC divider at `divider_x = 157`, posts), a **front panel**, and a **lid**. The lid carries the KP200 and, from v12.1, the DROK meter.
+The enclosure is three printed parts: an open-front **bottom shell** (floor, rear and side walls, the display pocket's walls, two front posts, the lid bosses), a **front panel**, and a **lid**. The lid carries the KP200 and the DROK meter.
 
-### Where the meter sits (v12.1)
+### How the compact layout works (v13.0)
 
-* In the lid over the AC bay, above the inlet, in a 45.6 × 74.0 mm snap-in cutout. No screws.
-* Its long side runs **front-to-back**, so the digits read from one end of the box, not from the front. Crosswise there are only 66 mm between the KP200 faceplate and the divider, and the body is 73.4 mm. It stays out of the DC bay because its terminals are mains. The cutout is symmetric, so choose which end it reads from when you snap it in.
-* Clearances from the model: 7.5 mm above the SSR, 13.8 mm above the inlet, 25 mm from the lid vent slots, 3.5 mm from the divider, 16 mm from the KP200 faceplate. Sheet 3 shows them to scale.
+v12 gave the display a full-depth bay of its own, 89 mm wide, for a board stack that is 12 mm deep: about a litre of air. v13.0 keeps every part and every wire and removes that bay. Sheet 3 shows the result to scale.
+
+* **Display pocket.** The display sits in a pocket behind the front panel: 89 mm wide, 31 mm deep at the floor (room for the MAX6675 and the cable bends) and 17 mm deep above 72 mm. Between those heights the pocket's rear wall leans forward at 45°, which keeps it in front of the KP200's front mounting screw and prints without support.
+* **KP200 over the pocket.** The KP200's faceplate is 129 mm long but its body only 70.5 mm. The faceplate's front end now covers the pocket instead of empty lid. The body hangs in the mains bay 35 mm above the floor, and the inlet's wiring runs underneath it.
+* **Mains bay.** An L shape around the pocket with about 208 cm² of floor (v12.1 had 228). Heatsink and SSR at the front right in the same fence, with a 10 mm intake plenum (was 8), the same 11 intake slots and 6 lid slots. The Wagos and the CT have a 58 × 37 mm zone at the rear between the oven socket and the inlet. The Shelly's pocket is on the left side wall behind the display pocket.
+* **Front posts.** Two full-height posts stand in the intake plenum, one on each side of the intake slots. Each takes two front-panel screws and one lid screw.
+* **DROK meter.** In the lid at the right rear, long side left-to-right, so the digits read from the front. Same 74.0 × 45.6 mm snap-in cutout. It sits 7.5 mm above the SSR and 26.8 mm from the vent slots.
+* **Under the lid.** An L-shaped rib stops 0.5 mm above the heatsink, so the heatsink cannot lift out of its 5 mm fence; the same rib screens the meter's terminals and the KP200 from anything pushed through the vent slots. Two 8 mm ribs, behind and in front of the KP200, stiffen the lid against plug-in and pull-out forces. A bead along the front edge sits in a chamfer on the front panel's top edge and keeps the panel from bowing out.
+* **Lid screws.** 8 (was 9), in bosses that hang from the walls on 45° undersides and in the two front posts. None stands on the floor and none is hidden under the KP200 faceplate.
+* **MAX6675.** A cable-tie saddle on the pocket floor: two pads with side lips and a bar for the tie. It takes boards 25 to 32.5 mm long and up to 16 mm wide. The four-boss pattern in v12 was not from a measured part.
+* **Wiring aids.** Three cable-tie anchors on the mains floor: two in the Wago zone, one in the channel between the heatsink and the KP200.
 
 ### Assembly order
 Full version with parts, checks and first-power procedure: [docs/BUILD-GUIDE.md](docs/BUILD-GUIDE.md).
 
-1. Inserts: 9 lid-screw inserts (shell, vertical), 6 front-panel inserts (shell posts, horizontal), 4 display inserts (front-panel standoffs), 2 KP200 inserts (lid).
+1. Inserts: 8 lid-screw inserts (shell, vertical), 6 front-panel inserts (shell posts, horizontal), 4 display inserts (front-panel standoffs), 2 KP200 inserts (lid). Pierce the four thin skins in the lid's KP200 holes.
 2. Screw the CrowPanel to the front panel (4 × M3 × 5), connectors toward the floor. Plug the three Grove cables in now; the connectors face down.
-3. Bench-wire the SSR (see SSR wiring), set the heatsink in its fence, fit the Shelly, inlet, socket, MAX6675. Snap the DROK meter into the lid.
-4. AC wiring per sheet 1, including the CT clamp on the SSR `T2` → socket-hot wire and the meter's leads.
-5. Route the J7 cable through the divider U-slot to `T3`/`T4`; J6/J10 to the MAX6675 along the DC floor.
-6. Fit the front panel (6 × M3 × 8 countersunk). The panel's rib slides along the AC face of the divider.
-7. Fit the lid (it also clamps the front panel's top edge), checking that the meter's leads fold down beside the inlet and nothing is pinched. Plug the USB-C cable in through the side wall.
+3. Bench-wire the SSR (see SSR wiring), set the heatsink in its fence, fit the Shelly, inlet and socket. Cable-tie the MAX6675 to its saddle: tie under the bar first, then the board, then close the tie. Snap the DROK meter into the lid.
+4. AC wiring per sheet 1, including the CT clamp on the SSR `T2` → socket-hot wire and the meter's leads. Tie the Wagos and the CT to the floor anchors.
+5. Thread the J7 cable's bare ends through the slot in the pocket wall to `T3`/`T4`; J6/J10 go to the MAX6675 on the pocket floor.
+6. Fit the front panel (6 × M3 × 8 countersunk).
+7. Fit the lid. Its front bead drops over the panel's chamfered top edge, its L-shaped rib over the heatsink and its front rib into the top of the display pocket. Check that the meter's leads fold down behind the SSR and nothing is pinched. Plug the USB-C cable in through the side wall.
 
 ### Service access
-* Everything inside is reached by taking the lid off (9 screws). The meter and KP200 lift with it; with the slack left on their wires the lid lies on its back beside the box.
+* Everything in the mains bay is reached by taking the lid off (8 screws, all visible). The meter and KP200 lift with it; with the slack left on their wires the lid lies on its back beside the box.
 * DROK meter out: lid off, squeeze the clips on its two long sides, push it up and out.
-* Display and Grove cables: front panel (6 screws).
+* Display, Grove cables and MAX6675: front panel (6 screws). With the lid on, swing the panel's bottom edge out and lower it out of the lid's bead. Refit top edge first.
 * Fuse: in the inlet's drawer, from outside, cord unplugged.
 
 ### Enclosure Revision Milestones
@@ -433,19 +447,20 @@ Full version with parts, checks and first-power procedure: [docs/BUILD-GUIDE.md]
 * **v10 / v10.1 / v10.3:** KP200 flush-mount rework from teardown measurements (window 46 × 72 mm, yoke-ear recesses with 45° lead-ins, captive box-screw clearance).
 * **v11.0:** AC bay rebuilt around the real parts: heatsink (measured 80 × 49.4 × 51 mm) along the front with the SSR on its rear face; NEMA 5-15R oven socket; FILSHU inlet cutout with clip reliefs; Shelly pocket; heatsink fence; intake and outlet slots.
 * **v12.0:** CrowPanel 2.8 in landscape on a separate **front panel** printed face down (clean face, crisp chamfered window, standoffs straight up). Board geometry from Elecrow's outline drawing, the LCM datasheet and Elecrow's STEP model. Board mounted connectors-down so its USB-C faces the side wall and the cable plugs in from outside. Box 230 × 155 × 65 → **250 × 155 × 83 mm** (89 mm DC bay; height for the board plus a 15 mm cable zone below it). The taller box lifts the KP200 body to 35 mm above the floor, which opens a straight-wire path at the SSR's AC end. Lid: display window and bosses removed; outlet slots 7 → 6 and moved 3 mm forward (the taller box let a 45° probe through the old rear slot reach the SSR terminal edge). One divider pass-through instead of two.
-* **v12.1 (Current):** DROK AC multimeter (face 76.5 × 48, body 73.4 × 45 × 21.5 mm, measured) snaps into a 45.6 × 74.0 mm cutout in the lid over the AC bay, above the inlet, long axis front-to-back. **Only the lid changed**; the bottom shell and front panel are the v12.0 parts. New `drok_meter_coupon` part, new keepouts for the meter body and its terminal zone, and asserts that keep it clear of the divider, the lid screw, the vent slots, the inlet and the SSR. The lid was re-exported in 2026-11 with one-layer skins over the four KP200 holes, after Bambu Studio warned about them (see Slicer Configurations).
+* **v12.1:** DROK AC multimeter (face 76.5 × 48, body 73.4 × 45 × 21.5 mm, measured) snaps into a 45.6 × 74.0 mm cutout in the lid over the AC bay, above the inlet, long axis front-to-back. **Only the lid changed**; the bottom shell and front panel are the v12.0 parts. New `drok_meter_coupon` part, new keepouts for the meter body and its terminal zone, and asserts that keep it clear of the divider, the lid screw, the vent slots, the inlet and the SSR. The lid was re-exported in 2026-11 with one-layer skins over the four KP200 holes, after Bambu Studio warned about them (see Slicer Configurations).
+* **v13.0 (Current):** Compact layout, **184 × 140 × 83 mm** (was 250 × 155 × 83), same parts and wire list. The full-depth low-voltage bay became a display pocket behind the front panel with the KP200 above it; the inlet moved 12 mm down; the DROK meter turned crosswise so it reads from the front; the lid bosses hang from the walls; new lid ribs, front-panel bead, MAX6675 saddle and cable-tie anchors. All three big parts are new; the five coupons are unchanged. Printed volume drops from about 450 to 320 cm³. Details: *How the compact layout works* above.
 
 ### Slicer Configurations
 * **Orientation:** All STL assets are pre-oriented for printing. No supports are required. The front panel and the lid print **outer face down**; the lid is already mirrored, so don't mirror it in the slicer. In the lid, the four KP200 holes are closed by a one-layer (0.2 mm) skin inside the two ear recesses: push a small screwdriver through each before fitting the KP200.
-* **v12.1 verification** (fresh OpenSCAD renders, `tools/verify_enclosure.py`; full output in [docs/VERIFY-v12_1.txt](docs/VERIFY-v12_1.txt)):
-  * All nine parts, including the meter coupon, are watertight with consistent winding and fit the 256 × 256 mm bed.
-  * The downward-surface scan finds only bridges (48 mm inlet top edge, 24.75 mm socket edge, 9 mm USB slot, 12 mm foot-recess ceilings at 0.8 mm, and on the lid the two 22 × 15.5 mm roofs of the KP200 ear recesses, 1.2 mm above the bed), small round holes (insert pockets, thermocouple hole), 45° lead-in chamfers, and the front panel's window chamfer and countersinks at ≤ 45°. The meter cutout is a plain through-cut and adds none.
-  * **Slicer warning check.** The script also runs Bambu Studio's "floating cantilever" rule, re-implemented from Bambu Studio's source, on 0.2 mm slices of every part. The first v12.1 lid tripped the real warning in Bambu Studio: the KP200 screw holes passed through the ear-recess roofs, so the first roof layer had to draw the hole edges in mid-air. The lid now closes those four holes with a one-layer skin, and the check flags no part. The re-implementation reproduces the warning on the old lid, but the new lid has not yet been re-sliced in Bambu Studio itself.
-  * There is zero volumetric interference between the shell, installed lid and installed front panel, and between them and 18 component keepouts (including the SSR wire zones, the board, its cable and speaker plug zones, the USB-C plug, and the meter body and terminal zone). No two keepouts overlap.
-  * 43,393 straight probe rays through every lid slot, front intake slot, the USB-C slot and the thermocouple hole: none reaches a live part.
-  * The check of Elecrow's STEP model against the printed parts (25 solids, standoff tops touching the PCB exactly) was run for v12.0 and not repeated for v12.1, because the shell and front panel it concerns did not change.
-  * Approximate inputs are labelled `APPROX` in the SCAD.
-* **Material:** ASA. **Brim ≤ 3 mm** for the 250 mm parts.
+* **v13.0 verification** (fresh OpenSCAD renders, `tools/verify_enclosure.py`; full output in [docs/VERIFY-v13_0.txt](docs/VERIFY-v13_0.txt)):
+  * All nine parts, including the coupons, are watertight with consistent winding and fit the 256 × 256 mm bed.
+  * The downward-surface scan finds only bridges (48 mm inlet top edge, 24.75 mm socket edge, the 18 mm bar of the MAX6675 saddle, 9 mm USB slot, 12 mm foot-recess ceilings at 0.8 mm, 5 mm cable-tie tunnels, and on the lid the two 22 × 15.5 mm roofs of the KP200 ear recesses, 1.2 mm above the bed), small round holes (insert pockets, thermocouple hole, control slot), and surfaces at 45° or steeper (the leaning part of the pocket wall, the undersides of the wall-hung bosses, lead-in chamfers, the front panel's window chamfer and countersinks).
+  * **Slicer warning check.** The script also runs Bambu Studio's "floating cantilever" rule, re-implemented from Bambu Studio's source, on 0.2 mm slices of every part. The first v12.1 lid tripped the real warning in Bambu Studio: the KP200 screw holes passed through the ear-recess roofs, so the first roof layer had to draw the hole edges in mid-air. The lid closes those four holes with a one-layer skin, and the check flags no v13.0 part. The re-implementation reproduces the warning on the old lid, but no v13.0 part has been sliced in Bambu Studio itself yet.
+  * There is zero volumetric interference between the shell, installed lid and installed front panel, and between them and 18 component keepouts (including the SSR wire zones, the Wago zone, the board, its cable and speaker plug zones, the USB-C plug, the MAX6675, and the meter body and terminal zone). No two keepouts overlap.
+  * 43,393 straight probe rays through every lid slot, front intake slot, the USB-C slot and the thermocouple hole: none reaches a live part. From v13.0 the meter's terminals, the Wago zone and the KP200's side terminals count as live as well as the SSR, inlet, socket and Shelly terminals.
+  * The check of Elecrow's STEP model against the printed parts (25 solids, standoff tops touching the PCB exactly) was run for v12.0 and not repeated for v13.0. The display mount (standoffs, window, panel thickness) is the same geometry. The pocket walls behind the board are new and are checked against the board's keep-out boxes, not against the STEP model.
+  * Approximate inputs are labelled `APPROX` in the SCAD. The MAX6675 module and the meter's CT have not been measured: the saddle and the Wago zone are sized to take the common variants.
+* **Material:** ASA. A normal brim fits (the parts are 184 mm wide).
 * **Infill & Perimeters:** Minimum 3 perimeters, 30–40% gyroid infill.
 
 ---
@@ -463,19 +478,22 @@ Full version with parts, checks and first-power procedure: [docs/BUILD-GUIDE.md]
 * [x] ~~Replace the 13 mm oven-lead gland.~~ NEMA 5-15R panel socket since v11.
 * [x] ~~SSR on GPIO 1 / R16 pad mod.~~ v12 drives the SSR from the CrowPanel's GPIO_D cable connector, active-low, no board mods.
 * [x] ~~Decide the screen orientation.~~ Landscape on the front panel (v12).
-* [x] ~~Redraw the wiring diagram.~~ Three illustrated sheets in `docs/wiring/` (v12.1).
+* [x] ~~Redraw the wiring diagram.~~ Three illustrated sheets in `docs/wiring/` (redrawn for v13.0).
 * [x] ~~Commit SSR / MAX6675 test sketches.~~ `firmware/bench_test/` for the CrowPanel pins.
 * [x] Reflow firmware written: UI, profiles, PID, safety aborts, Shelly heartbeat and `KVS.Set` state publishing (`firmware/reflow_controller/`), plus the Shelly supervisor script (`firmware/shelly/`).
 * [x] Firmware review (2026-11): heartbeat tolerates short Wi-Fi dropouts, never re-closes a relay the Shelly opened, stuck-SSR check, control-loop watchdog, script lockout after a trip, Wi-Fi password moved to a git-ignored `secrets.h`. PC test in `firmware/host_test/` (logic only, not hardware).
 * [x] DROK panel meter designed into the lid, with a cutout coupon (v12.1).
+* [x] Compact enclosure: 184 × 140 × 83 mm, display in a pocket behind the front panel (v13.0).
 * [x] Parts on hand, including the 14 AWG / 15 A C13 cord and a 15 A time-delay inlet fuse. Display boards ordered (2026-11).
 
 ### Open Action Items 🛠️
 
 **Print:**
-* [ ] Print the v12 coupons (ASA); set `os_cut` / `os_panel_t`; confirm the inlet snaps in; fit the CrowPanel on its coupon.
+* [ ] Print the coupons (ASA, unchanged since v12); set `os_cut` / `os_panel_t`; confirm the inlet snaps in; fit the CrowPanel on its coupon.
 * [ ] Print the DROK meter coupon; note which cell fits; re-export the lid if it isn't the middle 3.0 mm cell.
-* [ ] Print the v12 bottom and front panel and the v12.1 lid in ASA.
+* [ ] Slice the three v13.0 parts in Bambu Studio and confirm there is no support warning.
+* [ ] Print the v13.0 bottom, front panel and lid in ASA.
+* [ ] Measure the MAX6675 module and the meter's CT and check them against the saddle (25–32.5 × 16 mm) and the Wago zone (58 × 37 × 37 mm).
 
 **Bench (USB power only, no mains):**
 * [ ] CrowPanel bench checks 1–5 (Pin Configuration section).
@@ -511,7 +529,7 @@ Do not connect the device to wall power until every item below is explicitly che
 - [ ] **Firmware Safety Setting:** `SHELLY_REQUIRED` is `true` in `config.h` (it is only set `false` for the no-mains bench test).
 - [ ] **SSR Drive:** `T3` on J7 pin 3 (3V3), `T4` on J7 pin 2 (IO32); **nothing** on J7 pin 4 (GND). SSR LED stays off through power-up, RESET and flashing.
 - [ ] **Ground Path Bonding:** Confirm solid earth ground continuity from the inlet ground pin to the KP200, the SSR heatsink, and the oven socket ground.
-- [ ] **Isolation Separation:** Low-voltage lines cross the divider only through the U-slot and are insulated where they run in the AC chamber to the SSR.
+- [ ] **Isolation Separation:** Low-voltage lines leave the display pocket only through the control slot and are sleeved in 600 V heat-shrink from there to the SSR.
 - [ ] **Panel Meter:** The CT clamp is around the oven hot wire only and tied to it; the meter's voltage leads are 600 V rated, fully under their screws, and routed clear of the heatsink and vent slots. Nothing is pinched under the lid.
 - [ ] **Touch Protection:** No exposed live AC terminals or loose strands. `T1` and `T2` are live whenever the Shelly relay is closed; every strand must be under its clamp plate.
 - [ ] **Thermal Clearance:** Front intake slots and lid outlet slots unblocked.

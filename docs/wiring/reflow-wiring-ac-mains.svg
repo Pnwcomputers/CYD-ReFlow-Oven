@@ -2,7 +2,7 @@
 <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker><marker id="arrb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f5fa8"/></marker><pattern id="fins" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#c9ced4"/><rect width="6" height="14" fill="#9aa2ab"/></pattern><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#e9edf1"/><rect width="3" height="8" fill="#c3cad2"/></pattern></defs>
 <rect width="1800" height="1500" fill="#ffffff"/>
 <text x="30" y="42" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="27" font-weight="bold" text-anchor="start" fill="#111">Sheet 1 of 3 — AC mains wiring (120 V)</text>
-<text x="30" y="68" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="15" font-weight="normal" text-anchor="start" fill="#444">Reflow oven controller v12.1. Schematic, not to scale. Every wire has a tag (A1…A15) that matches the table. UNPLUG the cord before touching anything on this sheet.</text>
+<text x="30" y="68" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="15" font-weight="normal" text-anchor="start" fill="#444">Reflow oven controller v13.0. Schematic, not to scale. Every wire has a tag (A1…A15) that matches the table. UNPLUG the cord before touching anything on this sheet.</text>
 <rect x="30" y="84" width="125" height="46" rx="8" fill="#fdeeee" stroke="#b22222" stroke-width="1.8"/>
 <text x="92.5" y="103" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#111">Wall outlet</text>
 <text x="92.5" y="120" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="middle" fill="#444">120 V AC</text>
@@ -35,7 +35,7 @@
 <text x="1457.0" y="103" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#111">Oven</text>
 <text x="1457.0" y="120" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="middle" fill="#444">heating elements</text>
 <rect x="20" y="150" width="1480" height="960" rx="12" fill="none" stroke="#9aa5b1" stroke-width="2" stroke-dasharray="10,6"/>
-<text x="36" y="1100" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="start" fill="#b22222">AC BAY of the enclosure (mains). The DROK meter and the KP200 sit in the lid above this bay.</text>
+<text x="36" y="1100" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="start" fill="#b22222">MAINS BAY of the enclosure. The DROK meter and the KP200 sit in the lid above it.</text>
 <rect x="60" y="200" width="70" height="56" rx="10" fill="#2b2b2b" stroke="#111" stroke-width="2"/>
 <rect x="38" y="214" width="24" height="6" rx="1" fill="#c9a23a" stroke="#7a6220" stroke-width="1"/>
 <rect x="38" y="236" width="24" height="6" rx="1" fill="#c9a23a" stroke="#7a6220" stroke-width="1"/>
@@ -136,7 +136,7 @@
 <text x="740" y="241" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#cfe0f5">1PM Gen4</text>
 <text x="740" y="265" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#cfe0f5">relay + power meter</text>
 <text x="740" y="283" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#cfe0f5">Wi-Fi watchdog</text>
-<text x="740" y="335" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#444">pocket on the left wall</text>
+<text x="740" y="335" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#444">pocket on the left side wall</text>
 <text x="740" y="351" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#444">SW terminal: leave empty</text>
 <circle cx="640" cy="215" r="7" fill="#d9d9d9" stroke="#111" stroke-width="2"/>
 <line x1="636" y1="211" x2="644" y2="219" stroke="#555" stroke-width="1.5"/>
@@ -169,7 +169,7 @@
 <circle cx="1066" cy="346" r="7" fill="#d9d9d9" stroke="#111" stroke-width="2"/>
 <line x1="1062" y1="342" x2="1070" y2="350" stroke="#555" stroke-width="1.5"/>
 <text x="1066" y="334" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#888">4 −</text>
-<text x="1110" y="426" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#111">1 / 2 = AC end, toward the KP200</text>
+<text x="1110" y="426" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#111">1 / 2 = AC end, toward the socket</text>
 <text x="1110" y="443" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="normal" text-anchor="middle" fill="#666">3 / 4 = control input: see sheet 2</text>
 <circle cx="985" cy="380" r="9" fill="#d9d9d9" stroke="#111" stroke-width="2"/>
 <circle cx="985" cy="380" r="3.5" fill="#555" stroke="#111" stroke-width="1"/>
@@ -221,7 +221,7 @@
 <line x1="1286" y1="766" x2="1294" y2="774" stroke="#555" stroke-width="1.5"/>
 <text x="1278" y="775" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="13" font-weight="bold" text-anchor="end" fill="#111"></text>
 <text x="1302" y="774" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12" font-weight="bold" text-anchor="start" fill="#fff">G</text>
-<text x="1375" y="830" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#111">Oven socket · left wall</text>
+<text x="1375" y="830" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="bold" text-anchor="middle" fill="#111">Oven socket · right side wall</text>
 <text x="1292" y="848" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="start" fill="#444">HOT = narrow slot, brass screw</text>
 <text x="1292" y="863" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="start" fill="#444">N = wide slot, silver screw</text>
 <text x="1292" y="878" font-family="DejaVu Sans, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="normal" text-anchor="start" fill="#444">G = round hole, green screw</text>
